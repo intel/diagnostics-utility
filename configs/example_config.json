@@ -1,0 +1,10 @@
+[
+    {
+        "name": "gcc_version_check",
+        "path": "./checkers_py/gcc_checker.py"
+    },
+    {
+        "name": "gpu_backend_check",
+        "path": "./checkers_c/libgpu_backend_checker.so"
+    }
+]

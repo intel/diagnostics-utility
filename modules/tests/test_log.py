@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+# /*******************************************************************************
+# Copyright Intel Corporation.
+# This software and the related documents are Intel copyrighted materials, and your use of them
+# is governed by the express license under which they were provided to you (License).
+# Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose
+# or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties,
+# other than those that are expressly stated in the License.
+#
+# *******************************************************************************/
+
+# NOTE: workaround to import modules
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
+
+import tempfile  # noqa: E402
+import unittest  # noqa: E402
+
+import modules.log as log  # noqa: E402
+
+
+class TestLogger(unittest.TestCase):
+
+    def test_set_correct_verbosity_level(self):
+        verbosity_level = -1
+        expected = 30
+
+        value = log._verbosity2loglevel(verbosity_level)
+
+        self.assertEqual(expected, value)
+
+    def test_set_large_verbosity_level_is_correct(self):
+        verbosity_level = 10
+        expected = 10
+
+        value = log._verbosity2loglevel(verbosity_level)
+
+        self.assertEqual(expected, value)
+
+    def test_configure_logger_without_log_file_no_raise_error(self):
+        log.configure_logger(0, None)
+
+    def test_configure_logger_no_raise_error(self):
+        with tempfile.NamedTemporaryFile() as temp:
+            log.configure_logger(0, temp.name)
+
+    def test_configure_logger_second_time_no_raise_error(self):
+        with tempfile.NamedTemporaryFile() as temp:
+            log.configure_logger(2, temp.name)
+            log.configure_logger(0, temp.name)
+
+    def test_set_incorrect_verbosity_level(self):
+        self.assertRaises(ValueError, log._verbosity2loglevel, -2)
+
+
+if __name__ == '__main__':
+    unittest.main()

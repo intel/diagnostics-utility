@@ -1,0 +1,41 @@
+[run]
+branch = True
+disable_warnings = no-data-collected
+omit =
+    */.local/*
+    /usr/*
+    */test_*
+    # FIXME: Will be enabled when GSE cover this files
+    checkers_py/intel_gpu_detector_checker.py
+    checkers_py/oneapi_gpu_checker.py
+    # FIXME: Will be enabled later
+    modules/db_downloader.py
+
+source =
+    modules/
+    checkers_py/
+
+[paths]
+source =
+    tests/
+    */tests/
+
+[report]
+precision = 2
+ignore_errors = True
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+    def __repr__
+    if self\.debug
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+
+[html]
+directory = python_coverage_report
+
+[json]
+pretty_print = True
+output = python_coverage_report/index.json

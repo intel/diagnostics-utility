@@ -1,0 +1,19 @@
+{
+    "resources": [
+        "https://iotdk.intel.com/diagnostics/databases"
+    ],
+    "databases": {
+        "compatibility": [
+            {
+                "name": "compatibility_map_10152021.db",
+                "installation_name": "compatibility_map.db",
+                "version": "2022.0.0",
+                "date_of_creation": "11242021",
+                "compatibility": {
+                    "dependencies_check": ["0.1"]
+                },
+                "hash": "b653f6bd4fb14f51862d9ce075a7a5ab3b28e67864675ad748a4541ade3610a99f859f02cdd04a3b22f8eec01939dff7"
+            }
+        ]
+    }
+}
