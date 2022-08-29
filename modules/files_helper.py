@@ -9,14 +9,13 @@
 #
 # *******************************************************************************/
 
-import os
 import logging
 import json
 import platform
 
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Set, Tuple
 
 from modules.check import BaseCheck
 
@@ -24,9 +23,9 @@ from modules.check import BaseCheck
 def is_file_exist(path: Path) -> None:
     if path.exists():
         if not path.is_file():
-            raise ValueError(f"{path} is not a file")
+            raise ValueError(f"{path} is not a file.")
     else:
-        raise ValueError(f"{path} doesn't exist")
+        raise ValueError(f"{path} does not exist.")
 
 
 def get_json_content_from_file(source: Path) -> Dict:
@@ -36,18 +35,35 @@ def get_json_content_from_file(source: Path) -> Dict:
         try:
             content = json.load(file)
         except Exception:
-            raise ValueError(f"{source} is not json file")
+            raise ValueError(f"{source} is not a JSON file.")
     return content
 
 
 def read_config_data(source: Path) -> Dict:
+    expexted_data_fileds = ["path", "name"]
     config_data = get_json_content_from_file(source)
     if not isinstance(config_data, list):
-        raise ValueError("Configuration file has incorrect structure")
+        raise ValueError("Configuration file has incorrect structure.")
     for checker_data in config_data:
-        if "path" not in checker_data:
-            raise ValueError("Configuration file has incorrect structure")
+        if not all(item in expexted_data_fileds for item in list(checker_data.keys())) or \
+           not any(item == "name" for item in list(checker_data.keys())):
+            raise ValueError("Configuration file has incorrect structure.")
     return config_data
+
+
+def get_checkers_to_load_from_config_data(config_data: Dict) -> List[str]:
+    result_checkers = []
+    for checker_data in config_data:
+        if "path" in checker_data:
+            result_checkers.append(checker_data["path"])
+    return result_checkers
+
+
+def get_checks_to_run_from_config_data(config_data: Dict) -> Set[str]:
+    result_checks = set()
+    for checker_data in config_data:
+        result_checks = result_checks | {checker_data["name"]}
+    return result_checks
 
 
 def get_files_list_from_folder(path_to_folder: Path) -> List[Path]:
@@ -63,6 +79,8 @@ def save_json_output_file(checks: List[BaseCheck], file: Path) -> None:
     json_output = {}
     for check in checks:
         try:
+            if check.get_summary() is None:
+                continue
             json_output[check.get_metadata().name] = json.loads(check.get_summary().result)
         except ValueError:  # includes simplejson.decoder.JSONDecodeError
             print("Decoding JSON has failed\n\n")
@@ -79,8 +97,6 @@ def _args_string(args) -> str:
         result.append("list")
     if args.config:
         result.append(f"config_{args.config.stem}")
-    if args.single_checker:
-        result.append(f"single_checker_{args.single_checker.stem}")
     if args.force:
         result.append("force")
     if args.verbosity > -1:
@@ -91,23 +107,29 @@ def _args_string(args) -> str:
 def configure_output_files(args) -> Tuple[Optional[Path], Optional[Path]]:
     txt_output_file = None
     json_output_file = None
+    resolved_output = args.output.resolve()
     try:
-        if args.output.exists():
-            if not args.output.is_dir():
-                raise ValueError(f"{args.output} is not a directory.")
-            if not os.access(args.output, os.W_OK):
-                raise ValueError("Output folder has no write permissions.")
+        if resolved_output.exists():
+            if not resolved_output.is_dir():
+                raise ValueError(f"{resolved_output} is not a directory.")
+            # NOTE: Workaround for non POSIX OSes because
+            #       os.access(resolved_output, os.W_OK) always returns True
+            test_file_name = f"test{datetime.now().strftime('%Y%m%d_%H%M%S%f')}.txt"
+            test_file = resolved_output / test_file_name
+            with open(test_file, "w") as test:
+                test.write("test")
+            test_file.unlink()
         else:
-            args.output.mkdir(parents=True)
+            resolved_output.mkdir(parents=True)
     except PermissionError:
-        logging.warning("No permissions to create output folder")
+        logging.warning("No permissions to create output files.")
     except Exception as error:
         logging.warning(str(error))
     else:
         txt_output_file_name = f"diagnostics_{_args_string(args)}_{platform.node()}_{datetime.now().strftime('%Y%m%d_%H%M%S%f')}.txt"  # noqa: E501
         json_output_file_name = f"diagnostics_{_args_string(args)}_{platform.node()}_{datetime.now().strftime('%Y%m%d_%H%M%S%f')}.json"  # noqa: E501
-        txt_output_file = args.output / txt_output_file_name
-        json_output_file = args.output / json_output_file_name
+        txt_output_file = resolved_output / txt_output_file_name
+        json_output_file = resolved_output / json_output_file_name
 
     return txt_output_file, json_output_file
 
@@ -117,5 +139,5 @@ def get_examine_data(source: Path) -> Optional[Dict]:
     try:
         result = get_json_content_from_file(source)
     except ValueError as error:
-        logging.warning(f"Can't get examine data: {str(error)}")
+        logging.warning(f"Cannot get examine data: {str(error)}")
     return result

@@ -13,9 +13,9 @@ import sys
 import logging
 
 from pathlib import Path
-from types import ModuleType
 from typing import List, Dict
 
+from modules.check.check_list_py import CheckListPy
 from modules.check.check import CheckMetadataPy, BaseCheck, CheckSummary
 
 from modules.log import trace  # type: ignore
@@ -23,29 +23,30 @@ from modules.log import trace  # type: ignore
 
 class CheckPy(BaseCheck):
 
-    def __init__(self, metadata: CheckMetadataPy, module: ModuleType):
-        self.__module = module
+    def __init__(self, metadata: CheckMetadataPy, check_list: CheckListPy):
+        self.check_list = check_list
         self.metadata = metadata
 
     def get_api_version(self) -> str:
-        func = getattr(self.__module, "get_api_version")
-        return func()
+        return self.check_list.api_version
 
     @trace(log_args=True)
     def run(self, data: Dict) -> CheckSummary:
-        func = getattr(self.__module, self.metadata.run)
+        func = getattr(self.check_list.checker_module, self.metadata.run)
         return func(data)
 
     def __str__(self) -> str:
-        return f"{type(self).__name__}('module'='{self.__module.__file__}', 'metadata'='{self.metadata}')"
+        return f"{type(self).__name__}('check_list'='{self.check_list}', 'metadata'='{self.metadata}')"
 
 
 @trace(log_args=True)
-def getChecksPy(lib_checker_path: Path) -> List[BaseCheck]:
-    if not lib_checker_path.exists():
-        logging.error(f"Failed to load {str(lib_checker_path)}: No such file")
-        raise OSError(f"Failed to load {str(lib_checker_path)}: No such file")
-    sys.path.append(str(lib_checker_path.parent))
-    module = __import__(lib_checker_path.stem)
-    check_list = module.get_check_list()
-    return [CheckPy(check, module) for check in check_list]
+def getChecksPy(checker_path: Path, version: str) -> List[BaseCheck]:
+    if not checker_path.exists():
+        logging.error(f"Failed to load {str(checker_path)}: No such file.")
+        raise OSError(f"Failed to load {str(checker_path)}: No such file.")
+    sys.path.append(str(checker_path.parent))
+    check_list = CheckListPy(checker_path)
+    if check_list.api_version != version:
+        logging.error(f"Failed to load {str(checker_path)}:{str(checker_path)} is incompatible.")
+        raise ValueError(f"Failed to load {str(checker_path)}:{str(checker_path)} is incompatible.")
+    return [CheckPy(check, check_list) for check in check_list]

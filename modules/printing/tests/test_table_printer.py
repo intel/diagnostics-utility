@@ -22,18 +22,21 @@ from unittest.mock import patch  # noqa: E402
 
 from modules.printing.printer_helper import Aligment, Colors  # noqa: E402
 from modules.printing.table_printer import draw_info_row, draw_line  # noqa: E402
+from modules.printing.tests.printing_test_helper import print_ex_mock  # noqa: E402
 
 
 class TestDrawLine(unittest.TestCase):
 
-    def test_draw_line_default_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_draw_line_default_positive(self, mocked_print_ex):
         col_width = 7
         expected_stdout = "+-------+-------+-------+\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             draw_line([col_width] * 3, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_draw_line_empty_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_draw_line_empty_positive(self, mocked_print_ex):
         expected_stdout = ""
         with patch('sys.stdout', new=StringIO()) as stdout:
             draw_line([], None)
@@ -42,7 +45,8 @@ class TestDrawLine(unittest.TestCase):
 
 class TestDrawInfoRow(unittest.TestCase):
 
-    def test_drow_info_row_default_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_default_positive(self, mocked_print_ex):
         col_width = 7
         expected_stdout = "| col_1 | col_2 | col_3 |\n" + \
                           "+-------+-------+-------+\n"
@@ -54,7 +58,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_no_sep_line_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_no_sep_line_positive(self, mocked_print_ex):
         col_width = 7
         expected_stdout = "| col_1 | col_2 | col_3 |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -66,7 +71,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_colored_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_colored_positive(self, mocked_print_ex):
         col_width = 7
         expected_stdout = f"|{Colors.Yellow} col_1 {Colors.Default}|{Colors.Yellow} col_2 {Colors.Default}|{Colors.Yellow} col_3 {Colors.Default}|\n"   # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -79,7 +85,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_colored_different_len_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_colored_different_len_positive(self, mocked_print_ex):
         col_width = 7
         expected_stdout = f"|{Colors.Yellow} col_1 {Colors.Default}|{Colors.Yellow} col_2 {Colors.Default}| col_3 |\n"   # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -92,7 +99,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_aligned_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_aligned_positive(self, mocked_print_ex):
         col_width = 11
         expected_stdout = "|     col_1 |     col_2 |     col_3 |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -105,7 +113,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_aligned_different_len_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_aligned_different_len_positive(self, mocked_print_ex):
         col_width = 11
         expected_stdout = "|     col_1 |     col_2 | col_3     |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -117,7 +126,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_too_long_string_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_too_long_string_positive(self, mocked_print_ex):
         col_width = 6
         expected_stdout = "| colu | colu | colu |\n" + \
                           "| mn_1 | mn_2 | mn_3 |\n"
@@ -130,7 +140,8 @@ class TestDrawInfoRow(unittest.TestCase):
             )
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
-    def test_drow_info_row_different_len_positive(self):
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
+    def test_drow_info_row_different_len_positive(self, mocked_print_ex):
         col_width = 7
         expected_stdout = ""
         with patch('sys.stdout', new=StringIO()) as stdout:

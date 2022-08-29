@@ -36,21 +36,27 @@ To view a rendered version of this document, go to the
 Supported Operating Systems
 ---------------------------
 
+•	Windows 10
+•	Windows 11
+•	Windows Server 2022
+•	Ubuntu 18.04 LTS
 •	Ubuntu 20.04 LTS
 •	RHEL 8.2
 •	RHEL 8.3
 •	SLES 15 SP2
 •	SLES 15 SP3
+•	Rocky Linux 8.5
+
 
 Requirements
 ------------
 
 * Python 3.6 and newer
 
-If your system meets the Diagnostic Utility requirements click here
+If your system meets the Diagnostics Utility for Intel® oneAPI Toolkits requirements click here
 to :ref:`cli-options`.
 
-After running the Diagnostic Utility for the first time, explore
+After running the Diagnostics Utility for Intel® oneAPI Toolkits for the first time, explore
 :ref:`group-checks` and :ref:`verbosity` to see the flexibility of this
 utility.
 

@@ -22,9 +22,9 @@ class CheckMetadata(ctypes.Structure):
         ("tags", ctypes.c_char * MAX_STRING_LEN),
         ("descr", ctypes.c_char * MAX_STRING_LEN),
         ("dataReq", ctypes.c_char * MAX_STRING_LEN),
-        ("rights", ctypes.c_char * MAX_STRING_LEN),
+        ("merit", ctypes.c_int),
         ("timeout", ctypes.c_int),
-        ("version", ctypes.c_char * MAX_STRING_LEN)
+        ("version", ctypes.c_int)
     ]
 
 
@@ -37,6 +37,5 @@ class CheckResult(ctypes.Structure):
 class Check(ctypes.Structure):
     _fields_ = [
         ("check_metadata", CheckMetadata),
-        ("run", ctypes.CFUNCTYPE(CheckResult, ctypes.c_char_p)),
-        ("api_version", ctypes.c_char * MAX_STRING_LEN)
+        ("run", ctypes.CFUNCTYPE(CheckResult, ctypes.c_char_p))
     ]

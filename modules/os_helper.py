@@ -9,22 +9,45 @@
 #
 # *******************************************************************************/
 
+import platform
 from typing import Dict, List, Tuple
 
 
 SUPPORTED_OS: Dict[str, List[str]] = {
-    "Ubuntu": ["20.04"],
+    "Ubuntu": ["18.04", "20.04"],
     "Red Hat Enterprise Linux": ["8.2", "8.3"],
-    "SLES": ["15.2", "15.3"]
+    "SLES": ["15.2", "15.3"],
+    "Windows": ["10", "11", "Server 2022"],
+    "Rocky Linux": ["8.5"]
 }
 
 
-def _get_os() -> Tuple[str, str]:
+def _get_windows_version() -> str:  # pragma: no cover
+    import winreg  # pylint: disable=E0401
+    product_name_reg_key = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, product_name_reg_key) as key:
+        product_name = winreg.QueryValueEx(key, "ProductName")[0].split(" ")
+    version = " ".join(product_name[1:-1])
+    return version
+
+
+def _get_linux_distribution() -> Tuple[str, str]:
     os_release_path = "/etc/os-release"
     with open(os_release_path, "r") as file:
         os_release = file.readlines()
     name = [line.strip().split("=")[1][1:-1] for line in os_release if line.startswith("NAME")][0]
     version = [line.strip().split("=")[1][1:-1] for line in os_release if line.startswith("VERSION_ID")][0]
+    return name, version
+
+
+def _get_os() -> Tuple[str, str]:
+    os_name = platform.system()
+    if os_name == "Windows":
+        name, version = os_name, _get_windows_version()
+    elif os_name == "Linux":
+        name, version = _get_linux_distribution()
+    else:
+        raise Exception("The operating system is not supported.")
     return name, version
 
 

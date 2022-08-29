@@ -9,82 +9,129 @@
 #
 # *******************************************************************************/
 
-import os
 import json
 import logging
-import stat
 
-from typing import Dict, List
+from typing import Dict, List, Set, Tuple
+from multiprocessing import Process, Pipe
 
-from modules.check.check import BaseCheck, timeout_exit
+from modules.check.check import BaseCheck, CheckSummary
 
 
-def merge_dict(dst: Dict, to_merge: Dict) -> None:
-    for k, v2 in to_merge.items():
-        v1 = dst.get(k)
-        if (isinstance(v1, dict) and isinstance(v2, dict)):
-            merge_dict(v1, v2)
-        else:
-            if v1 is None:
-                dst[k] = v2
+def _check_run(connection, check, data) -> None:
+    try:
+        result = check.run(data)
+        connection.send(result)
+    except Exception as e:
+        connection.send(e)
+    finally:
+        connection.close
+
+
+def check_run(check, data) -> CheckSummary:
+    parent_connection, child_connection = Pipe(duplex=False)
+    process = Process(target=_check_run, args=(child_connection, check, data))
+    process.start()
+    if parent_connection.poll(timeout=check.get_metadata().timeout):
+        result = parent_connection.recv()
+        if isinstance(result, Exception):
+            json_dict = {
+                "RetVal": "ERROR",
+                "Verbosity": 0,
+                "Message": "",
+                "Value": {
+                    f"{check.get_metadata().name}": {
+                        "Value": "",
+                        "Verbosity": 0,
+                        "Message": "The check crashed at runtime. No data was received. "
+                                   "See call stack above.",
+                        "RetVal": "ERROR"
+                    }
+                }
+            }
+            json_str = json.dumps(json_dict)
+            result = CheckSummary(result=json_str)
+        parent_connection.close()
+    else:
+        process.terminate()
+        json_dict = {
+            "RetVal": "ERROR",
+            "Verbosity": 0,
+            "Message": "",
+            "Value": {
+                f"{check.get_metadata().name}": {
+                    "Value": "Timeout was exceeded.",
+                    "Verbosity": 0,
+                    "Message": "",
+                    "RetVal": "ERROR"
+                }
+            }
+        }
+        json_str = json.dumps(json_dict)
+        result = CheckSummary(result=json_str)
+    return result
+
+
+def _get_dependency_checks_map(checks: List[BaseCheck], dataReq: Dict) -> Dict[str, BaseCheck]:
+    required_dependencies_map: Dict[str, BaseCheck] = {}
+    for name, version in dataReq.items():
+        is_found = False
+        for check in checks:
+            metadata = check.get_metadata()
+            if metadata.name == name:
+                if metadata.version == version:
+                    required_dependencies_map.update({name: check})
+                    is_found = True
+                    break
+                else:
+                    logging.error(f"Another version of the required dependency {name} is loaded.")
             else:
-                logging.debug(
-                    "Destination dictionary contains information about check. Value will be overridden")
-                dst[k] = v2
+                continue
+        if not is_found:
+            logging.error(f"Cannot find the {name} in the loaded list of checks.")
+    return required_dependencies_map
 
 
-def get_sub_dict(data: Dict, to_get: Dict) -> int:
-    if not bool(to_get):
-        return 0
-    err_num = 0
-    for k, v2 in to_get.items():
-        try:
-            v1 = data.get('Value').get(k)
-        except AttributeError:
-            return err_num + 1
-        if not bool(v2):
-            to_get[k] = v1
-        if (isinstance(v1, dict) and isinstance(v2, dict)):
-            err_num += get_sub_dict(v1, v2)
-        else:
-            err_num += 1
-    return err_num
+def create_dependency_order(
+        loaded_checks: List[BaseCheck], filter: Set[str]) -> Tuple[List[str], List[BaseCheck]]:
+    checks_to_print: List[str] = []
+    ordered_checks_map: Dict[str, BaseCheck] = {}
+    for check in loaded_checks:
+        check_metadata = check.get_metadata()
+        if "all" not in filter and \
+           len((set(check_metadata.tags.split(",")) | {check_metadata.name}) & filter) == 0:
+            continue
+        checks_to_print.append(check_metadata.name)
+        dependency_checks = _get_dependency_checks_map(loaded_checks, json.loads(check_metadata.dataReq))
+        for name, dependency in dependency_checks.items():
+            if name not in ordered_checks_map:
+                ordered_checks_map[name] = dependency
+
+        if check_metadata.name not in ordered_checks_map:
+            ordered_checks_map[check_metadata.name] = check
+
+    return checks_to_print, list(ordered_checks_map.values())
 
 
-def run_checks(checks: List[BaseCheck]) -> None:
+def run_checks(checks_to_run: List[BaseCheck]) -> None:
     # TODO: Add more debug information
     json_full_results = {}
-    to_run = len(checks)
-
-    mode = stat.S_IWOTH | stat.S_IXOTH
-    is_shm_available = os.stat("/dev/shm").st_mode & mode >= mode
-    if not is_shm_available:
-        logging.warning(
-            "Other users doesn't have access to /dev/shm. "
-            "Checks will be performed in the current process due "
-            "to the impossibility of interprocess communication.")
-    if to_run == 0:
-        print("No checks found to run")
+    if len(checks_to_run) == 0:
+        print("No checks found to run.")
         exit(1)
-    while to_run > 0:
-        curr_run = to_run
-        for check in checks:
-            if check.get_summary() is None:
-                metadata = check.get_metadata()
-                if metadata.rights == "admin" and os.getuid() != 0:
-                    logging.warning(
-                        f"The check {metadata.name} needs root privileges. Please run with sudo.")
-                    checks.remove(check)
-                    to_run = to_run - 1
-                    continue
-                dataReqDict = json.loads(metadata.dataReq)
-                if 0 == get_sub_dict(json_full_results, dataReqDict):
-                    check_summary = timeout_exit(check.run)(check, dataReqDict) \
-                        if is_shm_available else check.run(dataReqDict)
-                    check.set_summary(check_summary)
-                    merge_dict(json_full_results, json.loads(check.get_summary().result))
-                    to_run = to_run - 1
-        if curr_run - to_run == 0:
-            print("The results of the required check dependencies were not received "
-                  "before running the corresponding check.")
-            exit(1)
+
+    for check in checks_to_run:
+        metadata = check.get_metadata()
+        required_dependencies = json.loads(metadata.dataReq)
+        required_dependencies_data = {
+            check_name: summary
+            for check_name, summary in json_full_results.items()
+            if check_name in required_dependencies.keys()
+        }
+        if len(required_dependencies) != len(required_dependencies_data):
+            logging.error(f"The {metadata.name} depends on results of other checks that cannot be obtained. "
+                          f"Please load checks with names: {','.join(list(required_dependencies.keys()))}.")
+            continue
+        check_summary = check_run(check, required_dependencies_data)
+        check.set_summary(check_summary)
+        json_full_results[check.get_metadata().name] = json.loads(check.get_summary().result)

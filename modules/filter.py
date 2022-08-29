@@ -10,16 +10,16 @@
 # *******************************************************************************/
 
 from itertools import filterfalse
-from typing import List
+from typing import List, Set
 
 from modules.check import BaseCheck
 
 
-def process_filter(filter: List[str]) -> List[str]:
-    """Set default filter if filter has not been initialized"""
-    result = filter
+def process_filter(filter: List[str]) -> Set[str]:
+    """Set default filter if filter has not been initialized."""
+    result = set(filter)
     if len(filter) == 1 and filter[0] == "not_initialized":
-        result = ["default"]
+        result = {"default"}
     return result
 
 

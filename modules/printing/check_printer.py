@@ -22,8 +22,8 @@ from modules.printing.printer import print_ex
 from modules.check.check import BaseCheck
 
 
-PREFIX_KEY_IN = '\u251C'+'\u2500'
-PREFIX_KEY_OUT = '\u2514'+'\u2500'
+PREFIX_KEY_IN = '\u251C' + '\u2500'
+PREFIX_KEY_OUT = '\u2514' + '\u2500'
 PREFIX_IN = '\u2502' + " "
 PREFIX_OUT = '\u2514' + " "
 
@@ -66,7 +66,7 @@ class CheckSummaryPrinter:
 
     def _result_format(self, res: str) -> List[str]:
         if len(res) > self.result_width:
-            raise ValueError("Too long result string")
+            raise ValueError("Output string is too long to display.")
         spaces = self.result_width - len(res)
         return [res + " " * spaces]
 
@@ -119,11 +119,19 @@ class CheckSummaryPrinter:
         return format_lines
 
     def _message_format(self, message: str, depth: int, out: List[bool]) -> List[str]:
-        message = f'Message:{message}'
+        message = f'Message: {message}'
         return self._string_format(message, depth, out)
 
     def _command_format(self, command: str, depth: int, out: List[bool]) -> List[str]:
-        command = f'Command:{command}'
+        command = f'Command: {command}'
+        return self._string_format(command, depth, out)
+
+    def _how_to_fix_format(self, how_to_fix_message: str, depth: int, out: List[bool]) -> List[str]:
+        command = f'How to fix: {how_to_fix_message}'
+        return self._string_format(command, depth, out)
+
+    def _automation_fix_format(self, _automation_fix_command: str, depth: int, out: List[bool]) -> List[str]:
+        command = f'Command to fix: {_automation_fix_command}'
         return self._string_format(command, depth, out)
 
     def print_line(
@@ -162,6 +170,20 @@ class CheckSummaryPrinter:
             print_ex(line, self.output_file, color=color, end="")
             print_ex(self._result_format("")[0] + SEPARATOR, self.output_file)
 
+    def print_how_to_fix(self, how_to_fix: str, color, depth: int, out: List[bool]) -> None:
+        how_to_fix_lines = self._how_to_fix_format(how_to_fix, depth, out)
+        for line in how_to_fix_lines:
+            print_ex(SEPARATOR, self.output_file, end="")
+            print_ex(line, self.output_file, color=color, end="")
+            print_ex(self._result_format("")[0] + SEPARATOR, self.output_file)
+
+    def print_automation_fix(self, automation_fix: str, color, depth: int, out: List[bool]) -> None:
+        automation_fix_lines = self._automation_fix_format(automation_fix, depth, out)
+        for line in automation_fix_lines:
+            print_ex(SEPARATOR, self.output_file, end="")
+            print_ex(line, self.output_file, color=color, end="")
+            print_ex(self._result_format("")[0] + SEPARATOR, self.output_file)
+
     def print_command(self, command: str, depth: int, out: List[bool]) -> None:
         command_format_lines = self._command_format(command, depth, out)
         for line in command_format_lines:
@@ -173,13 +195,21 @@ class CheckSummaryPrinter:
             key, data = item
             current_out = True if num == len(summary) - 1 else False
 
+            print_solution_description = False
+            how_to_fix_default_message = \
+                "The developer of the check did not provide information on how to solve the problem. " \
+                "To see the solution to the problem, ask the developer of the check to fill in the " \
+                "\"HowToFix\" field."
+
             color = Colors.Default
             if data['RetVal'] == "PASS":
                 color = Colors.Green
             elif data['RetVal'] == "ERROR":
                 color = Colors.Red
+                print_solution_description = True
             elif data['RetVal'] == "FAIL":
                 color = Colors.Red
+                print_solution_description = True
             elif data['RetVal'] == "WARNING":
                 color = Colors.Yellow
             elif data['RetVal'] == "INFO":
@@ -188,15 +218,28 @@ class CheckSummaryPrinter:
             if isinstance(data['Value'], dict):
                 command_exist = True if 'Command' in data and data['Command'] != "" else False
                 message_exist = True if 'Message' in data and data['Message'] != "" else False
-                line_out = current_out if not message_exist and not command_exist else False
-                command_out = current_out if not message_exist else False
-                message_out = current_out
+                how_to_fix_exist = True if 'HowToFix' in data and data['HowToFix'] != "" else False
+                automation_fix_exist = True if 'AutomationFix' in data and data['AutomationFix'] != "" \
+                    else False
+
+                line_out = current_out if (not message_exist and not command_exist and
+                                           not print_solution_description) else False
+                command_out = current_out if not message_exist and not print_solution_description else False
+                message_out = current_out if not print_solution_description else False
+                how_to_fix_out = current_out if not automation_fix_exist else False
+                automation_fix_out = current_out
 
                 self.print_line(key, "", "", color, depth, out+[line_out])
                 if command_exist:
                     self.print_command(data['Command'], depth, out+[command_out])
                 if message_exist:
                     self.print_message(data['Message'], color, depth, out+[message_out])
+                if print_solution_description:
+                    how_to_fix_message = data["HowToFix"] if how_to_fix_exist else how_to_fix_default_message
+                    self.print_how_to_fix(how_to_fix_message, color, depth, out+[how_to_fix_out])
+                    if automation_fix_exist:
+                        self.print_automation_fix(
+                            data['AutomationFix'], color, depth, out+[automation_fix_out])
 
                 if examine_summary is not None:
                     if isinstance(examine_summary[key]['Value'], dict):
@@ -208,7 +251,7 @@ class CheckSummaryPrinter:
                         )
                     else:
                         self.print_message(
-                            f"The value is not a dictionary. The value is '{examine_summary[key]['Value']}'",
+                            f"The value is not a dictionary. The value is '{examine_summary[key]['Value']}'.",
                             Colors.Red, depth, out=out+[False])
                         self.print_summary_tree(data['Value'], depth=depth+1, out=out+[current_out])
                 else:
@@ -216,15 +259,28 @@ class CheckSummaryPrinter:
             else:
                 command_exist = True if 'Command' in data and data['Command'] != "" else False
                 message_exist = True if 'Message' in data and data['Message'] != "" else False
-                line_out = current_out if not message_exist and not command_exist else False
-                command_out = current_out if not message_exist else False
-                message_out = current_out
+                how_to_fix_exist = True if 'HowToFix' in data and data['HowToFix'] != "" else False
+                automation_fix_exist = True if 'AutomationFix' in data and data['AutomationFix'] != "" \
+                    else False
+
+                line_out = current_out if (not message_exist and not command_exist and
+                                           not print_solution_description) else False
+                command_out = current_out if not message_exist and not print_solution_description else False
+                message_out = current_out if not print_solution_description else False
+                how_to_fix_out = current_out if not automation_fix_exist else False
+                automation_fix_out = current_out
 
                 self.print_line(key, str(data['Value']), data['RetVal'], color, depth, out+[line_out])
                 if command_exist:
                     self.print_command(data['Command'], depth, out+[command_out])
                 if message_exist:
                     self.print_message(data['Message'], color, depth, out+[message_out])
+                if print_solution_description:
+                    how_to_fix_message = data["HowToFix"] if how_to_fix_exist else how_to_fix_default_message
+                    self.print_how_to_fix(how_to_fix_message, color, depth, out+[how_to_fix_out])
+                    if automation_fix_exist:
+                        self.print_automation_fix(
+                            data['AutomationFix'], color, depth, out+[automation_fix_out])
 
                 if examine_summary is not None and examine_summary[key]['Value'] != data['Value']:
                     self.print_message(
@@ -243,7 +299,8 @@ def _verbosity_processing(summary: Dict, required_verbosity: int, parent_verbosi
                 del data["Command"]
         if parent_verbosity is not None and result_verbosity < parent_verbosity:
             result_verbosity = parent_verbosity
-            logging.warning("Verbosity level of subtree less than higer node verbosity level")
+            logging.warning(
+                "The verbosity level of the subtree is less than the verbosity level of the higher node.")
         if isinstance(data['Value'], dict) and result_verbosity <= required_verbosity:
             _verbosity_processing(data['Value'], required_verbosity, parent_verbosity=result_verbosity)
         if result_verbosity > required_verbosity:
@@ -258,12 +315,12 @@ def print_full_summary(
     for check in checks:
         metadata = check.get_metadata()
         summary = check.get_summary()
-        if metadata is None or summary is None:
-            raise ValueError("Check object is not correct")
+        if summary is None:
+            continue
         print_ex("", output_file)
         print_ex("=" * max(CONSOLE_MIN, shutil.get_terminal_size().columns), output_file)
         print_ex(f"Check name: {metadata.name}", output_file)
-        print_ex(f"Description : {metadata.descr}", output_file)
+        print_ex(f"Description: {metadata.descr}", output_file)
         print_ex("=" * max(CONSOLE_MIN, shutil.get_terminal_size().columns), output_file)
         print_ex("", output_file)
 
@@ -278,7 +335,7 @@ def print_full_summary(
             check_printer.print_summary_tree(summary_result['Value'], examine_summary=examine_summary)
 
         except (ValueError, KeyError, TypeError):  # includes simplejson.decoder.JSONDecodeError
-            print_ex("Incorrect or empty JSON format", output_file, color=Colors.Red)
+            print_ex("Incorrect or empty JSON format.", output_file, color=Colors.Red)
             continue
 
 
@@ -302,8 +359,9 @@ def print_short_summary(
     for check in checks:
         metadata = check.get_metadata()
         summary = check.get_summary()
-        if metadata is None or summary is None:
-            raise ValueError("Check object is not correct")
+
+        if summary is None:
+            continue
 
         result_status = ""
         result_color = ""
@@ -327,8 +385,8 @@ def print_short_summary(
 
         print_ex("=" * max(CONSOLE_MIN, shutil.get_terminal_size().columns), output_file)
         print_ex(f"Check name: {metadata.name}", output_file)
-        print_ex(f"Description : {metadata.descr}", output_file)
-        print_ex("Result status:", output_file, end=" ")
+        print_ex(f"Description: {metadata.descr}", output_file)
+        print_ex("Result status: ", output_file, end="")
         print_ex(f"{result_status}", output_file, color=result_color)
 
         try:
@@ -342,15 +400,19 @@ def print_short_summary(
         print_ex("=" * max(CONSOLE_MIN, shutil.get_terminal_size().columns), output_file)
         print_ex("", output_file)
 
-    print_ex(f"{checks_run} CHECKS", output_file, end=", ")
+    plural_suffix = "" if checks_run == 1 else "S"
+    plural_suffix_err = "" if checks_error == 1 else "S"
+    plural_suffix_war = "" if checks_warning == 1 else "S"
+
+    print_ex(f"{checks_run} CHECK{plural_suffix}", output_file, end=": ")
     print_ex(f"{checks_pass}", output_file, end=" ")
-    print_ex("PASSED", output_file, color=Colors.Green, end=", ")
+    print_ex("PASS", output_file, color=Colors.Green, end=", ")
     print_ex(f"{checks_fail}", output_file, end=" ")
-    print_ex("FAILED", output_file, color=Colors.Red, end=", ")
+    print_ex("FAIL", output_file, color=Colors.Red, end=", ")
     print_ex(f"{checks_warning}", output_file, end=" ")
-    print_ex("WARNING", output_file, color=Colors.Yellow, end=", ")
+    print_ex(f"WARNING{plural_suffix_war}", output_file, color=Colors.Yellow, end=", ")
     print_ex(f"{checks_error}", output_file, end=" ")
-    print_ex("ERROR", output_file, color=Colors.Red)
+    print_ex(f"ERROR{plural_suffix_err}", output_file, color=Colors.Red)
 
 
 def print_summary(
@@ -359,7 +421,8 @@ def print_summary(
     print_ex("", output_file)
     print_ex("Checks results:", output_file, color=Colors.Yellow)
     print_ex("", output_file)
+    checks_by_importance = sorted(checks, key=lambda check: check.get_metadata().merit, reverse=True)
     if required_verbosity == -1:
-        print_short_summary(checks, output_file)
+        print_short_summary(checks_by_importance, output_file)
     else:
-        print_full_summary(checks, required_verbosity, output_file, examine_data)
+        print_full_summary(checks_by_importance, required_verbosity, output_file, examine_data)

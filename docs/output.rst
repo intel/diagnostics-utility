@@ -67,7 +67,7 @@ You can specify the output folder to store these files by using the
 
   If all FAILs were fixed and you still have issue, try to fix ERRORs. First, try to run Diag tool with administrative privileges and check that you have setup setenv script from oneAPI.
 
-  If all checks passed, please collect all logs: run  “python3 diagnostics.py --filter all”, find full log into $HOME/intel/diagnostics (by default) and report issue to forum <link> .
+  If all checks passed, please collect all logs: run  “python3 diagnostics.py --filter all”, find full log into $HOME/intel/diagnostics/logs for Linux and C:\Users\<username>\intel\diagnostics\logs for Windows (by default) and report issue to forum <link> .
 
   How to interpret Diagnostics tool output
   ----------------------------------------
@@ -111,5 +111,5 @@ You can specify the output folder to store these files by using the
 
   If all FAILs were fixed and you still have issue, try to fix ERRORs. First, try to run Diag tool with administrative privileges and check that you have setup setenv script from oneAPI.
 
-  If all checks passed, please collect all logs: run  “python3 diagnostics.py --filter all”, find full log into $HOME/intel/diagnostics (by default) and report issue to forum <link> .
+  If all checks passed, please collect all logs: run  “python3 diagnostics.py --filter all”, find full log into $HOME/intel/diagnostics/logs for Linux and C:\Users\<username>\intel\diagnostics\logs for Windows (by default) and report issue to forum <link> .
 

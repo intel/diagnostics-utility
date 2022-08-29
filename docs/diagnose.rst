@@ -17,14 +17,13 @@ is reporting:
 - **PASS**  - the  **check**  found the expected result. If the check was
   to find information such as a version number, that information will be
   displayed.
-- **FAILED**  -  **check**  ran successfully but the  **check**
+- **FAIL**  -  **check**  ran successfully but the  **check**
   found a problem with the expected result. For example, if a GPU check
   is run on a system that does not
   have a GPU, the check will fail. A brief description will indicate why the
   check failed.
 - **WARNING**  -  **check**  ran successfully and but found incompatible
   or incorrect information. A brief description will indicate why.
-
 - **ERROR**  -  **check**  was not able to run. Possible causes:
     - current user does not have permissions to access information that
       the check is looking for. (Exmaple: check is looking for driver version,
@@ -65,7 +64,7 @@ A status of FAIL indicates that the check ran successfully but the result of
 the check does not meet the expected requirements. The table below shows the
 expected result and how to fix the problem.
 
-For example, running  ``python3 diagnositcs.py --filter intel_gpu_check``
+For example, running  ``python3 diagnostics.py --filter user_group_check  intel_gpu_detector_check``
 may produce this output:
 
 
@@ -73,18 +72,28 @@ may produce this output:
 
 ::
 
-  ==============================================================================
-  Check name: intel_gpu_check
-  Description : Detect which Intel GPU is on the system.
+  Checks results:
+
+  ======================================================================================================================
+  Check name: intel_gpu_detector_check
+  Description: This check shows which Intel GPU(s) is on the system based on lspci information and internal table.
+  Result status: PASS
+  ======================================================================================================================
+
+  ======================================================================================================================
+  Check name: user_group_check
+  Description: This check verifies that the current user is in the same group as the GPU(s).
   Result status: FAIL
-  Unable to get information about initialized devices because the user doesn't have read access to /sys/kernel/debug/dri/.
-  =============================================================================================================================================================================================================
+  Current user is not part of the video group, contact the system administrator to add current user to the video group.
+  ======================================================================================================================
 
-  1 CHECKS, 0 PASSED, 1 FAILED, 0 WARNING, 0 ERROR
+  2 CHECKS, 1 PASS, 1 FAIL, 0 WARNINGS, 0 ERRORS
 
-  Console output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141156.txt
-  JSON output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141156.json
-  ===============================================================================
+  Console output file: /home/test/intel/diagnostics/logs/diagnostics_filter_intel_gpu_detector_check_hostname_20211123_103132327319.txt
+  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_filter_intel_gpu_detector_check_hostname_20211123_103132327361.json
+
+  The report was generated for the machine: hostname
+  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
 
 
 
@@ -100,17 +109,16 @@ check:
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 |      Check that Failed      |                                                                 Possible Solution                                                                  |
 +=============================+====================================================================================================================================================+
-| oneapi_app_check            | Information only. If a oneapi is found, the check will PASS. If a oneAPI component is not found, the check will ERROR.                             |
-+-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | gpu_backend_check           | OpenCL or LevelZero Driver is not loaded. Load the driver.                                                                                         |
 |                             | Current user may not have permissions to access driver folder. Try running as  ``sudo``                                                            |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| vtune_check                 | VTune is not installed.                                                                                                                            |
-|                             | Current user may not have access to VTune folder. Try running as  ``sudo``                                                                         |
+| oneapi_app_check            | Information only. If a oneapi is found, the check will INFO. If a oneAPI component is not found, the check will ERROR.                             |
++-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| driver_compatibility_check  | Check drivers to ensure they are compatible with installed oneAPI components.                                                                      |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | gcc_version_check           | GCC compiler is not installed.                                                                                                                     |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| intel_gpu_detector_check    | Information only. If a gpu is found, the check will PASS. If a gpu is not found, the check will ERROR.                                             |
+| intel_gpu_detector_check    | Information only. If a gpu is found, the check will PASS. If a gpu is not found, the check will FAIL.                                              |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | base_system_check           | Information only. If a system information is found, the check will PASS. If system information is not found, the check will ERROR.                 |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -118,13 +126,13 @@ check:
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | user_group_check            | Current user is not a part of the same group as the GPU. Add current user to the video group with the command  ``sudo usermod -a -G video test`` . |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| kernel_boot_options_check   | Information only. If a system information is found, the check will PASS. If system information is not found, the check will ERROR.                 |
+| oneapi_env_check            |                                                                                                                                                    |
++-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
+| kernel_options_check        | Information only. If a system information is found, the check will PASS. If system information is not found, the check will ERROR.                 |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | gpu_metrics_check           |                                                                                                                                                    |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | oneapi_gpu_check            | Check was not able to run workloads on the GPU. Try running as sudo. If sudo does not work, GPU is not ready to run workloads.                     |
-+-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| advisor_check               |                                                                                                                                                    |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | user_resources_limits_check |                                                                                                                                                    |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -145,45 +153,5 @@ relationship.
 
  If all checks passed, please collect all logs: run
  “python3 diagnostics.py --filter all”, find full log
- into $HOME/intel/diagnostics (by default) and report issue to forum <link> .
+ into $HOME/intel/diagnostics/logs (by default) and report issue to forum <link> .
 
-
------------------------------------
-Resolving Dependency Error Messages
------------------------------------
-
-If you run a single check and this error message appears:
-
-``The results of the required check
-dependencies were not received before running the corresponding check.``
-
-This means that another check that needs to be run first. To troubleshoot this
-problem, run a group of checks that includes the check you want.
-
-For example, if the  ``oneapi_app_check``  is run using this command:
-
-  ``python3 diagnostics.py --filter oneapi_app_check``
-
-If the  ``required check dependencies``  message appears, look at the
-:ref:``List of Checks by Check Name<check-table>`` to determine what groups
-contain ``oneapi_app_check`` .
-In this case, the check
-is included in several different groups, but we will use the ``compile`` group:
-
-  ``python3 diagnostics.py --filter compile``
-
-This time, the check will give more details about dependencies. In this
-case, the dependency is on the Level Zero driver, which did not get checked
-when it was only the  ``oneapi_app_check``  being run.
-
-::
-
- Checks results:
-
- ===============================================================================
- Check name: oneapi_app_check
- Description : This check shows version information of installed oneAPI
- products.
- Result status: ERROR
- There is no information about Level Zero driver.
- ===============================================================================

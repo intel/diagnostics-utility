@@ -24,21 +24,21 @@ from modules.filter import process_filter, get_filtered_checks  # noqa: E402
 class TestProcessFilter(unittest.TestCase):
 
     def test_process_filter_one_filter_initialized(self):
-        expected = ["filter"]
+        expected = {"filter"}
 
         value = process_filter(["filter"])
 
         self.assertEqual(expected, value)
 
     def test_process_filter_two_filter_initialized(self):
-        expected = ["filter_1", "filter_2"]
+        expected = {"filter_1", "filter_2"}
 
         value = process_filter(["filter_1", "filter_2"])
 
         self.assertEqual(expected, value)
 
     def test_process_filter_not_initialized(self):
-        expected = ["default"]
+        expected = {"default"}
 
         value = process_filter(["not_initialized"])
 

@@ -29,9 +29,9 @@ py_metadata = CheckMetadataPy(
     tags='cpu',
     descr='This is example of python module',
     dataReq='{}',
-    rights='user',
+    merit=0,
     timeout=1,
-    version='0.5',
+    version=1,
     run='run'
 )
 
@@ -44,25 +44,24 @@ py_check_result = CheckSummary(
 test_filename = "test.py"
 
 mocked_module = MagicMock()
-mocked_module.__file__ = test_filename
 mocked_module.get_api_version.return_value = py_api_version
 mocked_module.run.return_value = py_check_result
 mocked_module.get_check_list.return_value = [py_metadata]
 
 
+py_check_list = MagicMock()
+py_check_list.__iter__.return_value = [py_metadata]
+py_check_list.api_version = py_api_version
+py_check_list.checker_module = mocked_module
+
+
 class TestClassCheckPy(unittest.TestCase):
 
     def setUp(self):
-        # NOTE: workaround to patching timeout exit
-        self.timeout_exit_patch = patch("modules.check.check.timeout_exit", lambda func: func)
-        self.timeout_exit_patch.start()
         importlib.reload(check_py)
-
-        self.check = check_py.CheckPy(metadata=py_metadata, module=mocked_module)
+        self.check = check_py.CheckPy(metadata=py_metadata, check_list=py_check_list)
 
     def tearDown(self):
-        # NOTE: workaround to patching timeout exit
-        self.timeout_exit_patch.stop()
         importlib.reload(check_py)
 
     def test_class_init_correct(self):
@@ -96,7 +95,7 @@ class TestGetCheckerPy(unittest.TestCase):
         mocked_file.__str__.return_value = test_filename
         mocked_file.exists.return_value = True
 
-        value = check_py.getChecksPy(mocked_file)[0].get_metadata()
+        value = check_py.getChecksPy(mocked_file, "0.1")[0].get_metadata()
 
         self.assertEqual(expected.__dict__, value.__dict__)
 
@@ -106,9 +105,20 @@ class TestGetCheckerPy(unittest.TestCase):
         mocked_file.__str__.return_value = test_filename
         mocked_file.exists.return_value = False
 
-        self.assertRaises(OSError, check_py.getChecksPy, mocked_file)
+        self.assertRaises(OSError, check_py.getChecksPy, mocked_file, "0.1")
+        mock_log.assert_called()
+
+    @patch("builtins.__import__", return_value=mocked_module)
+    @patch("logging.error")
+    def test_get_checks_py_raise_error_if_version_not_compatible(self, mock_log, mock_import):
+        mocked_file = MagicMock()
+        mocked_file.__str__.return_value = test_filename
+        mocked_file.exists.return_value = True
+
+        self.assertRaises(ValueError, check_py.getChecksPy, mocked_file, "0.3")
         mock_log.assert_called()
 
 
 if __name__ == '__main__':
+    unittest.TestCase.maxDiff = None
     unittest.main()

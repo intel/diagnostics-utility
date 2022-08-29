@@ -9,9 +9,4 @@
 #
 # *******************************************************************************/
 
-add_subdirectory(gpu_backend_checker)
-add_subdirectory(oneapi_checker)
-
-if(DEV_PACKAGE)
-  add_subdirectory(example_c_checker)
-endif()
+add_subdirectory(${OS})

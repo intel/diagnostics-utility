@@ -70,9 +70,9 @@ class TestGetJsonContentFromFile(unittest.TestCase):
 
 class TestReadConfigData(unittest.TestCase):
 
-    @patch("modules.files_helper.get_json_content_from_file", return_value=[{"path": "check.so"}])
+    @patch("modules.files_helper.get_json_content_from_file", return_value=[{"path": "check.so", "name": "check_name"}])  # noqa: E501
     def test_return_valid_config(self, mock_get_json_content_from_file):
-        expected = [{"path": "check.so"}]
+        expected = [{"path": "check.so", "name": "check_name"}]
 
         value = files_helper.read_config_data("config.json")
 
@@ -86,10 +86,40 @@ class TestReadConfigData(unittest.TestCase):
         mock_get_json_content_from_file.assert_called_once()
 
     @patch("modules.files_helper.get_json_content_from_file",
-           return_value={"not_path_filed": "test"})
+           return_value={"not_name_filed": "test"})
     def test_handle_invalid_config_is_not_list(self, mock_get_json_content_from_file):
         self.assertRaises(ValueError, files_helper.read_config_data, "config.json")
         mock_get_json_content_from_file.assert_called_once()
+
+
+class TestGetCheckersToLoadFromConfigData(unittest.TestCase):
+
+    def test_get_checkers_to_load_from_config_data_positive(self):
+        config_data = [{"path": "check.so", "name": "check_name1"}, {"name": "check_name2"}]
+        expected = ["check.so"]
+
+        value = files_helper.get_checkers_to_load_from_config_data(config_data)
+
+        self.assertEqual(expected, value)
+
+    def test_get_checkers_to_load_from_config_data_no_load_positive(self):
+        config_data = [{"name": "check_name1"}, {"name": "check_name2"}]
+        expected = []
+
+        value = files_helper.get_checkers_to_load_from_config_data(config_data)
+
+        self.assertEqual(expected, value)
+
+
+class TestGetChecksToRunFromConfigData(unittest.TestCase):
+
+    def test_get_checks_to_run_from_config_data_positive(self):
+        config_data = [{"path": "check.so", "name": "check_name1"}, {"name": "check_name2"}]
+        expected = {"check_name1", "check_name2"}
+
+        value = files_helper.get_checks_to_run_from_config_data(config_data)
+
+        self.assertEqual(expected, value)
 
 
 class TestGetFilesListFromFolder(unittest.TestCase):
@@ -212,9 +242,12 @@ class TestSaveJsonOutputFile(unittest.TestCase):
 class TestConfigureOutputFiles(unittest.TestCase):
 
     @patch("modules.files_helper.logging")
-    def test_configure_output_files_permission_create(self, mocked_logging):
+    def test_configure_output_files_output_does_not_exist_permission_error(self, mocked_logging):
         args = MagicMock()
-        args.output.mkdir.side_effect = PermissionError
+        resolved_output = MagicMock()
+        resolved_output.exists.return_value = False
+        resolved_output.mkdir.side_effect = PermissionError
+        args.output.resolve.return_value = resolved_output
 
         expected_value = (None, None)
 
@@ -223,14 +256,34 @@ class TestConfigureOutputFiles(unittest.TestCase):
         self.assertTrue(mocked_logging.warning.called)
         self.assertEqual(real_value, expected_value)
 
-    @patch("os.access", return_value=False)
     @patch("modules.files_helper.logging")
-    def test_configure_output_files_permission_exist(
+    def test_configure_output_files_output_exists_but_is_not_directory(
+            self,
+            mocked_logging):
+        args = MagicMock()
+        resolved_output = MagicMock()
+        resolved_output.exists.return_value = True
+        resolved_output.is_dir.return_value = False
+        args.output.resolve.return_value = resolved_output
+
+        expected_value = (None, None)
+
+        real_value = files_helper.configure_output_files(args)
+
+        self.assertTrue(mocked_logging.warning.called)
+        self.assertEqual(real_value, expected_value)
+
+    @patch("builtins.open", side_effect=PermissionError)
+    @patch("modules.files_helper.logging")
+    def test_configure_output_files_output_exists_but_user_does_not_have_permissions(
             self,
             mocked_logging,
-            mocked_access):
+            mocked_open):
         args = MagicMock()
-        args.output.exists.return_value = True
+        resolved_output = MagicMock()
+        resolved_output.exists.return_value = True
+        resolved_output.is_dir.return_value = True
+        args.output.resolve.return_value = resolved_output
 
         expected_value = (None, None)
 
@@ -239,7 +292,7 @@ class TestConfigureOutputFiles(unittest.TestCase):
         self.assertTrue(mocked_logging.warning.called)
         self.assertEqual(real_value, expected_value)
 
-    @patch("os.access", return_value=True)
+    @patch("builtins.open")
     @patch("modules.files_helper._args_string", return_value="arg1_value_arg2")
     @patch("platform.node", return_value="node")
     @patch("modules.files_helper.datetime")
@@ -248,9 +301,12 @@ class TestConfigureOutputFiles(unittest.TestCase):
             mocked_datetime,
             mocked_node,
             mocked__args_string,
-            mocked_access):
+            mocked_open):
         args = MagicMock()
-        args.output.exists.return_value = True
+        resolved_output = MagicMock()
+        resolved_output.exists.return_value = True
+        resolved_output.is_dir.return_value = True
+        args.output.resolve.return_value = resolved_output
         mocked_datetime.now.return_value.strftime.return_value = "time"
 
         expected_value = (
@@ -260,7 +316,7 @@ class TestConfigureOutputFiles(unittest.TestCase):
 
         files_helper.configure_output_files(args)
 
-        args.output.__truediv__.assert_has_calls(expected_value)
+        resolved_output.__truediv__.assert_has_calls(expected_value)
 
 
 class TestArgsString(unittest.TestCase):
@@ -270,11 +326,10 @@ class TestArgsString(unittest.TestCase):
         args.filter = ["fil"]
         args.list = True
         args.config = Path("/home/test/config.json")
-        args.single_checker = Path("/home/test/check.py")
         args.force = True
         args.verbosity = 5
 
-        expected_value = "filter_fil_list_config_config_single_checker_check_force_verbosity_5"
+        expected_value = "filter_fil_list_config_config_force_verbosity_5"
 
         real_value = files_helper._args_string(args)
 
@@ -285,7 +340,6 @@ class TestArgsString(unittest.TestCase):
         args.filter = ["not_initialized"]
         args.list = False
         args.config = None
-        args.single_checker = None
         args.examine = None
         args.force = False
         args.verbosity = -1

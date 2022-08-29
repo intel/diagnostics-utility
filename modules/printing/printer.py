@@ -10,7 +10,7 @@
 #
 # *******************************************************************************/
 
-import locale
+import sys
 
 from pathlib import Path
 from typing import Optional
@@ -23,8 +23,8 @@ def print_ex(message: str, file_path: Optional[Path], color: str = Colors.Defaul
 
     is_colored = True if color != Colors.Default else False
     colored_message = f"{color}{message}{Colors.Default}" if is_colored else message
-    print(colored_message.encode("utf-8").decode(locale.getlocale()[1]), end=end)
+    print(colored_message.encode("utf-8").decode(sys.stdout.encoding), end=end)
     if file_path is not None:
-        file = open(file_path, "a")
-        file.write(message.encode("utf-8").decode(locale.getlocale()[1]) + end)
+        file = open(file_path, "a", encoding="utf-8")
+        file.write(message.encode("utf-8").decode(sys.stdout.encoding) + end)
         file.close()

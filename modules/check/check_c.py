@@ -14,7 +14,7 @@ import logging
 from pathlib import Path
 from typing import List, Dict
 
-from modules.check.check_list import Check, CheckList
+from modules.check.check_list_c import CheckListC
 from modules.check.check import BaseCheck, CheckSummary, CheckMetadataPy
 
 from modules.log import trace  # type: ignore
@@ -23,28 +23,27 @@ import json
 
 class CheckC(BaseCheck):
 
-    def __init__(self, check: Check, check_list: CheckList):
-        self.check = check
+    def __init__(self, index: int, check_list: CheckListC):
         self.check_list = check_list
+        self.index = index
         self.metadata = CheckMetadataPy(
-            name=check.check_metadata.name.decode("utf-8"),
-            type=check.check_metadata.type.decode("utf-8"),
-            tags=check.check_metadata.tags.decode("utf-8"),
-            descr=check.check_metadata.descr.decode("utf-8"),
-            dataReq=check.check_metadata.dataReq.decode("utf-8"),
-            rights=check.check_metadata.rights.decode("utf-8"),
-            timeout=check.check_metadata.timeout,
-            version=check.check_metadata.version.decode("utf-8"),
+            name=check_list[index].check_metadata.name.decode("utf-8"),
+            type=check_list[index].check_metadata.type.decode("utf-8"),
+            tags=check_list[index].check_metadata.tags.decode("utf-8"),
+            descr=check_list[index].check_metadata.descr.decode("utf-8"),
+            dataReq=check_list[index].check_metadata.dataReq.decode("utf-8"),
+            merit=check_list[index].check_metadata.merit,
+            timeout=check_list[index].check_metadata.timeout,
+            version=check_list[index].check_metadata.version,
             run="run"
         )
-        self.api_version = check_list.api_version
 
     def get_api_version(self) -> str:
-        return self.api_version
+        return self.check_list.api_version
 
     @trace(log_args=True)
     def run(self, data: Dict) -> CheckSummary:
-        run_result = self.check.run(json.dumps(data).encode('utf-8'))
+        run_result = self.check_list[self.index].run(json.dumps(data).encode('utf-8'))
         return CheckSummary(
             result=run_result.result.decode("utf-8")
         )
@@ -54,12 +53,12 @@ class CheckC(BaseCheck):
 
 
 @trace(log_args=True)
-def getChecksC(lib_checker_path: Path) -> List[BaseCheck]:
+def getChecksC(lib_checker_path: Path, version: str) -> List[BaseCheck]:
     if not lib_checker_path.exists():
-        logging.error(f"Failed to load {str(lib_checker_path)}: No such file")
-        raise OSError(f"Failed to load {str(lib_checker_path)}: No such file")
-    chList = []
-    check_list = CheckList(str(lib_checker_path))
-    for check in check_list:
-        chList.append(CheckC(check, check_list))
-    return chList
+        logging.error(f"Failed to load {str(lib_checker_path)}: No such file.")
+        raise OSError(f"Failed to load {str(lib_checker_path)}: No such file.")
+    check_list = CheckListC(str(lib_checker_path))
+    if check_list.api_version != version:
+        logging.error(f"Failed to load {str(lib_checker_path)}:{str(lib_checker_path)} is incompatible.")
+        raise ValueError(f"Failed to load {str(lib_checker_path)}:{str(lib_checker_path)} is incompatible.")
+    return [CheckC(i, check_list) for i in range(len(check_list))]

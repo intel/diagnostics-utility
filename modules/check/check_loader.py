@@ -10,82 +10,75 @@
 # *******************************************************************************/
 
 import logging
+import os
+import platform
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Dict
 
-from modules.check.check import BaseCheck
+from modules.check.check import BaseCheck, CheckMetadataPy
 from modules.check.check_c import getChecksC
 from modules.check.check_exe import getChecksExe
 from modules.check.check_py import getChecksPy
-from modules.check.sys_check import getSysChecks, search_sys_checks
 
-from modules.files_helper import is_file_exist, read_config_data, get_files_list_from_folder
+from modules.files_helper import read_config_data, get_checkers_to_load_from_config_data, \
+                                    get_files_list_from_folder
 from modules.log import trace  # type: ignore
 
 
 _FULL_PATH_TO_CURRENT_FILE = Path(__file__).resolve().parent
-PATH_TO_DEFAULT_C_CHECKERS = _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_c"
-PATH_TO_DEFAULT_EXE_CHECKERS = _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_exe"
-PATH_TO_DEFAULT_PY_CHECKERS = _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py"
+DEFAULT_CHECKERS_PATHS = [
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_c",
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_exe",
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py",
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_c" / platform.system().lower(),
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_exe" / platform.system().lower(),
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py" / platform.system().lower()
+]
 
 
 @trace(log_args=True)
-def load_checks_from_checker(checker_path: Path, check_name: Optional[str] = None) -> List[BaseCheck]:
+def load_checks_from_checker(
+        checker_path: Path, version: str, loaded_checks_map: Dict[Path, CheckMetadataPy]) -> List[BaseCheck]:
+    check_list = []
     if not checker_path.exists():
-        logging.warning(f"A module path does not exists: {checker_path}")
-        return []
-    if checker_path.suffix == ".so":
-        return [check for check in getChecksC(checker_path)
-                if check.get_metadata().name == check_name] \
-            if check_name is not None else getChecksC(checker_path)
+        logging.warning(f"Checker not found at this path: {checker_path}.")
+        return check_list
+    if checker_path.suffix == ".so" or checker_path.suffix == ".dll":
+        check_list = getChecksC(checker_path, version)
     elif checker_path.suffix == ".py" and not checker_path.name.startswith("__"):
-        return [check for check in getChecksPy(checker_path)
-                if check.get_metadata().name == check_name] \
-            if check_name is not None else getChecksPy(checker_path)
-    # TODO: Workaround until the sys_checks are rewritten
-    # to the Diagnostics Utility for Intel® oneAPI Toolkits internal interface
-    elif checker_path.name == "sys_check.sh":
-        return [check for check in getSysChecks(checker_path)
-                if check.get_metadata().name == check_name] \
-            if check_name is not None else getSysChecks(checker_path)
-    elif checker_path.suffix == ".sh":  # TODO: Add more executable types
-        return [check for check in getChecksExe(checker_path)
-                if check.get_metadata().name == check_name] \
-            if check_name is not None else getChecksExe(checker_path)
-    return []
+        check_list = getChecksPy(checker_path, version)
+    elif checker_path.suffix == ".sh":
+        if not os.access(checker_path, os.X_OK):
+            logging.warning(f"A checker does not have execute permissions: {checker_path}.")
+            return check_list
+        check_list = getChecksExe(checker_path, version)
+    elif checker_path.suffix == ".bat":  # TODO: Add more executable types
+        check_list = getChecksExe(checker_path, version)
+    loaded_checks_map.update({checker_path: check.get_metadata() for check in check_list})
+    return check_list
 
 
 @trace(log_args=True)
-def load_checks(paths_list: List[Path], check_name: Optional[str] = None) -> List[BaseCheck]:
+def load_checks(
+        paths: List[Path], version: str, loaded_checks_map: Dict[Path, CheckMetadataPy]) -> List[BaseCheck]:
     checks = []
-    for file in paths_list:
-        checks.extend(load_checks_from_checker(file, check_name))
+    for file in paths:
+        checks.extend(load_checks_from_checker(file, version, loaded_checks_map))
     return checks
 
 
 @trace(log_args=True)
-def load_single_checker(single_checker: Path) -> List[BaseCheck]:
-    result: List[BaseCheck] = []
-    try:
-        is_file_exist(single_checker)
-        result.extend(load_checks_from_checker(single_checker))
-    except Exception as error:
-        print(error)
-        exit(1)
-    return result
-
-
-@trace(log_args=True)
-def load_checks_from_config(config: Path) -> List[BaseCheck]:
+def load_checks_from_config(
+        config: Path, version: str, loaded_checks_map: Dict[Path, CheckMetadataPy]) -> List[BaseCheck]:
     result: List[BaseCheck] = []
     try:
         config_data = read_config_data(config)
-        for checker_data in config_data:
-            check_name = checker_data["name"] if "name" in checker_data else None
-            loaded_checks = load_checks_from_checker(Path(checker_data["path"]), check_name)
+        checkers_to_load = get_checkers_to_load_from_config_data(config_data)
+        for checker in checkers_to_load:
+            loaded_checks = load_checks_from_checker(Path(checker), version, loaded_checks_map)
             if len(loaded_checks) == 0:
-                raise ValueError(f"No checks were found from checker file: {checker_data['path']}")
+                raise ValueError(f"No checks were found from checker file: {checker}")
             result.extend(loaded_checks)
     except Exception as error:
         print(error)
@@ -94,15 +87,44 @@ def load_checks_from_config(config: Path) -> List[BaseCheck]:
 
 
 @trace(log_args=True)
-def load_default_checks() -> List[BaseCheck]:
+def load_default_checks(
+        version: str, loaded_checks_map: Dict[Path, CheckMetadataPy]) -> List[BaseCheck]:
     # TODO: customization of directories to search
     # TODO: recursive search
     result: List[BaseCheck] = []
     try:
-        result.extend(load_checks(search_sys_checks()))
-        result.extend(load_checks(get_files_list_from_folder(PATH_TO_DEFAULT_C_CHECKERS)))
-        result.extend(load_checks(get_files_list_from_folder(PATH_TO_DEFAULT_PY_CHECKERS)))
-        result.extend(load_checks(get_files_list_from_folder(PATH_TO_DEFAULT_EXE_CHECKERS)))
+        for path in DEFAULT_CHECKERS_PATHS:
+            result.extend(load_checks(
+                get_files_list_from_folder(path),
+                version,
+                loaded_checks_map
+            ))
+    except Exception as error:
+        print(error)
+        exit(1)
+    return result
+
+
+@trace(log_args=True)
+def load_checks_from_env(
+        version: str, loaded_checks_map: Dict[Path, CheckMetadataPy]) -> List[BaseCheck]:
+    result: List[BaseCheck] = []
+    try:
+        DIAGUTIL_PATH_ENV = os.getenv("DIAGUTIL_PATH")
+        sep = ";" if platform.system() == "Windows" else ":"
+        env_paths = DIAGUTIL_PATH_ENV.split(sep=sep) if DIAGUTIL_PATH_ENV else []
+        for str_path in env_paths:
+            if not str_path:
+                continue
+            path = Path(str_path)
+            if not path.exists():
+                raise ValueError(f"{path} does not exist.")
+            if path.is_dir():
+                result.extend(load_checks(get_files_list_from_folder(path), version, loaded_checks_map))
+            elif path.is_file():
+                result.extend(load_checks_from_checker(path, version, loaded_checks_map))
+            else:
+                raise ValueError(f"{path} is not a file or directory.")
     except Exception as error:
         print(error)
         exit(1)

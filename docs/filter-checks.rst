@@ -4,8 +4,12 @@
 Basic Check Customization
 =========================
 
-You can adjust the set of launched checks by using the --filter option. Pass the required Tag to run a group of
-checks or the name of the desired check to run a single check. Use the "all" keyword to run all checks.
+You can adjust the set of launched checks by using the --filter option. Pass
+the required Tag to run a group of checks or the name of the desired check to
+run a single check. Use the "all" keyword to run all checks.
+
+  Note: the checks below are all supported on Linux. For Windows, only the
+  `base_system_check`` is supported.
 
 
 Run all checks
@@ -24,26 +28,29 @@ The command below will run all checks and output the minimum details.
 
   Checks results:
 
-  =============================================================================================================================================================================================================
+  ==========================================================================================================
   Check name: debugger_sys_check
-  Description : System check for debugger found in /opt/intel/oneapi/debugger/latest/sys_check/sys_check.sh
+  Description: System check for debugger found in /opt/intel/oneapi/debugger/latest/sys_check/sys_check.sh
   Result status: PASS
-  =============================================================================================================================================================================================================
+  ==========================================================================================================
 
-  =============================================================================================================================================================================================================
+  ==========================================================================================================
 
   Check name: oneapi_app_check
-  Description : This is a module for getting oneAPI product information.
+  Description: This is a module for getting oneAPI product information.
   Result status: PASS
-  =============================================================================================================================================================================================================
+  ==========================================================================================================
 
   ...
 
 
-  21 CHECKS, 21 PASSED, 0 FAILED, 0 WARNING, 0 ERROR
+  21 CHECKS, 21 PASS, 0 FAIL, 0 WARNINGS, 0 ERRORS
 
-  Console output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141425.txt
-  JSON output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141425.json
+  Console output file: /home/test/intel/diagnostics/logs/diagnostics_filter_all_hostname_20211123_130044508587.txt
+  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_filter_all_hostname_20211123_130044508628.json
+
+  The report was generated for the machine: hostname
+  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
 
 
 To run all checks and see more detail in the output, add the ``-v`` argument:
@@ -62,7 +69,7 @@ For more information about Verbose options, see :ref:`verbosity`.
 
   ======================================================================================================================================================================================================
   Check name: oneapi_app_check
-  Description : This check shows version information of installed oneAPI   products.
+  Description: This check shows version information of installed oneAPI   products.
   ======================================================================================================================================================================================================
 
   |    APP
@@ -110,58 +117,49 @@ To run a group of checks, use the Tag from :ref:`check-table` for the type of ch
 
   Checks results:
 
-  =============================================================================================================================================================================================================
+  =================================================================================================================
   Check name: gpu_backend_check
-  Description : This is a module for getting GPU information.
+  Description: This check shows information from OpenCL™ and Intel® oneAPI Level Zero drivers.
   Result status: PASS
-  =============================================================================================================================================================================================================
+  =================================================================================================================
 
-  =============================================================================================================================================================================================================
-  Check name: vtune_check
-  Description : Check system set up for GPU analysis.
-  Result status: PASS
-  =============================================================================================================================================================================================================
-
-  =============================================================================================================================================================================================================
+  =================================================================================================================
   Check name: intel_gpu_detector_check
-  Description : Detect which Intel GPU is on the system.
+  Description: This check shows which Intel GPU(s) is on the system based on lspci information and internal table.
   Result status: PASS
-  =============================================================================================================================================================================================================
+  =================================================================================================================
 
-  =============================================================================================================================================================================================================
+  =================================================================================================================
   Check name: hangcheck_check
-  Description : Check that GPU hangcheck is disabled to allow long-running jobs.
+  Description: This check verifies that the GPU hangcheck option is disabled to allow long-running jobs.
   Result status: PASS
-  =============================================================================================================================================================================================================
+  =================================================================================================================
 
-  =============================================================================================================================================================================================================
+  =================================================================================================================
   Check name: user_group_check
-  Description : Check that the current user is in the same group as the GPU(s).
+  Description: This check verifies that the current user is in the same group as the GPU(s).
   Result status: PASS
-  =============================================================================================================================================================================================================
+  =================================================================================================================
 
-  =============================================================================================================================================================================================================
+  =================================================================================================================
   Check name: gpu_metrics_check
-  Description : Check that GPU metrics are good.
+  Description: This check verifies that GPU metrics are good.
   Result status: PASS
-  =============================================================================================================================================================================================================
+  =================================================================================================================
 
-  =============================================================================================================================================================================================================
+  =================================================================================================================
   Check name: oneapi_gpu_check
-  Description : Contains information about the readiness to run GPU workloads.
+  Description: This check runs GPU workloads and verifies readiness to run applications on GPU(s).
   Result status: PASS
-  =============================================================================================================================================================================================================
+  =================================================================================================================
 
-  =============================================================================================================================================================================================================
-  Check name: advisor_check
-  Description : Check is setting up an environment to analyze GPU kernels.
-  Result status: PASS
-  =============================================================================================================================================================================================================
+  6 CHECKS, 6 PASS, 0 FAIL, 0 WARNINGS, 0 ERRORS
 
-  8 CHECKS, 8 PASSED, 0 FAILED, 0 WARNING, 0 ERROR
+  Console output file: /home/test/intel/diagnostics/logs/diagnostics_filter_gpu_hostname_20211123_130221787054.txt
+  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_filter_gpu_hostname_20211123_130221787096.json
 
-  Console output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141635.txt
-  JSON output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141635.json
+  The report was generated for the machine: hostname
+  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
 
 
 Run a Specific Check
@@ -180,16 +178,19 @@ To run a specific check, use the check name from the :ref:`check-table` table. F
 
   Checks results:
 
-  =============================================================================================================================================================================================================
+  ===========================================================================
   Check name: gcc_version_check
-  Description : Contains information about GCC compiler version.
+  Description: This check shows information about GCC compiler version.
   Result status: PASS
-  =============================================================================================================================================================================================================
+  ===========================================================================
 
-  1 CHECKS, 1 PASSED, 0 FAILED, 0 WARNING, 0 ERROR
+  1 CHECK, 1 PASS, 0 FAIL, 0 WARNINGS, 0 ERRORS
 
-  Console output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141832.txt
-  JSON output file: /home/test/intel/diagnostics/diagnostics_nnladtldev-01_20210831-141832.json
+  Console output file: /home/test/intel/diagnostics/logs/diagnostics_filter_gcc_version_check_hostname_20211123_130559427725.txt
+  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_filter_gcc_version_check_hostname_20211123_130559427767.json
+
+  The report was generated for the machine: hostname
+  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
 
 To view more information about the check, use the verbosity argument (-v): ::
 

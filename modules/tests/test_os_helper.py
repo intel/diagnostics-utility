@@ -18,24 +18,50 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../
 import unittest  # noqa: E402
 from unittest.mock import patch, mock_open  # noqa: E402
 
-from modules.os_helper import _get_os, is_os_supported, check_that_os_is_supported  # noqa: E402
+from modules.os_helper import _get_os, is_os_supported, check_that_os_is_supported, \
+                            _get_linux_distribution  # noqa: E402
 
 
 SUPPORTED_OS_RELEASE_CONTENT = """NAME="Ubuntu"\nVERSION_ID="20.04"\n"""
 
 
-class TestGetOs(unittest.TestCase):
+class TestGetLinuxDistribution(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data=SUPPORTED_OS_RELEASE_CONTENT))
-    def test_os_is_supported(self):
+    def test__get_linux_distribution_positive(self):
+        expected = ("Ubuntu", "20.04")
+
+        value = _get_linux_distribution()
+
+        self.assertEqual(expected, value)
+
+    @patch("builtins.open", mock_open(read_data="""TEST="Test"\n"""))
+    def test__get_linux_distribution_negative(self):
+        self.assertRaises(Exception, _get_linux_distribution)
+
+
+class TestGetOs(unittest.TestCase):
+
+    @patch("platform.system", return_value="Windows")
+    @patch("modules.os_helper._get_windows_version", return_value="10")
+    def test__get_os_windows_os_positive(self, mocked__get_windows_version, mocked_system):
+        expected = ("Windows", "10")
+
+        value = _get_os()
+
+        self.assertEqual(expected, value)
+
+    @patch("platform.system", return_value="Linux")
+    @patch("builtins.open", mock_open(read_data=SUPPORTED_OS_RELEASE_CONTENT))
+    def test__get_os_linux_os_positive(self, mocked_system):
         expected = ("Ubuntu", "20.04")
 
         value = _get_os()
 
         self.assertEqual(expected, value)
 
-    @patch("builtins.open", mock_open(read_data="""TEST="Test"\n"""))
-    def test_if_etc_release_does_not_have_name_or_version_id(self):
+    @patch("platform.system", return_value="Unsupported")
+    def test__get_os_not_supported_os_negative(self, mocked_system):
         self.assertRaises(Exception, _get_os)
 
 
@@ -59,7 +85,7 @@ class TestIsOsSupported(unittest.TestCase):
         mock__get_os.assert_called_once()
         self.assertEqual(expected, value)
 
-    @patch("modules.os_helper._get_os", return_value=("Ubuntu", "18.04"))
+    @patch("modules.os_helper._get_os", return_value=("Os", "1.1"))
     def test_os_is_not_supported_version(self, mock__get_os):
         expected = False
 

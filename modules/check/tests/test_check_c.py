@@ -30,12 +30,12 @@ c_metadata.name = "c_example".encode()
 c_metadata.type = "Data".encode()
 c_metadata.tags = "cpu".encode()
 c_metadata.descr = "This is example of c module".encode()
-c_metadata.dataReq = "{}".encode()
-c_metadata.rights = "user".encode()
+c_metadata.dataReq = '''{}'''.encode()
+c_metadata.merit = 0
 c_metadata.timeout = 1
-c_metadata.version = "0.5".encode()
+c_metadata.version = 1
 
-c_api_version = "0.1".encode()
+c_api_version = "0.1"
 
 c_run_output = Mock()
 c_run_output.error_code = 0
@@ -51,6 +51,8 @@ c_check.check_metadata = c_metadata
 c_check.run = c_run
 
 c_check_list = MagicMock()
+c_check_list.__getitem__.return_value = c_check
+c_check_list.__len__.return_value = 1
 c_check_list.__iter__.return_value = [c_check]
 c_check_list.api_version = c_api_version
 
@@ -58,16 +60,10 @@ c_check_list.api_version = c_api_version
 class TestClassCheckC(unittest.TestCase):
 
     def setUp(self):
-        # NOTE: workaround to patching timeout exit
-        self.timeout_exit_patch = patch("modules.check.check.timeout_exit", lambda func: func)
-        self.timeout_exit_patch.start()
         importlib.reload(check_c)
-
-        self.check = check_c.CheckC(c_check, c_check_list)
+        self.check = check_c.CheckC(0, c_check_list)
 
     def tearDown(self):
-        # NOTE: workaround to patching timeout exit
-        self.timeout_exit_patch.stop()
         importlib.reload(check_c)
 
     def test_class_init_correct(self):
@@ -77,9 +73,9 @@ class TestClassCheckC(unittest.TestCase):
             tags='cpu',
             descr='This is example of c module',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -106,7 +102,7 @@ class TestClassCheckC(unittest.TestCase):
 
 class TestGetCheckC(unittest.TestCase):
 
-    @patch("modules.check.check_c.CheckList", return_value=c_check_list)
+    @patch("modules.check.check_c.CheckListC", return_value=c_check_list)
     def test_get_checks_c_correct_with_correct_argument(self, mock_check_list):
         expected = CheckMetadataPy(
             name='c_example',
@@ -114,16 +110,16 @@ class TestGetCheckC(unittest.TestCase):
             tags='cpu',
             descr='This is example of c module',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
         mock_file = MagicMock()
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = True
 
-        value = check_c.getChecksC(mock_file)[0].get_metadata()
+        value = check_c.getChecksC(mock_file, "0.1")[0].get_metadata()
 
         self.assertEqual(expected.__dict__, value.__dict__)
 
@@ -133,7 +129,17 @@ class TestGetCheckC(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = False
 
-        self.assertRaises(OSError, check_c.getChecksC, mock_file)
+        self.assertRaises(OSError, check_c.getChecksC, mock_file, "0.1")
+        mock_log.assert_called()
+
+    @patch("modules.check.check_c.CheckListC", return_value=c_check_list)
+    @patch("logging.error")
+    def test_get_checks_py_raise_error_if_version_not_compatible(self, mock_log, mock_check_list):
+        mock_file = MagicMock()
+        mock_file.__str__.return_value = test_filename
+        mock_file.exists.return_value = True
+
+        self.assertRaises(ValueError, check_c.getChecksC, mock_file, "0.3")
         mock_log.assert_called()
 
 

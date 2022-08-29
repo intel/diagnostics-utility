@@ -1,0 +1,14 @@
+[
+    {
+        "name": "c_check_sample",
+        "path": "checkers_samples/libc_checker_sample.so"
+    },
+    {
+        "name": "py_check_sample_1",
+        "path": "checkers_samples/py_checker_sample_1.py"
+    },
+    {
+        "name": "py_check_sample_2",
+        "path": "checkers_samples/py_checker_sample_2.py"
+    }
+]

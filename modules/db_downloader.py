@@ -27,9 +27,8 @@ DEFAULT_DATABASES_FOLDER = Path(__file__).parent.parent.resolve() / "databases"
 DOWNLOADED_DATABASES_FOLDER = Path.home() / "intel" / "diagnostics" / "databases"
 
 
-def _get_available_resource(metadata_content: Dict) -> Optional[str]:
+def _get_available_resource(resources: List[str]) -> Optional[str]:
     available_resource = None
-    resources = metadata_content["resources"]
     for resource in resources:
         if "intel.com" not in resource:
             logging.warning("Downloading from domains other than Intel is prohibited. Link will be skipped.")
@@ -52,12 +51,12 @@ def _download_metadata(available_resource: str) -> Optional[Dict]:
         content = json.loads(responce.read().decode("utf-8"))
     except URLError as error:
         logging.warning(
-            f"Can't download metadata from a resource ({metadata_url}) for the reason: {error}"
+            f"Cannot download metadata from ({metadata_url}) due to: {error}"
         )
     return content
 
 
-def _is_db_compatible_with_checks(db_info: Dict, checks: List[BaseCheck]):
+def _is_db_compatible_with_checks(db_info: Dict, checks: List[BaseCheck]) -> bool:
     is_db_compatible_with_checks = True
     check_compatibility = list(filterfalse(
         lambda x: not list(set(db_info["compatibility"].keys() & set([x.get_metadata().name]))),
@@ -105,11 +104,11 @@ def are_database_updates_available(all_checks: List[BaseCheck]) -> Tuple[Optiona
     DOWNLOADED_DATABASES_FOLDER.mkdir(parents=True, exist_ok=True)
 
     default_metadata_content = _get_metadata_of_all_installed_databases()
-    available_resource = _get_available_resource(default_metadata_content)
+    available_resource = _get_available_resource(default_metadata_content["resources"])
     if available_resource is None:
         logging.warning(
             "All servers are unavailable or there is no internet connection. "
-            "Unable to check for the existence of database updates"
+            "Unable to check for the existence of database updates."
         )
         return None, default_metadata_content, {}
     downloaded_metadata_content = _download_metadata(available_resource)
@@ -125,10 +124,11 @@ def are_database_updates_available(all_checks: List[BaseCheck]) -> Tuple[Optiona
     return available_resource, downloaded_metadata_content, newer_databases
 
 
-def update_databases(resource: Optional[str], metadata: Dict, databases: Dict) -> int:
+def update_databases(
+        resource: Optional[str], metadata: Dict, databases: Dict) -> int:
     return_code = 0
     if resource is None:
-        print("Can't connect to update server to check updates.")
+        print("Cannot connect to update server to check for updates.")
         return 1
     if not len(databases):
         print("No available updates for existing databases.")
@@ -149,7 +149,7 @@ def update_databases(resource: Optional[str], metadata: Dict, databases: Dict) -
                 outfile.write(binary)
         except URLError as error:
             logging.warning(
-                f"Can't download database from a resource ({database_url}) for the reason: {error}"
+                f"Cannot download database from ({database_url}) due to: {error}"
             )
             metadata["databases"].pop(db_type)
             return_code += 1
@@ -159,7 +159,7 @@ def update_databases(resource: Optional[str], metadata: Dict, databases: Dict) -
             return_code += 1
     with open(f"{DOWNLOADED_DATABASES_FOLDER}/metadata.json", "w") as outfile:
         json.dump(metadata, outfile, indent=4)
-    print(f"Compatibitility database is updated successfully in {DOWNLOADED_DATABASES_FOLDER}.")
+    print(f"Compatibility database is updated successfully in {DOWNLOADED_DATABASES_FOLDER}.")
     return return_code
 
 

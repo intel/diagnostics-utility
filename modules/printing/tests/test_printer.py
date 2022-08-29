@@ -17,7 +17,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../
 
 import unittest  # noqa: E402
 
-from io import StringIO  # noqa: E402
 from pathlib import Path  # noqa: E402
 from unittest.mock import patch, mock_open  # noqa: E402
 
@@ -27,46 +26,46 @@ from modules.printing.printer_helper import Colors  # noqa: E402
 
 class TestPrintEx(unittest.TestCase):
 
-    def test_print_ex_console_only_default_positive(self):
-        with patch('sys.stdout', new=StringIO()) as stdout:
-            print_ex("Message", None)
-            self.assertEqual(stdout.getvalue(), "Message\n")
+    @patch('builtins.print')
+    def test_print_ex_console_only_default_positive(self, mocked_print):
+        print_ex("Message", None)
+        mocked_print.assert_called_with("Message", end="\n")
 
-    def test_print_ex_console_only_colored_positive(self):
-        with patch('sys.stdout', new=StringIO()) as stdout:
-            print_ex("Message", None, color=Colors.Green)
-            self.assertEqual(stdout.getvalue(), f"{Colors.Green}Message{Colors.Default}\n")
+    @patch('builtins.print')
+    def test_print_ex_console_only_colored_positive(self, mocked_print):
+        print_ex("Message", None, color=Colors.Green)
+        mocked_print.assert_called_with(f"{Colors.Green}Message{Colors.Default}", end="\n")
 
-    def test_print_ex_console_only_changed_end_positive(self):
-        with patch('sys.stdout', new=StringIO()) as stdout:
-            print_ex("Message", None, end="")
-            self.assertEqual(stdout.getvalue(), "Message")
+    @patch('builtins.print')
+    def test_print_ex_console_only_changed_end_positive(self, mocked_print):
+        print_ex("Message", None, end="")
+        mocked_print.assert_called_with("Message", end="")
 
-    def test_print_ex_console_only_colored_and_changed_end_positive(self):
-        with patch('sys.stdout', new=StringIO()) as stdout:
-            print_ex("Message", None, color=Colors.Green, end="")
-            self.assertEqual(stdout.getvalue(), f"{Colors.Green}Message{Colors.Default}")
+    @patch('builtins.print')
+    def test_print_ex_console_only_colored_and_changed_end_positive(self, mocked_print):
+        print_ex("Message", None, color=Colors.Green, end="")
+        mocked_print.assert_called_with(f"{Colors.Green}Message{Colors.Default}", end="")
 
-    @patch("sys.stdout")
-    def test_print_ex_default_positive(self, mocked_stdout):
+    @patch('builtins.print')
+    def test_print_ex_default_positive(self, mocked_print):
         with patch("builtins.open", mock_open()) as output_file:
             print_ex("Message", Path("path_to_the_output_file"))
             output_file().write.assert_called_once_with("Message\n")
 
-    @patch("sys.stdout")
-    def test_print_ex_colored_positive(self, mocked_stdout):
+    @patch('builtins.print')
+    def test_print_ex_colored_positive(self, mocked_print):
         with patch("builtins.open", mock_open()) as output_file:
             print_ex("Message", Path("path_to_the_output_file"), color=Colors.Red)
             output_file().write.assert_called_once_with("Message\n")
 
-    @patch("sys.stdout")
-    def test_print_ex_changed_end_positive(self, mocked_stdout):
+    @patch('builtins.print')
+    def test_print_ex_changed_end_positive(self, mocked_print):
         with patch("builtins.open", mock_open()) as output_file:
             print_ex("Message", Path("path_to_the_output_file"), end="")
             output_file().write.assert_called_once_with("Message")
 
-    @patch("sys.stdout")
-    def test_print_ex_colored_and_changed_end_positive(self, mocked_stdout):
+    @patch('builtins.print')
+    def test_print_ex_colored_and_changed_end_positive(self, mocked_print):
         with patch("builtins.open", mock_open()) as output_file:
             print_ex("Message", Path("path_to_the_output_file"), color=Colors.Red, end="")
             output_file().write.assert_called_once_with("Message")

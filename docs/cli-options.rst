@@ -5,9 +5,9 @@ Get Started
 ===========
 
 
-To run the diagnostics utility:
+To run the Diagnostics Utility for Intel® oneAPI Toolkits:
 
-1. Open a terminal and navigate to the directory where oneAPI is installed.
+1. Open a terminal and navigate to the directory where oneAPI products is installed.
 
    If you installed to the default directory,
    the utility will be located at ``/opt/intel/oneapi/``.
@@ -20,7 +20,7 @@ To run the diagnostics utility:
   cd diagnostics/latest/
 
 
-3. Run the utility using this syntax:
+3. Run the Diagnostics Utility for Intel® oneAPI Toolkits using this syntax:
 
 ``python3 diagnostics.py --filter <ARGUMENT_NAME>``
 
@@ -39,8 +39,10 @@ The output will display in two places:
 * the active console
 * a JSON file
 
-The default directory of the JSON file is Home/intel/diagnostics. To customize
-the default directory, see :ref:`customization`.
+The default directory of the output files is
+$HOME/intel/diagnostics/logs for Linux and
+C:\Users\<username>\intel\diagnostics\logs for Windows.
+To customize the default directory, see :ref:`customization`.
 
 
 To increase the amount of detail, add the -v argument:
@@ -50,7 +52,7 @@ To increase the amount of detail, add the -v argument:
   python3 diagnostics.py --filter all -v
 
 
-The diagnostics utility can be customized to output only the data you need.
+The Diagnostics Utility for Intel® oneAPI Toolkits can be customized to output only the data you need.
 Use these methods to customize the command for your needs:
 
 - :ref:`Run a group of related checks <group-checks>`
@@ -63,6 +65,10 @@ Use these methods to customize the command for your needs:
 
 List of Checks by Check Name
 ----------------------------
+
+  Note: the checks below are all supported on Linux. For Windows, only the
+  `base_system_check`` is supported.
+
 
 The table below shows the list of  **checks** and which  **groups** can
 also be used to run that check.
@@ -85,17 +91,42 @@ GPUs by using the GPU argument.
 
    * - Check Name
      - Groups where check is included
-     - Rights
      - Description
-   * -  ``oneapi_app_check``
-     - | ``compile``
+   * -  ``hangcheck_check``
+     - |  ``gpu``
+       |  ``profiling``
+       |  ``runtime``
+       |  ``sysinfo``
+       |  ``target``
+     - This check verifies that the GPU hangcheck option is disabled to
+       allow long-running jobs.
+   * -  ``user_group_check``
+     - |  ``default``
+       |  ``profiling``
+       |  ``gpu``
+       |  ``runtime``
+       |  ``target``
+     - This check verifies that the current user is in the same group
+       as the GPU(s).
+   * - ``driver_compatibility_check``
+     - |  ``compile``
        |  ``default``
        |  ``host``
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - user
-     - The check shows version information of installed oneAPI products.
+     - This check verifies compatibility of oneAPI products versions and
+       GPU drivers versions.
+   * -  ``oneapi_gpu_check``
+     - |  ``gpu``
+       |  ``sysinfo``
+     - This check runs GPU workloads and verifies readiness to run
+       applications on GPU(s).
+   * -  ``gpu_metrics_check``
+     - |  ``gpu``
+       |  ``runtime``
+       |  ``target``
+     - This check verifies that GPU metrics are good.
    * -  ``gpu_backend_check``
      - |  ``compile``
        |  ``default``
@@ -104,105 +135,53 @@ GPUs by using the GPU argument.
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - user
-     - The check shows information from OpenCL and LevelZero drivers.
-   * - ``oneapi_env_check``
-     - | ``compile``
-       | ``default``
-       | ``host``
-       | ``runtime``
-       | ``sysinfo``
-       | ``target``
-     - user
-     - This check shows the version information of the oneAPI products installed in the environment.
-   * - ``dependencies_check``
-     - | ``compile``
-       | ``default``
-       | ``host``
-       | ``runtime``
-       | ``sysinfo``
-       | ``target``
-     - user
-     - This check verifies compatibility of oneAPI products versions and GPU drivers versions.
-   * -  ``vtune_check``
-     - |  ``gpu``
-       |  ``runtime``
-       |  ``target``
-       |  ``vtune``
-     - user
-     - The check verifies if the system is ready to do VTune analysis on GPU(s).
-   * - ``debugger_check``
-     - | ``debugger``
-       | ``gdb``
-     - user
-     - This check verifies if the environment is ready to use Intel(R) Distribution for GDB*.
-   * -  ``gcc_version_check``
+     - This check shows information from OpenCL™ and Intel® oneAPI Level
+       Zero drivers.
+   * -  ``oneapi_app_check``
      - |  ``compile``
        |  ``default``
        |  ``host``
+       |  ``runtime``
        |  ``sysinfo``
-     - user
-     - The check shows information about GCC compiler version.
+       |  ``target``
+     - This check shows version information of installed oneAPI products.
    * -  ``intel_gpu_detector_check``
-     - |  ``advisor``
+     - |  ``profiling``
        |  ``default``
        |  ``gpu``
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-       |  ``vtune``
-     - user
-     - The check shows which Intel GPU(s) is on the system, based on lspci information and internal table.
+     - This check shows which Intel GPU(s) is on the system based on lspci
+       information and internal table.
+     * - ``oneapi_env_check``
+     - |  ``compile``
+       |  ``default``
+       |  ``host``
+       |  ``runtime``
+       |  ``sysinfo``
+       |  ``target``
+     - This check shows the version information of the oneAPI products
+       installed in the environment.
+   * -  ``gcc_version_check``
+     - |  ``compile``
+       |  ``default``
+       |  ``host``
+       |  ``sysinfo``
+     - This check shows information about GCC compiler version.
    * -  ``base_system_check``
      - |  ``compile``
        |  ``host``
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - user
-     - The check shows information about hostname, CPU, BIOS, and operating system.
-   * -  ``hangcheck_check``
-     - |  ``advisor``
-       |  ``gpu``
-       |  ``runtime``
-       |  ``sysinfo``
-       |  ``target``
-       |  ``vtune``
-     - user
-     - The check verifies that the GPU hangcheck option is disabled to allow long-running jobs.
-   * -  ``user_group_check``
-     - |  ``advisor``
-       |  ``gpu``
-       |  ``runtime``
-       |  ``target``
-       |  ``vtune``
-     - user
-     - The check verifies that the current user is in the same group as the GPU(s).
-   * -  ``kernel_boot_options_check``
+     - This check shows information about hostname, CPU, BIOS and
+       operating system.
+   * - ``kernel_options_check``
      - |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - user
-     - The check shows kernel boot options.
-   * -  ``gpu_metrics_check``
-     - |  ``gpu``
-       |  ``runtime``
-       |  ``target``
-     - user
-     - The check verifies that GPU metrics are good.
-   * -  ``oneapi_gpu_check``
-     - |  ``gpu``
-       |  ``sysinfo``
-     - user
-     - The check runs GPU workloads and verifies readiness to run applications on GPU(s).
-   * -  ``advisor_check``
-     - |  ``advisor``
-       |  ``gpu``
-       |  ``kernel``
-       |  ``runtime``
-       |  ``target``
-     - user
-     - The check verifies if environment is ready to analyze GPU kernels.
+     - This check shows kernel options.
    * -  ``user_resources_limits_check``
      - |  ``compile``
        |  ``host``
@@ -210,7 +189,8 @@ GPUs by using the GPU argument.
        |  ``sysinfo``
        |  ``target``
      - user
-     - The check shows resources limits.
+     - This check shows limits of each resource.
+
 
 To learn more about the output, see :ref:`diagnose`.
 
@@ -241,86 +221,74 @@ to run the **check**, see :ref:`check-table`.
    * - Group of Checks
      - Checks included
    * -  ``compile``
-     - |  ``oneapi_app_check``
+     - |  ``driver_compatibility_check``
        |  ``gpu_backend_check``
+       |  ``oneapi_app_check``
        |  ``oneapi_env_check``
-       |  ``dependencies_check``
        |  ``gcc_version_check``
        |  ``base_system_check``
        |  ``user_resources_limits_check``
    * -  ``default``
-     - |  ``oneapi_app_check``
+     - |  ``user_group_check``
+       |  ``driver_compatibility_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_env_check``
-       |  ``dependencies_check``
-       |  ``gcc_version_check``
+       |  ``oneapi_app_check``
        |  ``intel_gpu_detector_check``
-   * -  ``host``
-     - |  ``oneapi_app_check``
-       |  ``gpu_backend_check``
        |  ``oneapi_env_check``
-       |  ``dependencies_check``
+       |  ``gcc_version_check``
+   * -  ``host``
+     - |  ``driver_compatibility_check``
+       |  ``gpu_backend_check``
+       |  ``oneapi_app_check``
+       |  ``oneapi_env_check``
        |  ``gcc_version_check``
        |  ``base_system_check``
        |  ``user_resources_limits_check``
    * -  ``runtime``
-     - |  ``oneapi_app_check``
-       |  ``gpu_backend_check``
-       |  ``oneapi_env_check``
-       |  ``dependencies_check``
-       |  ``vtune_check``
-       |  ``intel_gpu_detector_check``
-       |  ``base_system_check``
-       |  ``hangcheck_check``
+     - |  ``hangcheck_check``
        |  ``user_group_check``
-       |  ``kernel_boot_options_check``
+       |  ``driver_compatibility_check``
        |  ``gpu_metrics_check``
-       |  ``advisor_check``
+       |  ``gpu_backend_check``
+       |  ``oneapi_app_check``
+       |  ``intel_gpu_detector_check``
+       |  ``oneapi_env_check``
+       |  ``base_system_check``
+       |  ``kernel_options_check``
        |  ``user_resources_limits_check``
    * -  ``sysinfo``
-     - |  ``oneapi_app_check``
-       |  ``gpu_backend_check``
-       |  ``oneapi_env_check``
-       |  ``dependencies_check``
-       |  ``gcc_version_check``
-       |  ``intel_gpu_detector_check``
-       |  ``base_system_check``
-       |  ``hangcheck_check``
-       |  ``kernel_boot_options_check``
+     - |  ``hangcheck_check``
+       |  ``driver_compatibility_check``
        |  ``oneapi_gpu_check``
+       |  ``gpu_backend_check``
+       |  ``oneapi_app_check``
+       |  ``intel_gpu_detector_check``
+       |  ``oneapi_env_check``
+       |  ``gcc_version_check``
+       |  ``base_system_check``
+       |  ``kernel_options_check``
        |  ``user_resources_limits_check``
    * -  ``target``
-     - |  ``oneapi_app_check``
-       |  ``gpu_backend_check``
-       |  ``oneapi_env_check``
-       |  ``dependencies_check``
-       |  ``vtune_check``
-       |  ``intel_gpu_detector_check``
-       |  ``base_system_check``
-       |  ``hangcheck_check``
+     - |  ``hangcheck_check``
        |  ``user_group_check``
-       |  ``kernel_boot_options_check``
+       |  ``driver_compatibility_check``
        |  ``gpu_metrics_check``
-       |  ``advisor_check``
+       |  ``gpu_backend_check``
+       |  ``oneapi_app_check``
+       |  ``intel_gpu_detector_check``
+       |  ``oneapi_env_check``
+       |  ``base_system_check``
+       |  ``kernel_options_check``
        |  ``user_resources_limits_check``
    * -  ``gpu``
-     - | ``gpu_backend_check``
-       |  ``vtune_check``
-       |  ``intel_gpu_detector_check``
-       |  ``hangcheck_check``
+     - |  ``hangcheck_check``
        |  ``user_group_check``
+       |  ``oneapi_gpu_check``
        |  ``gpu_metrics_check``
-       |  ``advisor_check``
-   * -  ``vtune``
-     - |  ``vtune_check``
+       |  ``gpu_backend_check``
        |  ``intel_gpu_detector_check``
-       |  ``hangcheck_check``
+   * -  ``profiling``
+     - |  ``hangcheck_check``
        |  ``user_group_check``
-   * -  ``advisor``
-     - |  ``intel_gpu_detector_check``
-       |  ``hangcheck_check``
-       |  ``user_group_check``
-       |  ``advisor_check``
-   * -  ``kernel``
-     - |  ``kernel_boot_options_check``
-       |  ``advisor_check``
+       |  ``intel_gpu_detector_check``
+

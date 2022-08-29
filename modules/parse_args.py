@@ -18,7 +18,7 @@ from pathlib import Path
 def create_parser(version: str):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
-        description="Diagnostics Utility for Intel® oneAPI Toolkits is a tool "
+        description="The Diagnostics Utility for Intel® oneAPI Toolkits is a tool "
                     "designed to diagnose the system status for using Intel® software.",
         epilog=f"Important notes:\n"
                f"\n"
@@ -26,27 +26,34 @@ def create_parser(version: str):
                f" - For GPU diagnostics run 'python3 diagnostics.py --filter gpu'\n"
                f" - To get all information run 'python3 diagnostics.py --filter all'\n"
                f"\n"
-               f"2. Check's status explanation:\n"
+               f"2. Explanation of result status:\n"
                f"PASS - the check passed, no further information will be given.\n"
-               f"FAILED - check ran successfully and the check found a problem.\n"
-               f"   For example if a GPU check is run on a system that does not have a GPU,\n"
-               f"   the check will fail. A brief description will indicate why the check failed.\n"
-               f"ERROR - check was not able to be run, a brief description will indicate why\n"
-               f"   the check was not successful\n"
+               f"FAILED - the check ran successfully but the check found a\n"
+               f"problem with the expected result. For example, if a GPU check\n"
+               f"is run on a system that does not have a GPU, the check will\n"
+               f"fail. A brief description will indicate why the check failed.\n"
+               f"ERROR - check was not able to run. Possible causes:\n"
+               f"- current user does not have permissions to access information\n"
+               f"that the check is looking for. (Example: check is looking\n"
+               f"for the driver version, but the driver is not accessible to\n"
+               f"the current user).\n"
+               f"- software or hardware is not initialized.\n"
                f"WARNING - check ran successfully and but found incompatible or incorrect information.\n"
                f"   A brief description will indicate why.\n"
                f"\n"
-               f"3. Basic rules how to interpret results:\n"
+               f"3. Basic rules for how to interpret results:\n"
                f"   - Each category of checks contains multiple checks with different level of details.\n"
-               f"   Please go throw all checks and analyze all failures before make decision what is wrong.\n"
-               f"   Some checks may report that cannot get some information only, some checks provide\n"
-               f"   diagnostics what wrong. There is no order or dependencies for these checks yet. \n"
-               f"   Please, read all failures\\infos and combine it in one bird eye view\n"
-               f"   - Output may have different format in case of using verbose mode\n"
-               f"   (with -v or without the parameter). Both variants may be useful.\n"
+               f"   Please go through all checks and analyze all failures before deciding on what is causing "
+               f"the problem.\n"
+               f"   Some checks only report that information is not available, while other checks provide\n"
+               f"   diagnostics to indicate what might the problem might be. \n"
+               f"   Please read all failures\\infos to evaluate the results of the checks.\n"
+               f"   - Using verbose mode (-v) with or without other parameters will display\n"
+               f"   output in different formats which may help you determine the root cause of the problems."
+               f"\n"
                f"\n"
                f"4. For more details see online documentation:\n"
-               f"   https://software.intel.com/content/www/us/en/develop/documentation/diagnostic-utility-user-guide/top.html\n"  # noqa: E501
+               f"   https://www.intel.com/content/www/us/en/develop/documentation/diagnostic-utility-user-guide/top.html \n"  # noqa: E501
                f"\n"
                f"Diagnostics Utility for Intel® oneAPI Toolkits {version}\n"
                f"Copyright (C) Intel Corporation. All rights reserved.",
@@ -54,15 +61,16 @@ def create_parser(version: str):
     )
     group_check_run = parser.add_mutually_exclusive_group()
     group_output_format = parser.add_mutually_exclusive_group()
-    parser.add_argument(
+    group_update_format = parser.add_mutually_exclusive_group()
+    group_check_run.add_argument(
         "--filter",
         nargs="+",
         type=str,
         default=["not_initialized"],
-        help="Filter checker results by tag or checker name\n"
+        help="Filter checker results by group name or check name\n"
              "tags, combine one or more checkers into groups.\n"
-             "Each checker can be marked with one or more tags.\n"
-             "To view all available checkers with their names and marked tags,\n"
+             "Each checker can belong to one or more groups.\n"
+             "To view all available checks with their names and marked groups,\n"
              "run the Diagnostics Utility for Intel® oneAPI Toolkits\n"
              "with the \"--list\" option."
     )
@@ -75,13 +83,7 @@ def create_parser(version: str):
         "-c", "--config",
         type=Path,
         metavar="PATH_TO_CONFIG",
-        help="Path to the JSON config file to run a group of checks or particular check from checkers."
-    )
-    group_check_run.add_argument(
-        "-s", "--single_checker",
-        type=Path,
-        metavar="PATH_TO_CHECKER",
-        help="Path to the checker module file which can be a library, python module, or executable bash."
+        help="Path to the JSON config file to run a group of checks or a specific check."
     )
     group_output_format.add_argument(
         "-o", "--output",
@@ -90,29 +92,51 @@ def create_parser(version: str):
         default=f"{Path.home()}/intel/diagnostics/logs",
         help="Path to the folder for saving the console output file and\n"
              "the JSON file with the results of the performed checks.\n"
-             "(default: $HOME/intel/diagnostics/logs)"
     )
     group_output_format.add_argument(
         "-t", "--terminal_output",
         action="store_true",
-        help="Allow output only to the terminal window without saving additional output files."
+        help="Output to the terminal window without saving additional output files."
     )
-    parser.add_argument(
+    group_update_format.add_argument(
+        "-s", "--skip_update",
+        action="store_true",
+        help="Skip the check that looks for database updates."
+    )
+    group_update_format.add_argument(
         "-u", "--update",
         action="store_true",
         help="Download new databases if they are available."
     )
     parser.add_argument(
-        "-f", "--force",
+        "-p", "--path",
+        nargs="+",
+        type=str,
+        help="Add paths to folders with checker files or to specific checker files\n"
+             "using the environment variable DIAGUTIL_PATH. Paths from this environment are an additional\n"
+             "way to load checks."
+    )
+    parser.add_argument(
+        "--force",
         action="store_true",
         help="Force the program to run on any operating system.")
     parser.add_argument(
         "-v", "--verbosity",
         action="count",
-        help="Increase output verbosity. By default tool prints\n"
-        "FAILUREs and ERRORs only. Use -v for get more details.\n"
-        "Add additional v (like -vvvv) for next level of details",
+        help="Increase output verbosity. By default, this utility prints\n"
+             "FAILUREs and ERRORs only. Use -v for get more details.\n"
+             "Add additional 'v' (like -vvvv) to increase the amount of details",
         default=-1
+    )
+    parser.add_argument(
+        "-V", "--version",
+        action="version",
+        version=f"Diagnostics Utility for Intel® oneAPI Toolkits\n"
+                f"Version: {version}\n"
+                f"Date of creation: @DATE_OF_CREATION@\n"
+                f"Git commit: @GIT_COMMIT@\n"
+                f"Copyright (C) Intel Corporation. All rights reserved.",
+        help="Show version and exit."
     )
     parser.add_argument(
         "-h", "--help",

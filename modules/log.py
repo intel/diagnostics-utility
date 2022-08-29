@@ -20,24 +20,25 @@ file_formatter = logging.Formatter('%(asctime)s %(process)d %(levelname)7s %(fil
 
 
 def _configure_console_logging(logging_level: int) -> None:
-    _default_logger = logging.getLogger("")
-    for handler in _default_logger.handlers:
+    default_logger = logging.getLogger()
+    for handler in default_logger.handlers:
         if isinstance(handler, logging.StreamHandler):
             handler.close()
-            _default_logger.removeHandler(handler)
+            default_logger.removeHandler(handler)
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging_level)
     console_handler.setFormatter(stream_formatter)
-    _default_logger.addHandler(console_handler)
+    default_logger.addHandler(console_handler)
 
 
-def _configure_file_logging(logging_level: int, logging_file: Path) -> None:
-    _default_logger = logging.getLogger("")
+def configure_file_logging(verbosity: int, logging_file: Path) -> None:
+    default_logger = logging.getLogger()
+
     file_handler = logging.FileHandler(filename=logging_file, mode="a")
-    file_handler.setLevel(logging_level)
+    file_handler.setLevel(_verbosity2loglevel(verbosity))
     file_handler.setFormatter(file_formatter)
-    _default_logger.addHandler(file_handler)
+    default_logger.addHandler(file_handler)
 
 
 def _verbosity2loglevel(verbosity: int) -> int:
@@ -49,7 +50,7 @@ def _verbosity2loglevel(verbosity: int) -> int:
     """
 
     if verbosity < -1:
-        raise ValueError("Wrong verbosity level")
+        raise ValueError("Wrong verbosity level.")
     if 4 < verbosity:
         verbosity = 4
     log_num = 0
@@ -62,13 +63,11 @@ def _verbosity2loglevel(verbosity: int) -> int:
     return log_num
 
 
-def configure_logger(verbosity: int, logging_file: Optional[Path]) -> None:
-    _default_logger = logging.getLogger("")
+def configure_logger(verbosity: int) -> None:
+    default_logger = logging.getLogger()
     logging_level = _verbosity2loglevel(verbosity)
-    _default_logger.setLevel(logging_level)
+    default_logger.setLevel(logging_level)
     _configure_console_logging(logging_level)
-    if logging_file is not None:
-        _configure_file_logging(logging_level, logging_file)
 
 
 _trace = """

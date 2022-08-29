@@ -17,15 +17,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../
 
 import json  # noqa: E402
 from copy import deepcopy  # noqa: E402
-from time import sleep  # noqa: E402
 
 import unittest  # noqa: E402
 from unittest.mock import patch  # noqa: E402
-from typing import Dict  # noqa: E402
-from types import MethodType  # noqa: E402
 
 from modules.check.check import BaseCheck, CheckMetadataPy, CheckSummary, _result_summary_is_correct, \
-                                 check_correct_metadata, check_correct_summary, timeout_exit  # noqa: E402
+                                 check_correct_metadata, check_correct_summary  # noqa: E402
 
 
 correct_result_dict_1 = {
@@ -460,9 +457,9 @@ class TestCheckMetadataPy(unittest.TestCase):
             tags='tag',
             descr='decription',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -473,9 +470,9 @@ class TestCheckMetadataPy(unittest.TestCase):
             tags='tag',
             descr='decription',
             dataReq='{}',
-            rights='admin',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -486,9 +483,9 @@ class TestCheckMetadataPy(unittest.TestCase):
             tags='tag1,tag2',
             descr='decription',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -499,9 +496,9 @@ class TestCheckMetadataPy(unittest.TestCase):
             tags='tag1, tag2',
             descr='decription',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -513,9 +510,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                 tags='tag',
                 descr='decription',
                 dataReq='not_json_data',
-                rights='user',
+                merit=0,
                 timeout=1,
-                version='0.5',
+                version=1,
                 run='run'
             )
 
@@ -527,9 +524,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                 tags='tag',
                 descr='decription',
                 dataReq='{}',
-                rights='user',
+                merit=0,
                 timeout=1,
-                version='0.5',
+                version=1,
                 run='run'
             )
 
@@ -541,23 +538,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                 tags='tag with spaces',
                 descr='decription',
                 dataReq='{}',
-                rights='user',
+                merit=0,
                 timeout=1,
-                version='0.5',
-                run='run'
-            )
-
-    def test_raise_error_init_check_metadata_with_incorrect_rights(self):
-        with self.assertRaises(ValueError):
-            CheckMetadataPy(
-                name='example',
-                type='data',
-                tags='tag',
-                descr='decription',
-                dataReq='{}',
-                rights='not_user_or_not_admin',
-                timeout=1,
-                version='0.5',
+                version=1,
                 run='run'
             )
 
@@ -572,9 +555,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                     tags='tag',
                     descr='decription',
                     dataReq='{}',
-                    rights='user',
+                    merit=0,
                     timeout=1,
-                    version='0.5',
+                    version=1,
                     run='run'
                 )
 
@@ -592,9 +575,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                     tags='tag',
                     descr='decription',
                     dataReq='not_json_data',
-                    rights='user',
+                    merit=0,
                     timeout=1,
-                    version='0.5',
+                    version=1,
                     run='run'
                 )
 
@@ -609,9 +592,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                     tags='tag',
                     descr='decription',
                     dataReq='{}',
-                    rights='user',
+                    merit=0,
                     timeout=1,
-                    version='0.5',
+                    version=1,
                     run='run'
                 )
 
@@ -630,30 +613,9 @@ class TestCheckMetadataPy(unittest.TestCase):
                     tags='tag with spaces',
                     descr='decription',
                     dataReq='{}',
-                    rights='user',
+                    merit=0,
                     timeout=1,
-                    version='0.5',
-                    run='run'
-                )
-
-        obj = temp()
-        with self.assertRaises(ValueError):
-            check_correct_metadata(temp.func)(obj)
-
-    def test_check_metadata_decorator_with_incorrect_rights(self):
-        class temp:
-            self.metadata = None
-
-            def func(self):
-                self.metadata = CheckMetadataPy(
-                    name='example',
-                    type='data',
-                    tags='tag with spaces',
-                    descr='decription',
-                    dataReq='{}',
-                    rights='not_user_or_not_admin',
-                    timeout=1,
-                    version='0.5',
+                    version=1,
                     run='run'
                 )
 
@@ -683,9 +645,9 @@ class TestBaseCheck(unittest.TestCase):
             tags='tag',
             descr='decription',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -719,9 +681,9 @@ class TestBaseCheck(unittest.TestCase):
             tags='tag',
             descr='decription',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -741,9 +703,9 @@ class TestTimeoutDecorator(unittest.TestCase):
             tags='tag',
             descr='decription',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run='run'
         )
 
@@ -755,72 +717,6 @@ class TestTimeoutDecorator(unittest.TestCase):
             metadata=self.correct_metadata,
             summary=self.correct_summary
         )
-
-    def test_timeout_exit_return_result(self):
-        expected = self.correct_summary
-
-        def run(check: BaseCheck, dataReq: Dict):
-            return check.get_summary()
-
-        self.check.run = MethodType(run, self.check)
-
-        value = timeout_exit(self.check.run)(self.check, {})
-
-        self.assertEqual(expected.__dict__, value.__dict__)
-
-    def test_timeout_exit_killed_by_timeout(self):
-        expected = CheckSummary(
-            result=json.dumps({
-                "RetVal": "ERROR",
-                "Verbosity": 0,
-                "Message": "",
-                "Value": {
-                    f"{self.check.get_metadata().name}": {
-                        "Value": "Timeout was exceeded",
-                        "Verbosity": 0,
-                        "Message": "",
-                        "RetVal": "ERROR"
-                    }
-                }
-            })
-        )
-
-        def run(check: BaseCheck, dataReq: Dict):
-            sleep(2)
-            return check.get_summary()
-
-        self.check.run = MethodType(run, self.check)
-
-        value = timeout_exit(self.check.run)(self.check, {})
-
-        self.assertEqual(expected.__dict__, value.__dict__)
-
-    def test_timeout_exit_check_crushed(self):
-        expected = CheckSummary(
-            result=json.dumps({
-                "RetVal": "ERROR",
-                "Verbosity": 0,
-                "Message": "",
-                "Value": {
-                    f"{self.check.get_metadata().name}": {
-                        "Value": "",
-                        "Verbosity": 0,
-                        "Message": "The check crushed at runtime. No data was received. "
-                                   "See call stack above.",
-                        "RetVal": "ERROR"
-                    }
-                }
-            })
-        )
-
-        def run(check: BaseCheck, dataReq: Dict):
-            raise Exception("Imitation of crash")
-
-        self.check.run = MethodType(run, self.check)
-
-        value = timeout_exit(self.check.run)(self.check, {})
-
-        self.assertEqual(expected.__dict__, value.__dict__)
 
 
 if __name__ == '__main__':

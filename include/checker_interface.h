@@ -27,9 +27,9 @@ struct CheckMetadata
     char tags[MAX_STRING_LEN];
     char descr[MAX_STRING_LEN];
     char dataReq[MAX_STRING_LEN];
-    char rights[MAX_STRING_LEN];
+    int merit;
     int timeout;
-    char version[MAX_STRING_LEN];
+    int version;
 };
 
 struct CheckResult
@@ -43,9 +43,9 @@ struct Check
     struct CheckResult (*run)(char *);
 };
 
-#define REGISTER_CHECKER(VAR, NAME, TYPE, TAGS, DESCR, DATAREQ, RIGHTS, TIMEOUT, VER, RUN)    \
+#define REGISTER_CHECKER(VAR, NAME, TYPE, TAGS, DESCR, DATAREQ, MERIT, TIMEOUT, VER, RUN)    \
     struct Check VAR = {                                                                    \
-         {(NAME), (TYPE), (TAGS), (DESCR), (DATAREQ), (RIGHTS), (TIMEOUT), (VER)},            \
+         {(NAME), (TYPE), (TAGS), (DESCR), (DATAREQ), (MERIT), (TIMEOUT), (VER)},            \
          (RUN)                                                                                \
     };
 

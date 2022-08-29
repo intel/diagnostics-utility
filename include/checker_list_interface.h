@@ -13,23 +13,31 @@ other than those that are expressly stated in the License.
 #define __CHECKER_LIST_INTERFACE_H__
 
 #ifdef __cplusplus
-extern "C" {  
-#endif  
+extern "C" {
+#endif
+
+#ifdef _MSC_VER
+#define EXPORT_API __declspec(dllexport)
+#else
+#ifdef __GNUC__
+#define EXPORT_API __attribute__((const))
+#endif
+#endif
 
 /**
  * @brief Get api version that checkers use
  * @return String with api version
  */
-char* get_api_version(void);
+EXPORT_API char* get_api_version(void);
 
 /**
  * @brief Get list of the Checks in the library
  * @return Array of the pointers to checkers
  */
-__attribute__((const)) struct Check** get_check_list(void);
+EXPORT_API struct Check** get_check_list(void);
 
-#ifdef __cplusplus  
-} // extern "C"  
+#ifdef __cplusplus
+} // extern "C"
 #endif
 
 #endif /* __CHECKER_LIST_INTERFACE_H__ */

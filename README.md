@@ -4,11 +4,16 @@ Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose t
 
 ## Supported OS
 
- - Ubuntu 20.04 LTS
- - RHEL 8.2
- - RHEL 8.3
- - SLES 15 SP2
- - SLES 15 SP3
+- Windows 10
+- Windows 11
+- Windows Server 2022
+- Ubuntu 18.04 LTS
+- Ubuntu 20.04 LTS
+- RHEL 8.2
+- RHEL 8.3
+- SLES 15 SP2
+- SLES 15 SP3
+- Rocky Linux 8.5
 
 ## Requirements
 
@@ -16,9 +21,8 @@ Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose t
 
 ## More documentation
 
-For detailed documentation, open `index.html` in the `docs` folder. If you installed the Diagnostics Utility
-to the default folder, the `docs` folder is located at `/opt/intel/oneapi/diagnostics/latest/docs` or you may view the
-[User Guide online](https://software.intel.com/content/www/us/en/develop/documentation/diagnostic-utility-user-guide/top.html).
+For detailed documentation, view the
+[User Guide online](https://www.intel.com/content/www/us/en/develop/documentation/diagnostic-utility-user-guide/top.html).
 
 ## License
 

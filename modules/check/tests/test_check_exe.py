@@ -33,9 +33,9 @@ exe_metadata_output = json.dumps({
     "tags": "cpu",
     "descr": "This is example of exe module",
     "dataReq": "{}",
-    "rights": "user",
+    "merit": 0,
     "timeout": 1,
-    "version": "0.5",
+    "version": 1,
     "run": ""
 })
 
@@ -51,18 +51,12 @@ class TestClassCheckExe(unittest.TestCase):
 
     @patch("subprocess.Popen")
     def setUp(self, mock_popen):
-        # NOTE: workaround to patching timeout exit
-        self.timeout_exit_patch = patch("modules.check.check.timeout_exit", lambda func: func)
-        self.timeout_exit_patch.start()
         importlib.reload(check_exe)
-
         mock_popen.return_value.communicate.return_value = (exe_metadata_output, "")
         mock_popen.return_value.returncode = 0
         self.check_exe = check_exe.CheckExe("path")
 
     def tearDown(self):
-        # NOTE: workaround to patching timeout exit
-        self.timeout_exit_patch.stop()
         importlib.reload(check_exe)
 
     def test_class_init_correct(self):
@@ -72,9 +66,9 @@ class TestClassCheckExe(unittest.TestCase):
             tags='cpu',
             descr='This is example of exe module',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run=''
         )
 
@@ -115,19 +109,29 @@ class TestGetCheckExe(unittest.TestCase):
             tags='cpu',
             descr='This is example of exe module',
             dataReq='{}',
-            rights='user',
+            merit=0,
             timeout=1,
-            version='0.5',
+            version=1,
             run=''
         )
-        mock_popen.return_value.communicate.return_value = (exe_metadata_output, "")
-        mock_popen.return_value.returncode = 0
+        mock_metadata = MagicMock()
+        mock_metadata.communicate.return_value = (exe_metadata_output, "")
+        mock_metadata.returncode = 0
+
+        mock_api_version = MagicMock()
+        mock_api_version.communicate.return_value = (exe_api_version_output, "")
+        mock_api_version.returncode = 0
+
+        mock_popen.side_effect = [
+            mock_api_version,
+            mock_metadata
+        ]
 
         mock_file = MagicMock()
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = True
 
-        value = check_exe.getChecksExe(mock_file)[0].get_metadata()
+        value = check_exe.getChecksExe(mock_file, "0.1")[0].get_metadata()
 
         self.assertEqual(expected.__dict__, value.__dict__)
 
@@ -141,7 +145,7 @@ class TestGetCheckExe(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = True
 
-        self.assertRaises(Exception, check_exe.getChecksExe, mock_file)
+        self.assertRaises(Exception, check_exe.getChecksExe, mock_file, "0.1")
         mock_log.assert_called()
 
     @patch("logging.error")
@@ -150,7 +154,20 @@ class TestGetCheckExe(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = False
 
-        self.assertRaises(OSError, check_exe.getChecksExe, mock_file)
+        self.assertRaises(OSError, check_exe.getChecksExe, mock_file, "0.1")
+        mock_log.assert_called()
+
+    @patch("subprocess.Popen")
+    @patch("logging.error")
+    def test_get_checks_py_raise_error_if_version_not_compatible(self, mock_log, mock_popen):
+        mock_file = MagicMock()
+        mock_file.__str__.return_value = test_filename
+        mock_file.exists.return_value = True
+
+        mock_popen.return_value.communicate.return_value = (exe_api_version_output, "")
+        mock_popen.return_value.returncode = 0
+
+        self.assertRaises(ValueError, check_exe.getChecksExe, mock_file, "0.3")
         mock_log.assert_called()
 
 

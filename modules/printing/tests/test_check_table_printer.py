@@ -25,12 +25,12 @@ from unittest.mock import patch  # noqa: E402
 from modules.check import BaseCheck, CheckMetadataPy  # noqa: E402
 from modules.printing.printer_helper import Colors  # noqa: E402
 from modules.printing.check_table_printer import print_metadata  # noqa: E402
+from modules.printing.tests.printing_test_helper import print_ex_mock  # noqa: E402
 
 
 class TestPrintMetadata(unittest.TestCase):
 
     def setUp(self):
-        self.maxDiff = None
         self.check_list: List[BaseCheck] = [
             BaseCheck(
                 metadata=CheckMetadataPy(
@@ -39,7 +39,7 @@ class TestPrintMetadata(unittest.TestCase):
                     tags="tag1,tag2,tag3",
                     descr="description",
                     dataReq="{}",
-                    rights="user",
+                    merit=0,
                     timeout=10,
                     version="0",
                     run="run"
@@ -52,7 +52,7 @@ class TestPrintMetadata(unittest.TestCase):
                     tags="tag1,tag2,tag3",
                     descr="description",
                     dataReq="{}",
-                    rights="user",
+                    merit=0,
                     timeout=10,
                     version="0",
                     run="run"
@@ -60,43 +60,46 @@ class TestPrintMetadata(unittest.TestCase):
             )
         ]
 
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_metadata_console_min_width_less_positive(self, mock_get_terminal_size):
-        expected_stdout = "+---------------+----------+----------+--------------------+\n" + \
-                          f"|{Colors.Yellow}  Check name   {Colors.Default}|{Colors.Yellow}   Tags   {Colors.Default}|{Colors.Yellow}  Rights  {Colors.Default}|{Colors.Yellow}    Description     {Colors.Default}|\n" + \
-                          "+---------------+----------+----------+--------------------+\n" + \
-                          "| name_of_check | tag1     | user     | description        |\n" + \
-                          "|               | tag2     |          |                    |\n" + \
-                          "|               | tag3     |          |                    |\n" + \
-                          "+---------------+----------+----------+--------------------+\n"  # noqa: E501
+    def test_print_metadata_console_min_width_less_positive(self, mock_get_terminal_size, mocked_print_ex):
+        expected_stdout = "+---------------+------+-----------------------------------+\n" + \
+                          f"|{Colors.Yellow}  Check name   {Colors.Default}|{Colors.Yellow} Tags {Colors.Default}|{Colors.Yellow}            Description            {Colors.Default}|\n" + \
+                          "+---------------+------+-----------------------------------+\n" + \
+                          "| name_of_check | tag1 | description                       |\n" + \
+                          "|               | tag2 |                                   |\n" + \
+                          "|               | tag3 |                                   |\n" + \
+                          "+---------------+------+-----------------------------------+\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_metadata(self.check_list[0:1], None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_metadata_console_min_width_more_positive(self, mock_get_terminal_size):
-        expected_stdout = "+--------------------+----------+----------+---------------+\n" + \
-                          f"|{Colors.Yellow}     Check name     {Colors.Default}|{Colors.Yellow}   Tags   {Colors.Default}|{Colors.Yellow}  Rights  {Colors.Default}|{Colors.Yellow}  Description  {Colors.Default}|\n" + \
-                          "+--------------------+----------+----------+---------------+\n" + \
-                          "| too_long_name_of_c | tag1     | user     | description   |\n" + \
-                          "| heck               | tag2     |          |               |\n" + \
-                          "|                    | tag3     |          |               |\n" + \
-                          "+--------------------+----------+----------+---------------+\n"  # noqa: E501
+    def test_print_metadata_console_min_width_more_positive(self, mock_get_terminal_size, mocked_print_ex):
+        expected_stdout = "+--------------------+------+------------------------------+\n" + \
+                          f"|{Colors.Yellow}     Check name     {Colors.Default}|{Colors.Yellow} Tags {Colors.Default}|{Colors.Yellow}         Description          {Colors.Default}|\n" + \
+                          "+--------------------+------+------------------------------+\n" + \
+                          "| too_long_name_of_c | tag1 | description                  |\n" + \
+                          "| heck               | tag2 |                              |\n" + \
+                          "|                    | tag3 |                              |\n" + \
+                          "+--------------------+------+------------------------------+\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_metadata(self.check_list[1:2], None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((70, 0)))
-    def test_print_metadata_console_width_more_positive(self, mock_get_terminal_size):
-        expected_stdout = "+------------------------+----------+----------+---------------------+\n" + \
-                          f"|{Colors.Yellow}       Check name       {Colors.Default}|{Colors.Yellow}   Tags   {Colors.Default}|{Colors.Yellow}  Rights  {Colors.Default}|{Colors.Yellow}     Description     {Colors.Default}|\n" + \
-                          "+------------------------+----------+----------+---------------------+\n" + \
-                          "| too_long_name_of_check | tag1     | user     | description         |\n" + \
-                          "|                        | tag2     |          |                     |\n" + \
-                          "|                        | tag3     |          |                     |\n" + \
-                          "+------------------------+----------+----------+---------------------+\n"  # noqa: E501
+    def test_print_metadata_console_width_more_positive(self, mock_get_terminal_size, mocked_print_ex):
+        expected_stdout = "+------------------------+------+------------------------------------+\n" + \
+                          f"|{Colors.Yellow}       Check name       {Colors.Default}|{Colors.Yellow} Tags {Colors.Default}|{Colors.Yellow}            Description             {Colors.Default}|\n" + \
+                          "+------------------------+------+------------------------------------+\n" + \
+                          "| too_long_name_of_check | tag1 | description                        |\n" + \
+                          "|                        | tag2 |                                    |\n" + \
+                          "|                        | tag3 |                                    |\n" + \
+                          "+------------------------+------+------------------------------------+\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_metadata(self.check_list[1:2], None)
@@ -104,4 +107,5 @@ class TestPrintMetadata(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    unittest.TestCase.maxDiff = None
     unittest.main()

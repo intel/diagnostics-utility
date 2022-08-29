@@ -10,5 +10,5 @@
 # *******************************************************************************/
 
 from .check import BaseCheck, CheckSummary, CheckMetadataPy
-from .check_loader import load_single_checker, load_checks_from_config, load_default_checks
-from .check_runner import run_checks
+from .check_loader import load_checks_from_env, load_checks_from_config, load_default_checks
+from .check_runner import run_checks, create_dependency_order

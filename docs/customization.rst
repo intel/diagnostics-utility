@@ -29,42 +29,53 @@ to the terminal:
      - Example
 
    * - ``--filter``
-     - Filter checker results by tag or checker name tags, combine one or more checkers into groups. Each checker can be marked with one or more tags. For a full list of available checks and tags, see :ref:`check-table`.
-     -  | ``python3 diagnostics.py -filter oneapi_app_check``
+     - Filter checker results by tag or checker name tags, combine
+       one or more checkers into groups. Each checker can be marked with one or more
+       tags. For a full list of available checks and tags, see :ref:`check-table`.
+     -  ``python3 diagnostics.py -filter oneapi_app_check``
 
    * - ``--list``
-     - Show list of available checks in the terminal window. You can also see a list of available checks and tags in :ref:`check-table`.
+     - Show list of available checks in the terminal window. You can also
+       see a list of available checks and tags in :ref:`check-table`.
      -  ``python3 diagnostics.py --list``
 
    * - ``-c PATH_TO_CONFIG``
      - Path to the JSON config file to run a group of checks or particular check from checkers.
-     -  ``python3 diagnostics.py -c configs/example_config.json``
-
-   * - ``-s PATH_TO_CHECKER``
-     - Path to the checker module file which can be a library, python module, or executable bash.
-     -  ``python3 diagnostics.py -s checkers_c/liboneapi_checker.so``
+     -  ``python3 diagnostics.py -c configs/sample_config.json``
 
    * - ``-o PATH_TO_OUTPUT``
      - Path to the folder for saving the console output file and
        the JSON file with the results of the performed checks.
-       (default: $HOME/intel/diagnostics).
-     -  ``python3 diagnostics.py -o $HOME/intel/diagnostics``
+     -  ``python3 diagnostics.py -o $HOME/intel/diagnostics/logs``
 
    * - ``-t``
      -  Allow output only to the terminal window without saving additional output files.
      -  ``python3 diagnostics.py -t``
 
+   * - ``-s``
+     - Skip checking for update availability for existing databases.
+     -  ``python3 diagnostics.py -s``
+
    * - ``-u``
      - Download new databases if they are available.
      -  ``python3 diagnostics.py -u``
 
-   * - ``-f``
-     - Force the utility to run on any operating system.
-     -  ``python3 diagnostics.py -f``
+   * - ``-p``
+     - Add paths to environment variable DIAGUTIL_PATH to additionally
+       load checks.
+     -  ``python3 diagnostics.py -p checkers_py/base_system_checker.py``
+
+   * - ``--force``
+     - Force the program to run on any operating system.
+     -  ``python3 diagnostics.py --force``
 
    * - ``-v``
      - Increase the amount of verbosity in the output. This will give more details in the output.
      -  ``python3 diagnostics.py -v``
+
+   * - ``--version``
+     - Show program's version.
+     -  ``python3 diagnostics.py --version``
 
    * - ``-h``
      - Show help message.

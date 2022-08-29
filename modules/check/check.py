@@ -11,10 +11,8 @@
 
 import json
 import logging
-import faulthandler
 
 from functools import wraps
-from multiprocessing import Process, Queue
 from typing import Callable, Dict, Optional
 
 
@@ -33,24 +31,24 @@ def _result_summary_recursive(summary_value: Dict, is_root: bool = False) -> int
             elif data["RetVal"] == "ERROR":
                 subcheck_error_code = 3
         else:
-            raise ValueError(f"Error in subtree: {data}. RetVal is required")
+            raise ValueError(f"Error in subtree: {data}. RetVal is required.")
 
         if "Verbosity" in data:
             if not isinstance(data["Verbosity"], int):
                 raise ValueError(
-                    f"Error in subtree: {data}. Verbosity must be a integer")
+                    f"Error in subtree: {data}. Verbosity must be an integer.")
             if is_root:
                 if 0 < data["Verbosity"]:
                     raise ValueError(
-                        f"Error in subtree: {data}. Root verbosity level must to be zero")
+                        f"Error in subtree: {data}. Root verbosity level must be set to zero.")
         if "Message" in data:
             if not isinstance(data["Message"], str):
                 raise ValueError(
-                    f"Error in subtree: {data}. Message must be a string")
+                    f"Error in subtree: {data}. Message must be a string.")
         if "Command" in data:
             if not isinstance(data["Command"], str):
                 raise ValueError(
-                    f"Error in subtree: {data}. Command must be a string")
+                    f"Error in subtree: {data}. Command must be a string.")
         if "Value" in data:
             if isinstance(data["Value"], dict):
                 subcheck_error_code = max(
@@ -58,7 +56,7 @@ def _result_summary_recursive(summary_value: Dict, is_root: bool = False) -> int
                     _result_summary_recursive(data["Value"])
                 )
         else:
-            raise ValueError(f"Error in subtree: {data}. Value is required")
+            raise ValueError(f"Error in subtree: {data}. Value is required.")
         result_error_code = max(
             result_error_code,
             subcheck_error_code
@@ -69,9 +67,9 @@ def _result_summary_recursive(summary_value: Dict, is_root: bool = False) -> int
 def _result_summary_is_correct(
         summary: Dict) -> int:
     if len(summary) == 0:
-        raise ValueError("Value dictionary cannot be empty")
+        raise ValueError("Value dictionary cannot be empty.")
     if "Value" not in summary:
-        raise ValueError("Result summary is not correct: Top level should contain Value")
+        raise ValueError("Result summary is not correct: Top level should contain Value.")
     return _result_summary_recursive(summary_value=summary["Value"], is_root=True)
 
 
@@ -80,32 +78,66 @@ def _metadata_is_correct(metadata):
         json.loads(metadata.dataReq)
     except Exception:
         raise ValueError(
-            f"Metadata: {metadata} contains wrong 'dataReq' value. Isn't valid json")
+            f"Metadata: {metadata} contains wrong 'dataReq' value. This is not a valid json file.")
     if " " in metadata.name:
         raise ValueError(
-            f"Metadata: {metadata} contains wrong 'name' value. Name have to be without spaces")
+            f"Metadata: {metadata} contains wrong 'name' value. Remove spaces from the name.")
     tags = [elem.strip() for elem in metadata.tags.split(",")]
     for tag in tags:
         if " " in tag:
             raise ValueError(
                 f"Metadata: {metadata} contains wrong 'tag' value. "
-                f"Tag have to be without spaces. Tag '{tag}' have a space.")
-    correct_rights = ["user", "admin"]
-    if metadata.rights not in correct_rights:
-        raise ValueError(
-            f"Metadata: {metadata} contains wrong 'rights' value. "
-            f"Rights can be 'user' and 'admin' only")
+                f"Remove spaces from '{tag}'.")
 
 
 class CheckMetadataPy:
+    """
+    Create a new `CheckMetadataPy` object. `CheckMetadataPy` takes several arguments:
+
+    * `name`: A string value containing the check name without spaces.
+
+    * `type`: A string value containing the check type.
+
+    * `tags`: A string value containing a tag or a sequence of tags separated by commas.
+       Used to change the set of run checks be `--filter` option.
+       For example, `python3 diagnostics.py --filter mytag` will run checks which contain
+       `mytag` tag only. String values are case sensitive.
+
+    * `descr`: A string value containing a check description.
+
+    * `dataReq`: A string value in JSON format containing dict with name and version of dependencies.
+      For example, if JSON string contains `{"my_check": 1, "my_check_2": 1}` it means that the current
+      check depends on two checks: `my check` version 1 and `my_check_2` version 1. This check should be
+      run with dependencies. The data dictionaries from these checks will be sent to the `run` function
+      as the only argument. If check does not have a dependencies string should have empty JSON `{}`.
+
+    * `merit`: An integer value containing a check merit. The higher the value, the higher the check
+      result will be printed. We recommend that you follow the following guidelines for merit value:
+      ` 0` - `19` - Checks that provide information about system configuration.
+      `20` - `39` - Checks that provide information from drivers or tools.
+      `40` - `59` - Checks that performance.
+      `60` - `79` - Checks that check tools readiness.
+      `80` - `99` - Checks that check system requirements.
+
+    * `timeout`: An integer value containing the timeout in seconds. If check time exceeds the timeout,
+       check will be forcibly completed without saving data.
+
+    * `version`: An integer value containing the check version. We recommend to increase check version
+      when you change `CheckSummary` `Value` dict tree.
+
+    * `run`: A string value containing the name of a function to be called. A function should have the
+      following declaration: `def my_func(data)` and should return `CheckSummary` object.
+      If `dataReq` field is not empty, JSON dict data is used, along with data from dependencies checks.
+      If `dataReq` is empty, JSON data is empty dict.
+    """
     name: str
     type: str
     tags: str
     descr: str
     dataReq: str
-    rights: str
+    merit: int
     timeout: int
-    version: str
+    version: int
     run: str
 
     def __init__(
@@ -115,16 +147,16 @@ class CheckMetadataPy:
             tags: str,
             descr: str,
             dataReq: str,
-            rights: str,
+            merit: int,
             timeout: int,
-            version: str,
+            version: int,
             run: str) -> None:
         self.name = name
         self.type = type
         self.tags = tags
         self.descr = descr
         self.dataReq = dataReq
-        self.rights = rights
+        self.merit = merit
         self.timeout = timeout
         self.version = version
         self.run = run
@@ -173,7 +205,7 @@ def check_correct_metadata(function: Callable) -> Callable:
         if hasattr(self, "metadata"):
             _metadata_is_correct(self.metadata)
         else:
-            logging.warning("Can't wraps function, because object have not metadata attribute")
+            logging.warning("Cannot wrap function, because the object does not have a metadata attribute.")
         return ret
     return wrapper
 
@@ -230,58 +262,3 @@ class BaseCheck:
 
     def __repr__(self) -> str:
         return str(self)
-
-
-def timeout_exit(function: Callable[[BaseCheck, Dict], CheckSummary]) -> \
-        Callable[[BaseCheck, Dict], CheckSummary]:
-    @wraps(function)
-    def wrapper(instance: BaseCheck, dataReqDict: Dict) -> CheckSummary:
-        faulthandler.enable()
-        queue = Queue()
-
-        def queue_wrapper(dataReqDict):
-            result = function(dataReqDict)
-            queue.put(result)
-
-        process = Process(target=queue_wrapper, args=(dataReqDict,))
-        process.start()
-        try:
-            result = queue.get(block=True, timeout=instance.get_metadata().timeout)
-        except Exception:
-            if process.exitcode is None:
-                process.terminate()
-                json_dict = {
-                    "RetVal": "ERROR",
-                    "Verbosity": 0,
-                    "Message": "",
-                    "Value": {
-                        f"{instance.get_metadata().name}": {
-                            "Value": "Timeout was exceeded",
-                            "Verbosity": 0,
-                            "Message": "",
-                            "RetVal": "ERROR"
-                        }
-                    }
-                }
-                json_str = json.dumps(json_dict)
-                result = CheckSummary(result=json_str)
-            else:
-                json_dict = {
-                    "RetVal": "ERROR",
-                    "Verbosity": 0,
-                    "Message": "",
-                    "Value": {
-                        f"{instance.get_metadata().name}": {
-                            "Value": "",
-                            "Verbosity": 0,
-                            "Message": "The check crushed at runtime. No data was received. "
-                                       "See call stack above.",
-                            "RetVal": "ERROR"
-                        }
-                    }
-                }
-                json_str = json.dumps(json_dict)
-                result = CheckSummary(result=json_str)
-        faulthandler.disable()
-        return result
-    return wrapper

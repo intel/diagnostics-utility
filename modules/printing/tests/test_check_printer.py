@@ -30,6 +30,7 @@ from modules.printing.check_printer import CheckSummaryPrinter, \
     _verbosity_processing, _get_status_message, \
     print_summary, print_short_summary, print_full_summary, \
     MAX_KEY_WIDTH, MIN_KEY_WIDTH  # noqa: E402
+from modules.printing.tests.printing_test_helper import print_ex_mock  # noqa: E402
 
 correct_result_dict_default = {
     "Value": {
@@ -72,7 +73,24 @@ correct_result_dict = {
                     "Verbosity": 4,
                     "Command": "Command is not required filed",
                     "Value": "SubcheckValue1",
-                    "RetVal": "ERROR"
+                    "RetVal": "ERROR",
+                    "HowToFix": "test decsription",
+                    "AutomationFix": "command"
+                },
+                "Subcheck2": {
+                    "Verbosity": 4,
+                    "Value": {
+                        "Subcheck1": {
+                            "Verbosity": 4,
+                            "Value": "SubCheckValue1",
+                            "RetVal": "ERROR",
+                            "HowToFix": "test decsription",
+                            "AutomationFix": "command"
+                        }
+                    },
+                    "RetVal": "ERROR",
+                    "HowToFix": "test decsription",
+                    "AutomationFix": "command"
                 }
             }
         },
@@ -148,7 +166,7 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             CheckSummaryPrinter(incorrect_test_result_dict, None)
 
     def test__get_widths_positive(self):
-        expected_list_widths = [6 + 2, 6 + 2, 9 + 4, 9 + 4, 9 + 4]
+        expected_list_widths = [6 + 2, 6 + 2, 9 + 4, 9 + 4, 9 + 6, 9 + 4, 9 + 4]
         real_list_widths = []
         check_printer = CheckSummaryPrinter(correct_result_dict, None)
         check_printer._get_widths(correct_result_dict, 0, real_list_widths)
@@ -347,19 +365,20 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
 
     def test__message_format_positive(self):
         expected_message_format = [
-            "  Message:String                                   "
+            "  Message: String                                  "
         ]
         real_message_format = self.check_printer._message_format("String", 0, [False])
         self.assertEqual(expected_message_format, real_message_format)
 
     def test__command_format_positive(self):
         expected_command_format = [
-            "  Command:String                                   "
+            "  Command: String                                  "
         ]
         real_command_format = self.check_printer._command_format("String", 0, [False])
         self.assertEqual(expected_command_format, real_command_format)
 
-    def test_print_line_positive(self):
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_line_positive(self, mocked_print_ex):
         expected_stdout = "|  Key---------------Value--------------------------Res    |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             self.check_printer.print_line(
@@ -372,7 +391,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_line_long_key_positive(self):
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_line_long_key_positive(self, mocked_print_ex):
         expected_stdout = "|  KeyKeyKeyKeyKey---Value--------------------------Res    |\n" + \
                           "|  KeyKeyKeyKeyKey                                         |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -386,7 +406,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_line_long_value_positive(self):
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_line_long_value_positive(self, mocked_print_ex):
         expected_stdout = "|  Key---------------ValueValueValueValueValueValue-Res    |\n" + \
                           "|                    ValueValueValueValue                  |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -400,7 +421,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_line_depth_out_positive(self):
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_line_depth_out_positive(self, mocked_print_ex):
         expected_stdout = "|  └─Key-------------Value--------------------------Res    |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             self.check_printer.print_line(
@@ -413,7 +435,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_line_depth_noout_positive(self):
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_line_depth_noout_positive(self, mocked_print_ex):
         expected_stdout = "|  ├─Key-------------Value--------------------------Res    |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             self.check_printer.print_line(
@@ -426,7 +449,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_line_depth_long_value_positive(self):
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_line_depth_long_value_positive(self, mocked_print_ex):
         expected_stdout = "|    │ └─Key---------ValueValueValueValueValueValue-Res    |\n" + \
                           "|    │               ValueValueValueValue                  |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
@@ -440,55 +464,91 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_message_positive(self):
-        expected_stdout = "|  Message:String                                          |\n"
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_message_positive(self, mocked_print_ex):
+        expected_stdout = "|  Message: String                                         |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             self.check_printer.print_message("String", Colors.Default, 0, [False])
             self.assertEqual(expected_stdout, stdout.getvalue())
 
-    def test_print_command_positive(self):
-        expected_stdout = "|  Command:String                                          |\n"
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
+    def test_print_command_positive(self, mocked_print_ex):
+        expected_stdout = "|  Command: String                                         |\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             self.check_printer.print_command("String", 0, [False])
             self.assertEqual(expected_stdout, stdout.getvalue())
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_summary_tree_positive(self, mock_get_terminal_size):
+    def test_print_summary_tree_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
         check_printer = CheckSummaryPrinter(correct_result_dict, None)
         expected_stdout = f"|  Check1                                           {Colors.Green}       {Colors.Default}|\n" + \
-                          f"|{Colors.Green}  Message:Message is not required filed            {Colors.Default}       |\n" + \
+                          f"|{Colors.Green}  Message: Message is not required filed           {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
-                          "|  └ Command:Command is not required filed                 |\n" + \
+                          "|  │ Command: Command is not required filed                |\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|  ├─Subcheck2                                      {Colors.Red}       {Colors.Default}|\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  └ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|    ├─Subcheck1-----SubCheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
+                          f"|{Colors.Red}    │ How to fix: test decsription                 {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}    └ Command to fix: command                      {Colors.Default}       |\n" + \
                           f"|  Check2                                           {Colors.Yellow}       {Colors.Default}|\n" + \
-                          "|  Command:Command is not required filed                   |\n" + \
+                          "|  Command: Command is not required filed                  |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}FAIL   {Colors.Default}|\n" + \
-                          f"|{Colors.Red}  │ Message:Message is not required filed          {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Message: Message is not required filed         {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ How to fix: The developer of the check did     {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ not provide information on how to solve the    {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ problem. To see the solution to the problem,   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ ask the developer of the check to fill in      {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ the \"HowToFix\" field.                          {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck2-------SubcheckValue2-----------------{Colors.Blue}INFO   {Colors.Default}|\n" + \
-                          f"|{Colors.Blue}  └ Message:Message is not required filed          {Colors.Default}       |\n"  # noqa: E501
+                          f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             check_printer.print_summary_tree(correct_result_dict["Value"])
             self.assertEqual(expected_stdout, stdout.getvalue())
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_summary_tree_examine_not_equal_positive(self, mock_get_terminal_size):
+    def test_print_summary_tree_examine_not_equal_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
         check_printer = CheckSummaryPrinter(correct_result_dict, None)
         expected_stdout = f"|  Check1                                           {Colors.Green}       {Colors.Default}|\n" + \
-                          f"|{Colors.Green}  Message:Message is not required filed            {Colors.Default}       |\n" + \
-                          f"|{Colors.Red}  Message:The value is not a dictionary. The       {Colors.Default}       |\n" + \
-                          f"|{Colors.Red}  value is 'CheckValue'                            {Colors.Default}       |\n" + \
+                          f"|{Colors.Green}  Message: Message is not required filed           {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  Message: The value is not a dictionary. The      {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  value is 'CheckValue'.                           {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
-                          "|  └ Command:Command is not required filed                 |\n" + \
+                          "|  │ Command: Command is not required filed                |\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|  ├─Subcheck2                                      {Colors.Red}       {Colors.Default}|\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  └ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|    ├─Subcheck1-----SubCheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
+                          f"|{Colors.Red}    │ How to fix: test decsription                 {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}    └ Command to fix: command                      {Colors.Default}       |\n" + \
                           f"|  Check2                                           {Colors.Yellow}       {Colors.Default}|\n" + \
-                          "|  Command:Command is not required filed                   |\n" + \
+                          "|  Command: Command is not required filed                  |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}FAIL   {Colors.Default}|\n" + \
-                          f"|{Colors.Red}  │ Message:Message is not required filed          {Colors.Default}       |\n" + \
-                          f"|{Colors.Red}  │ Message:The values of the current and          {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Message: Message is not required filed         {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ How to fix: The developer of the check did     {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ not provide information on how to solve the    {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ problem. To see the solution to the problem,   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ ask the developer of the check to fill in      {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ the \"HowToFix\" field.                          {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Message: The values of the current and         {Colors.Default}       |\n" + \
                           f"|{Colors.Red}  │ compared runs are not equal. The value is 'S   {Colors.Default}       |\n" + \
                           f"|{Colors.Red}  │ ubcheckValue1NotEgual'!!!!!!!!!!!!!!!!!!!!!!   {Colors.Default}       |\n" + \
                           f"|{Colors.Red}  │ !                                              {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck2-------SubcheckValue2-----------------{Colors.Blue}INFO   {Colors.Default}|\n" + \
-                          f"|{Colors.Blue}  └ Message:Message is not required filed          {Colors.Default}       |\n"  # noqa: E501
+                          f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             check_printer.print_summary_tree(
                 correct_result_dict["Value"],
@@ -496,19 +556,36 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_summary_tree_examine_equal_positive(self, mock_get_terminal_size):
+    def test_print_summary_tree_examine_equal_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
         check_printer = CheckSummaryPrinter(correct_result_dict, None)
         expected_stdout = f"|  Check1                                           {Colors.Green}       {Colors.Default}|\n" + \
-                          f"|{Colors.Green}  Message:Message is not required filed            {Colors.Default}       |\n" + \
+                          f"|{Colors.Green}  Message: Message is not required filed           {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
-                          "|  └ Command:Command is not required filed                 |\n" + \
+                          "|  │ Command: Command is not required filed                |\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|  ├─Subcheck2                                      {Colors.Red}       {Colors.Default}|\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  └ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|    ├─Subcheck1-----SubCheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
+                          f"|{Colors.Red}    │ How to fix: test decsription                 {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}    └ Command to fix: command                      {Colors.Default}       |\n" + \
                           f"|  Check2                                           {Colors.Yellow}       {Colors.Default}|\n" + \
-                          "|  Command:Command is not required filed                   |\n" + \
+                          "|  Command: Command is not required filed                  |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}FAIL   {Colors.Default}|\n" + \
-                          f"|{Colors.Red}  │ Message:Message is not required filed          {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Message: Message is not required filed         {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ How to fix: The developer of the check did     {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ not provide information on how to solve the    {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ problem. To see the solution to the problem,   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ ask the developer of the check to fill in      {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ the \"HowToFix\" field.                          {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck2-------SubcheckValue2-----------------{Colors.Blue}INFO   {Colors.Default}|\n" + \
-                          f"|{Colors.Blue}  └ Message:Message is not required filed          {Colors.Default}       |\n"  # noqa: E501
+                          f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             check_printer.print_summary_tree(
                 correct_result_dict["Value"],
@@ -586,7 +663,7 @@ class BasePrintSummary(unittest.TestCase):
                     tags="tag1,tag2,tag3",
                     descr="description",
                     dataReq="{}",
-                    rights="user",
+                    merit=0,
                     timeout=10,
                     version="0",
                     run="run"
@@ -600,70 +677,106 @@ class BasePrintSummary(unittest.TestCase):
 
 class TestPrintFullSummary(BasePrintSummary):
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_full_summary_positive(self, mock_get_terminal_size):
+    def test_print_full_summary_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "\n" + \
                           "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           "============================================================\n" + \
                           "\n" + \
                           f"|  Check1                                           {Colors.Green}       {Colors.Default}|\n" + \
-                          f"|{Colors.Green}  Message:Message is not required filed            {Colors.Default}       |\n" + \
+                          f"|{Colors.Green}  Message: Message is not required filed           {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
-                          "|  └ Command:Command is not required filed                 |\n" + \
+                          "|  │ Command: Command is not required filed                |\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|  ├─Subcheck2                                      {Colors.Red}       {Colors.Default}|\n" + \
+                          f"|{Colors.Red}  │ How to fix: test decsription                   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  └ Command to fix: command                        {Colors.Default}       |\n" + \
+                          f"|    ├─Subcheck1-----SubCheckValue1-----------------{Colors.Red}ERROR  {Colors.Default}|\n" + \
+                          f"|{Colors.Red}    │ How to fix: test decsription                 {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}    └ Command to fix: command                      {Colors.Default}       |\n" + \
                           f"|  Check2                                           {Colors.Yellow}       {Colors.Default}|\n" + \
-                          "|  Command:Command is not required filed                   |\n" + \
+                          "|  Command: Command is not required filed                  |\n" + \
                           f"|  ├─Subcheck1-------SubcheckValue1-----------------{Colors.Red}FAIL   {Colors.Default}|\n" + \
-                          f"|{Colors.Red}  │ Message:Message is not required filed          {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ Message: Message is not required filed         {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ How to fix: The developer of the check did     {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ not provide information on how to solve the    {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ problem. To see the solution to the problem,   {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ ask the developer of the check to fill in      {Colors.Default}       |\n" + \
+                          f"|{Colors.Red}  │ the \"HowToFix\" field.                          {Colors.Default}       |\n" + \
                           f"|  ├─Subcheck2-------SubcheckValue2-----------------{Colors.Blue}INFO   {Colors.Default}|\n" + \
-                          f"|{Colors.Blue}  └ Message:Message is not required filed          {Colors.Default}       |\n"  # noqa: E501
+                          f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_full_summary(self.check_list, 5, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_full_summary_none_negative(self, mock_get_terminal_size):
-        with self.assertRaises(ValueError):
+    def test_print_full_summary_none_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
+        expected_stdout = ""
+        with patch('sys.stdout', new=StringIO()) as stdout:
             print_full_summary([BaseCheck()], 5, None)
+            self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     @patch("json.loads", return_value={})
-    def test_print_full_summary_empty_summary_positive(self, mock_loads, mock_get_terminal_size):
+    def test_print_full_summary_empty_summary_positive(
+            self, mock_loads,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "\n" + \
                           "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"{Colors.Red}Incorrect or empty JSON format{Colors.Default}\n"  # noqa: E501
+                          f"{Colors.Red}Incorrect or empty JSON format.{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_full_summary(self.check_list, 5, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     @patch("json.loads", return_value={"a": 1})
-    def test_print_full_summary_incorrect_summary_positive(self, mock_loads, mock_get_terminal_size):
+    def test_print_full_summary_incorrect_summary_positive(
+            self,
+            mock_loads,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "\n" + \
                           "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"{Colors.Red}Incorrect or empty JSON format{Colors.Default}\n"  # noqa: E501
+                          f"{Colors.Red}Incorrect or empty JSON format.{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_full_summary(self.check_list, 5, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_full_summary_incorrect_examine_positive(self, mock_get_terminal_size):
+    def test_print_full_summary_incorrect_examine_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "\n" + \
                           "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"{Colors.Red}Incorrect or empty JSON format{Colors.Default}\n"  # noqa: E501
+                          f"{Colors.Red}Incorrect or empty JSON format.{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_full_summary(self.check_list, 5, None, examine_data={})
             self.assertEqual(stdout.getvalue(), expected_stdout)
@@ -671,64 +784,89 @@ class TestPrintFullSummary(BasePrintSummary):
 
 class TestPrintShortSummary(BasePrintSummary):
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_short_summary_positive(self, mock_get_terminal_size):
+    def test_print_short_summary_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           f"Result status: {Colors.Red}ERROR{Colors.Default}\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"1 CHECKS, 0 {Colors.Green}PASSED{Colors.Default}, 0 {Colors.Red}FAILED{Colors.Default}, 0 {Colors.Yellow}WARNING{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
+                          f"1 CHECK: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_short_summary(self.check_list, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
-    def test_print_short_summary_none_negative(self, mock_get_terminal_size):
-        with self.assertRaises(ValueError):
+    def test_print_short_summary_none_positive(
+            self,
+            mock_get_terminal_size,
+            mocked_print_ex):
+        expected_stdout = f"1 CHECK: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 0 {Colors.Red}ERRORS{Colors.Default}\n"  # noqa: E501
+        with patch('sys.stdout', new=StringIO()) as stdout:
             print_short_summary([BaseCheck()], None)
+            self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     @patch("json.loads", return_value={})
-    def test_print_short_summary_empty_summary_positive(self, mock_loads, mock_get_terminal_size):
+    def test_print_short_summary_empty_summary_positive(
+            self,
+            mock_loads,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           f"Result status: {Colors.Red}ERROR{Colors.Default}\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"1 CHECKS, 0 {Colors.Green}PASSED{Colors.Default}, 0 {Colors.Red}FAILED{Colors.Default}, 0 {Colors.Yellow}WARNING{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
+                          f"1 CHECK: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_short_summary(self.check_list, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     @patch("json.loads", return_value={"a": 1})
-    def test_print_short_summary_incorrect_summary_positive(self, mock_loads, mock_get_terminal_size):
+    def test_print_short_summary_incorrect_summary_positive(
+            self,
+            mock_loads,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           f"Result status: {Colors.Red}ERROR{Colors.Default}\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"1 CHECKS, 0 {Colors.Green}PASSED{Colors.Default}, 0 {Colors.Red}FAILED{Colors.Default}, 0 {Colors.Yellow}WARNING{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
+                          f"1 CHECK: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_short_summary(self.check_list, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     @patch("modules.printing.check_printer._get_status_message", return_value=["Message1", "Message2"])
-    def test_print_short_summary_messages_positive(self, mock_get_status_message, mock_get_terminal_size):
+    def test_print_short_summary_messages_positive(
+            self,
+            mock_get_status_message,
+            mock_get_terminal_size,
+            mocked_print_ex):
         expected_stdout = "============================================================\n" + \
                           "Check name: name_of_check\n" + \
-                          "Description : description\n" + \
+                          "Description: description\n" + \
                           f"Result status: {Colors.Red}ERROR{Colors.Default}\n" + \
                           f"{Colors.Red}Message1{Colors.Default}\n" + \
                           f"{Colors.Red}Message2{Colors.Default}\n" + \
                           "============================================================\n" + \
                           "\n" + \
-                          f"1 CHECKS, 0 {Colors.Green}PASSED{Colors.Default}, 0 {Colors.Red}FAILED{Colors.Default}, 0 {Colors.Yellow}WARNING{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
+                          f"1 CHECK: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 1 {Colors.Red}ERROR{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_short_summary(self.check_list, None)
             self.assertEqual(stdout.getvalue(), expected_stdout)
@@ -736,9 +874,14 @@ class TestPrintShortSummary(BasePrintSummary):
 
 class TestPrintSummary(BasePrintSummary):
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("modules.printing.check_printer.print_short_summary")
     @patch("modules.printing.check_printer.print_full_summary")
-    def test_print_summary_short_positive(self, mock_print_full_summary, mock_print_short_summary):
+    def test_print_summary_short_positive(
+            self,
+            mock_print_full_summary,
+            mock_print_short_summary,
+            mocked_print_ex):
         expected_stdout = f"\n{Colors.Yellow}Checks results:{Colors.Default}\n\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_summary(self.check_list, -1, None)
@@ -746,9 +889,14 @@ class TestPrintSummary(BasePrintSummary):
             mock_print_short_summary.assert_called_once_with(self.check_list, None)
             mock_print_full_summary.assert_not_called()
 
+    @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
     @patch("modules.printing.check_printer.print_short_summary")
     @patch("modules.printing.check_printer.print_full_summary")
-    def test_print_summary_full_positive(self, mock_print_full_summary, mock_print_short_summary):
+    def test_print_summary_full_positive(
+            self,
+            mock_print_full_summary,
+            mock_print_short_summary,
+            mocked_print_ex):
         expected_stdout = f"\n{Colors.Yellow}Checks results:{Colors.Default}\n\n"
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_summary(self.check_list, 5, None)
@@ -758,4 +906,5 @@ class TestPrintSummary(BasePrintSummary):
 
 
 if __name__ == '__main__':
+    unittest.TestCase.maxDiff = None
     unittest.main()

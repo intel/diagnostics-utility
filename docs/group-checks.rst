@@ -4,7 +4,11 @@
 Run a Group of Checks
 =====================
 
-The Intel Diagnostic Utility organizes checks in groups or categories.
+  Note: running a group of checks is supported on Linux. For Windows, only the
+  `base_system_check`` is supported so there is not a group checks
+  that can be run.
+
+The Diagnostics Utility for Intel® oneAPI Toolkits organizes checks in groups or categories.
 To choose specific groups you want to run, use the List of Checks.
 
 For example, use the  ``gpu``  argument to run mulitple checks related
@@ -43,8 +47,8 @@ To get more information, use ``-v`` to activate verbose mode:
 
 
 The output will contain expanded details for each check. In the example below,
-the  ``intel_gpu_detector_check`` shows what information the Diagnostic
-Utility found.
+the  ``intel_gpu_detector_check`` shows what information the Diagnostics Utility
+for Intel® oneAPI Toolkits found.
 
 .. image:: images/gpu-group-check-v.png
   :width: 800

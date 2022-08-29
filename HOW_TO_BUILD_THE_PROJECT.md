@@ -2,58 +2,105 @@
 
 ## Install dependencies
 
-Use Ubuntu 20.04
+### Project dependencies
 
-Project dependencies:
+For linux:
 
-  1. Follow https://dgpu-docs.intel.com/installation-guides/ubuntu/ubuntu-focal.html
-  2. Install OpenCL SDK - https://software.intel.com/content/www/us/en/develop/tools/opencl-sdk.html
-  3. Install sqlite - sudo apt-get install -y libsqlite3-dev
+1. Install system development packages
 
-Documentation dependencies:
+   ```bash
+      # Make sure that these packages are installed
+      # Build tools
+      $ sudo apt install cmake
+      # Database
+      $ sudo apt install libsqlite3-dev
+      # Documentation
+      $ sudo apt install doxygen graphviz sphinx-common
+   ```
 
-  1. Run the following command:
+For windows:
 
+1. Install Visual Studio with Spectre-mitigated libs
+2. Install CMake
+
+### Documentation dependencies
+
+  1. Go to the root directory of the git repository
+  2. Run the following command:
+
+     ```bash
+     # Installing with Python package manager
+     $ pip install -r docs/requirements.txt
      ```
-     pip install -r docs/requirements.txt
-     ```
-
 
 ## Build options
 
 Cmake build options:
 
-  1. `-DDEV_PACKAGE=ON` (`OFF` by default). Install examples to package.
-  2. `-DBUILD_TESTS=ON` (`OFF` by default). Install unit and integration tests to package.
-  3. `-DCOVERAGE=ON` (`OFF` by default). Add --coverage flag to C/CPP compilers.
-  4. `-BUILD_DOCS=ON` (`OFF` by default). Install HTML documentation to package.
+| Option             |Default| Description                                    |
+|:-------------------|:------|:-----------------------------------------------|
+| `‑DBUILD_TESTS=ON` |`OFF`  | Install unit and integration tests in package. |
+| `‑DCOVERAGE=ON`    |`OFF`  | Add --coverage flag to C/CPP compilers.        |
+| `‑DBUILD_DOCS=ON`  |`OFF`  | Install HTML documentation package.            |
 
 ## Build procudure
 
-From root folder
+### Linux
 
-1. Create `build` directory
+```bash
+# Go to root directory of git repository
+$ cd .../applications.validation.one-diagnostics.source
 
-   ```
-   mkdir build
-   ```
+# Create a build directory
+$ mkdir build
+$ cd build
 
-2. Go to `build` directory
+# Create the build files
+$ cmake -DOS=LINUX ..
 
-   ```
-   cd build
-   ```
+# Compile C checks and install tool
+$ make install
+# The `install` folder should be packed in the  `build` directory
+```
 
-3. Create the build files
+### Windows
 
-   ```
-   cmake ..
-   ```
+```powershell
+# Go to root directory of git repository
+PS> cd ...\applications.validation.one-diagnostics.source
 
-4. Compile C checks and install tool
+# Create a build directory
+PS> md build
+PS> cd build
 
-   ```
-   make install
-   ```
+# Create the build files
+PS> cmake -DOS=WINDOWS ..
 
-   **Note:** `install` folder should be packed in `build` directory
+# Compile C checks and install tool
+PS> cmake --build . --target INSTALL --config Release
+# The `install` folder should be packed in the  `build` directory
+```
+
+👉 The application should be available to test in the root directory:
+
+Linux:
+
+```bash
+$ cd .../applications.validation.one-diagnostics.source
+$ ./diagnostics.py --help
+usage: diagnostics.py [--filter FILTER [FILTER ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-s | -u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
+
+Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
+...
+```
+
+Windows:
+
+```powershell
+PS> cd .../applications.validation.one-diagnostics.source
+PS> python diagnostics.py --help
+usage: diagnostics.py [--filter FILTER [FILTER ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-s | -u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
+
+Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
+...
+```

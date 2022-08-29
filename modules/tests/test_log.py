@@ -21,7 +21,7 @@ import unittest  # noqa: E402
 import modules.log as log  # noqa: E402
 
 
-class TestLogger(unittest.TestCase):
+class TestVerbosity2LogLevel(unittest.TestCase):
 
     def test_set_correct_verbosity_level(self):
         verbosity_level = -1
@@ -39,20 +39,24 @@ class TestLogger(unittest.TestCase):
 
         self.assertEqual(expected, value)
 
-    def test_configure_logger_without_log_file_no_raise_error(self):
-        log.configure_logger(0, None)
-
-    def test_configure_logger_no_raise_error(self):
-        with tempfile.NamedTemporaryFile() as temp:
-            log.configure_logger(0, temp.name)
-
-    def test_configure_logger_second_time_no_raise_error(self):
-        with tempfile.NamedTemporaryFile() as temp:
-            log.configure_logger(2, temp.name)
-            log.configure_logger(0, temp.name)
-
     def test_set_incorrect_verbosity_level(self):
         self.assertRaises(ValueError, log._verbosity2loglevel, -2)
+
+
+class TestConfigureLogger(unittest.TestCase):
+
+    def test_configure_logger_no_raise_error(self):
+        log.configure_logger(0)
+
+    def test_configure_logger_second_time_no_raise_error(self):
+        log.configure_logger(0)
+        log.configure_logger(0)
+
+    def test_configure_logger_second_time_when_file_handler_exists_no_raise_error(self):
+        with tempfile.NamedTemporaryFile() as temp:
+            log.configure_logger(0)
+            log.configure_file_logging(0, temp.name)
+            log.configure_logger(0)
 
 
 if __name__ == '__main__':

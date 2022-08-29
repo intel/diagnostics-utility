@@ -13,131 +13,181 @@
 # NOTE: workaround to import modules
 import os
 import sys
+
+from modules.check.check import CheckSummary
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../'))
 
 import json  # noqa: E402
+import time  # noqa: E402
 import unittest  # noqa: E402
 from unittest.mock import MagicMock, patch, call  # noqa: E402
 
-from modules.check.check_runner import merge_dict, get_sub_dict, run_checks  # noqa: E402
+from modules.check.check_runner import run_checks, check_run, _get_dependency_checks_map,\
+    create_dependency_order  # noqa: E402
 
 
-class TestMergeDict(unittest.TestCase):
+class TestCheckRun(unittest.TestCase):
 
-    def test_merge_checker_result_to_empty_dict(self):
-        test_data = {"Value": {"Check": {"Value": "Data"}}}
-        value = {}
-        expected = test_data
+    def test_check_run_positive(self):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check"
+        mocked_check.get_metadata.return_value.timeout = 1
+        mocked_check.run.return_value = CheckSummary(result=json.dumps({
+            "Value": {
+                "Check": {
+                    "Value": "Check Value",
+                    "RetVal": "INFO"
+                }
+            }
+        }))
 
-        merge_dict(value, test_data)
+        expected = CheckSummary(result=json.dumps({
+            "Value": {
+                "Check": {
+                    "Value": "Check Value",
+                    "RetVal": "INFO"
+                }
+            }
+        }))
+        value = check_run(mocked_check, {})
+
+        self.assertEqual(expected.__dict__, value.__dict__)
+
+    def test_check_run_timeout_positive(self):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check"
+        mocked_check.get_metadata.return_value.timeout = 1
+        mocked_check.run = lambda data: time.sleep(2)
+
+        expected = CheckSummary(result=json.dumps({
+            "RetVal": "ERROR",
+            "Verbosity": 0,
+            "Message": "",
+            "Value": {
+                "check": {
+                    "Value": "Timeout was exceeded.",
+                    "Verbosity": 0,
+                    "Message": "",
+                    "RetVal": "ERROR"
+                }
+            }
+        }))
+        value = check_run(mocked_check, {})
+
+        self.assertEqual(expected.__dict__, value.__dict__)
+
+    def test_check_run_check_crush_positive(self):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check"
+        mocked_check.get_metadata.return_value.timeout = 1
+        mocked_check.run.side_effect = Exception()
+
+        expected = CheckSummary(result=json.dumps({
+            "RetVal": "ERROR",
+            "Verbosity": 0,
+            "Message": "",
+            "Value": {
+                "check": {
+                    "Value": "",
+                    "Verbosity": 0,
+                    "Message": "The check crashed at runtime. No data was received. "
+                               "See call stack above.",
+                    "RetVal": "ERROR"
+                }
+            }
+        }))
+        value = check_run(mocked_check, {})
+
+        self.assertEqual(expected.__dict__, value.__dict__)
+
+
+class TestGetDependencyChecksMap(unittest.TestCase):
+
+    def test__get_dependency_checks_map_positive(self):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check"
+        mocked_check.get_metadata.return_value.version = 1
+
+        expected = {"check": mocked_check}
+
+        value = _get_dependency_checks_map([mocked_check], {"check": 1})
 
         self.assertEqual(expected, value)
 
-    def test_merge_checker_result_to_not_empty_dict(self):
-        test_data = {"Value": {"OtherCheck": {"Value": "OtherData"}}}
-        value = {"Value": {"Check": {"Value": "Data"}}}
-        expected = {"Value": {"Check": {"Value": "Data"}, "OtherCheck": {"Value": "OtherData"}}}
+    def test__get_dependency_checks_map_no_dep_positive(self):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check"
+        mocked_check.get_metadata.return_value.version = 1
 
-        merge_dict(value, test_data)
+        expected = {}
 
-        self.assertEqual(expected, value)
-
-    @patch("logging.debug")
-    def test_rewrite_exist_checker_info_in_dst_dict(self, mock_debug):
-        test_data = {"Value": {"Check": {"Value": "NewData"}}}
-        value = {"Value": {"Check": {"Value": "OldData"}}}
-        expected = {"Value": {"Check": {"Value": "NewData"}}}
-
-        merge_dict(value, test_data)
-
-        self.assertEqual(expected, value)
-        mock_debug.assert_called_once()
-
-
-class TestGetSubDict(unittest.TestCase):
-
-    def test_get_empty_subdict(self):
-        test_data = {"Value": {"Check": {"Value": "Data"}}}
-        test_subdict = {}
-        expected = 0
-
-        value = get_sub_dict(test_data, test_subdict)
+        value = _get_dependency_checks_map([mocked_check], {})
 
         self.assertEqual(expected, value)
 
-    def test_get_subdict_from_empty_dict(self):
-        test_subdict = {"Check": {}}
-        expected = 1
+    @patch("logging.error")
+    def test__get_dependency_checks_map_another_version_negative(self, mocked_log):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check"
+        mocked_check.get_metadata.return_value.version = 1
 
-        value = get_sub_dict({}, test_subdict)
+        expected = {}
+
+        value = _get_dependency_checks_map([mocked_check], {"check": 3})
 
         self.assertEqual(expected, value)
+        mocked_log.assert_called()
 
-    def test_get_subdict_from_first_try_one_value(self):
-        test_data = {"Value": {"Check": {"Value": "Data"}}}
-        test_subdict = {"Check": {}}
-        expected_return_code = 0
-        expected_value = {"Check": {"Value": "Data"}}
+    @patch("logging.error")
+    def test__get_dependency_checks_map_not_found_negative(self, mocked_log):
+        mocked_check = MagicMock()
+        mocked_check.get_metadata.return_value = MagicMock()
+        mocked_check.get_metadata.return_value.name = "check_2"
+        mocked_check.get_metadata.return_value.version = 1
 
-        value = get_sub_dict(test_data, test_subdict)
+        expected = {}
 
-        self.assertEqual(expected_value, test_subdict)
-        self.assertEqual(expected_return_code, value)
+        value = _get_dependency_checks_map([mocked_check], {"check": 1})
 
-    def test_get_subdict_from_first_try_two_value(self):
-        test_data = {"Value": {"Check1": {"Value": "Data1"},
-                               "Check2": {"Value": "Data2"},
-                               "Check3": {"Value": "Data3"}}}
-        test_subdict = {"Check1": {}, "Check3": {}}
-        expected_return_code = 0
-        expected_value = {"Check1": {"Value": "Data1"}, "Check3": {"Value": "Data3"}}
+        self.assertEqual(expected, value)
+        mocked_log.assert_called_once()
 
-        value = get_sub_dict(test_data, test_subdict)
 
-        self.assertEqual(expected_value, test_subdict)
-        self.assertEqual(expected_return_code, value)
+class TestCreateDependencyOrder(unittest.TestCase):
 
-    def test_get_subdict_from_second_try_one_value(self):
-        test_data = {"Value": {"TopLevelCheck": {"Value": {"Check": {"Value": "Data"}}}}}
-        test_subdict = {"TopLevelCheck": {"Check": {}}}
-        expected_return_code = 0
-        expected_value = {"TopLevelCheck": {"Check": {"Value": "Data"}}}
+    def test_create_dependency_order_positive(self):
+        mocked_check_1 = MagicMock()
+        mocked_check_1.get_metadata.return_value = MagicMock()
+        mocked_check_1.get_metadata.return_value.name = "check_1"
+        mocked_check_1.get_metadata.return_value.version = 1
+        mocked_check_1.get_metadata.return_value.dataReq = """{"check_3": 1}"""
+        mocked_check_1.get_metadata.return_value.tags = "default"
 
-        value = get_sub_dict(test_data, test_subdict)
+        mocked_check_2 = MagicMock()
+        mocked_check_2.get_metadata.return_value = MagicMock()
+        mocked_check_2.get_metadata.return_value.name = "check_2"
+        mocked_check_2.get_metadata.return_value.version = 1
+        mocked_check_2.get_metadata.return_value.dataReq = """{"check_1": 1}"""
+        mocked_check_2.get_metadata.return_value.tags = "default"
 
-        self.assertEqual(expected_value, test_subdict)
-        self.assertEqual(expected_return_code, value)
+        mocked_check_3 = MagicMock()
+        mocked_check_3.get_metadata.return_value = MagicMock()
+        mocked_check_3.get_metadata.return_value.name = "check_3"
+        mocked_check_3.get_metadata.return_value.version = 1
+        mocked_check_3.get_metadata.return_value.dataReq = "{}"
+        mocked_check_3.get_metadata.return_value.tags = "default"
 
-    def test_get_subdict_from_second_try_two_value(self):
-        test_data = {"Value": {"TopLevelCheck": {"Value": {"Check1": {"Value": "Data1"},
-                                                           "Check2": {"Value": "Data2"},
-                                                           "Check3": {"Value": "Data3"}}}}}
-        test_subdict = {"TopLevelCheck": {"Check1": {}, "Check3": {}}}
-        expected_return_code = 0
-        expected_value = {"TopLevelCheck": {"Check1": {"Value": "Data1"}, "Check3": {"Value": "Data3"}}}
+        expected = (["check_1", "check_2", "check_3"], [mocked_check_3, mocked_check_1, mocked_check_2])
 
-        value = get_sub_dict(test_data, test_subdict)
+        value = create_dependency_order([mocked_check_1, mocked_check_2, mocked_check_3], {"default"})
 
-        self.assertEqual(expected_value, test_subdict)
-        self.assertEqual(expected_return_code, value)
-
-    def test_get_wrong_subdict_returns_error_code(self):
-        test_data = {"Value": {"Check": {"Value": "Data"}}}
-        test_subdict = {"Check": "Value"}
-        expected_return_code = 1
-
-        value = get_sub_dict(test_data, test_subdict)
-
-        self.assertEqual(expected_return_code, value)
-
-    def test_get_subdict_from_wrong_dict_returns_error_code(self):
-        test_data = {"Value": {"Check": "Value"}}
-        test_subdict = {"Check": {}}
-        expected_return_code = 1
-
-        value = get_sub_dict(test_data, test_subdict)
-
-        self.assertEqual(expected_return_code, value)
+        self.assertEqual(expected, value)
 
 
 class TestRunChecks(unittest.TestCase):
@@ -152,173 +202,97 @@ class TestRunChecks(unittest.TestCase):
         mocked_print.assert_called_once()
         mocked_exit.assert_called_once_with(expected_exit_code)
 
-    @patch("builtins.exit", side_effect=Exception())
-    @patch("builtins.print")
-    def test_run_checks_does_not_have_dependency(self, mocked_print, mocked_exit):
-        expected_exit_code = 1
-
+    @patch("logging.error")
+    def test_run_checks_does_not_have_dependency(self, mocked_error):
         mocked_check = MagicMock()
         mocked_check.get_metadata.return_value = MagicMock()
         mocked_check.get_metadata.return_value.name = "check"
-        mocked_check.get_metadata.return_value.rights = "user"
-        mocked_check.get_metadata.return_value.dataReq = """{"data": {}}"""
+        mocked_check.get_metadata.return_value.dataReq = """{"data": "1"}"""
         mocked_check.get_summary.return_value = None
 
-        self.assertRaises(Exception, run_checks, [mocked_check])
+        run_checks([mocked_check])
 
-        mocked_exit.assert_called_once_with(expected_exit_code)
-        mocked_print.assert_called_once()
+        mocked_error.assert_called()
 
-    @patch("os.stat")
-    @patch("os.getuid", return_value=1000)
-    @patch("logging.warning")
-    def test_run_checks_run_admin_check_without_root_rights(self, mocked_log, mocked_getuid, mocked_stat):
-        mocked_stat.return_value = MagicMock()
-        mocked_stat.return_value.st_mode = 16387
+    @patch("modules.check.check_runner.check_run")
+    def test_run_checks_run_check(self, mocked_check_run):
         mocked_summary = MagicMock()
         mocked_summary.result = "{}"
         mocked_check = MagicMock()
         mocked_check.get_metadata.return_value = MagicMock()
         mocked_check.get_metadata.return_value.name = "check"
-        mocked_check.get_metadata.return_value.rights = "admin"
+        mocked_check.get_metadata.return_value.timeout = 1
         mocked_check.get_metadata.return_value.dataReq = "{}"
-        mocked_check.get_summary.side_effect = [None, mocked_summary]
+        mocked_check.get_summary.return_value = mocked_summary
 
         run_checks([mocked_check])
 
-        mocked_getuid.assert_called_once()
-        mocked_log.assert_called_once()
+        mocked_check_run.assert_called_once_with(mocked_check, {})
 
-    @patch("os.stat")
-    @patch("os.getuid", return_value=0)
-    @patch("modules.check.check_runner.timeout_exit")
-    def test_run_checks_run_user_check_with_root_rights(self, mocked_timeout, mocked_getuid, mocked_stat):
-        mocked_stat.return_value = MagicMock()
-        mocked_stat.return_value.st_mode = 16387
-        mocked_summary = MagicMock()
-        mocked_summary.result = "{}"
-        mocked_check = MagicMock()
-        mocked_check.get_metadata.return_value = MagicMock()
-        mocked_check.get_metadata.return_value.name = "check"
-        mocked_check.get_metadata.return_value.rights = "user"
-        mocked_check.get_metadata.return_value.dataReq = "{}"
-        mocked_check.get_summary.side_effect = [None, mocked_summary]
-
-        run_checks([mocked_check])
-
-        mocked_timeout.assert_called_once_with(mocked_check.run)
-
-    @patch("os.stat")
-    @patch("os.getuid", return_value=1000)
-    @patch("modules.check.check_runner.timeout_exit")
-    def test_run_checks_run_user_check_without_root_rights(self, mocked_timeout, mocked_getuid, mocked_stat):
-        mocked_stat.return_value = MagicMock()
-        mocked_stat.return_value.st_mode = 16387
-        mocked_summary = MagicMock()
-        mocked_summary.result = "{}"
-        mocked_check = MagicMock()
-        mocked_check.get_metadata.return_value = MagicMock()
-        mocked_check.get_metadata.return_value.name = "check"
-        mocked_check.get_metadata.return_value.rights = "user"
-        mocked_check.get_metadata.return_value.dataReq = "{}"
-        mocked_check.get_summary.side_effect = [None, mocked_summary]
-
-        run_checks([mocked_check])
-
-        mocked_timeout.assert_called_once_with(mocked_check.run)
-
-    @patch("os.stat")
-    @patch("os.getuid", return_value=1000)
-    @patch("logging.warning")
-    def test_run_checks_run_user_check_without_shm_access(self, mocked_log, mocked_getuid, mocked_stat):
-        mocked_stat.return_value = MagicMock()
-        mocked_stat.return_value.st_mode = 16388
-        mocked_summary = MagicMock()
-        mocked_summary.result = "{}"
-        mocked_check = MagicMock()
-        mocked_check.get_metadata.return_value = MagicMock()
-        mocked_check.get_metadata.return_value.name = "check"
-        mocked_check.get_metadata.return_value.rights = "user"
-        mocked_check.get_metadata.return_value.dataReq = "{}"
-        mocked_check.get_summary.side_effect = [None, mocked_summary]
-
-        run_checks([mocked_check])
-
-        mocked_check.run.assert_called_once_with({})
-        mocked_log.assert_called_once()
-
-    @patch("os.stat")
-    @patch("os.getuid", return_value=1000)
-    @patch("modules.check.check_runner.timeout_exit")
-    def test_run_checks_run_two_dependencies_checks(self,  mocked_timeout, mocked_getuid, mocked_stat):
-        mocked_stat.return_value = MagicMock()
-        mocked_stat.return_value.st_mode = 16387
+    @patch("modules.check.check_runner.check_run")
+    def test_run_checks_run_two_dependencies_checks(self, mocked_check_run):
         mocked_summary_1 = MagicMock()
         mocked_summary_1.result = "{}"
         mocked_check_1 = MagicMock()
         mocked_check_1.get_metadata.return_value = MagicMock()
         mocked_check_1.get_metadata.return_value.name = "check_1"
-        mocked_check_1.get_metadata.return_value.rights = "user"
-        mocked_check_1.get_metadata.return_value.dataReq = """{"Check 2": {}}"""
-        mocked_check_1.get_summary.side_effect = [None, None, mocked_summary_1]
+        mocked_check_1.get_metadata.return_value.timeout = 1
+        mocked_check_1.get_metadata.return_value.dataReq = """{"check_2": "1"}"""
+        mocked_check_1.get_summary.return_value = mocked_summary_1
 
         mocked_summary_2 = MagicMock()
         mocked_summary_2.result = json.dumps({
-            "Value": {
-                "Check 2": {
-                    "Value": "Check 2 Value",
-                    "RetVal": "INFO"
+                "Value": {
+                    "Check 2": {
+                        "Value": "Check 2 Value",
+                        "RetVal": "INFO"
+                    }
                 }
-            }
         })
         mocked_check_2 = MagicMock()
         mocked_check_2.get_metadata.return_value = MagicMock()
         mocked_check_2.get_metadata.return_value.name = "check_2"
-        mocked_check_2.get_metadata.return_value.rights = "user"
+        mocked_check_2.get_metadata.return_value.version = "1"
+        mocked_check_2.get_metadata.return_value.timeout = 1
         mocked_check_2.get_metadata.return_value.dataReq = "{}"
-        mocked_check_2.get_summary.side_effect = [None, mocked_summary_2, mocked_summary_2]
+        mocked_check_2.get_summary.return_value = mocked_summary_2
 
-        run_checks([mocked_check_1, mocked_check_2])
+        run_checks([mocked_check_2, mocked_check_1])
 
         expected_calls = [
-            call(mocked_check_2.run),
-            call()(mocked_check_2, {}),
-            call(mocked_check_1.run),
-            call()(mocked_check_1, {"Check 2": {"Value": "Check 2 Value", "RetVal": "INFO"}})
+            call(mocked_check_2, {}),
+            call(
+                mocked_check_1,
+                {"check_2": {"Value": {"Check 2": {"Value": "Check 2 Value", "RetVal": "INFO"}}}}
+            )
         ]
-        mocked_timeout.assert_has_calls(expected_calls)
+        mocked_check_run.assert_has_calls(expected_calls)
 
-    @patch("os.stat")
-    @patch("os.getuid", return_value=1000)
-    @patch("modules.check.check_runner.timeout_exit")
-    def test_run_checks_run_two_separate_checks(self, mocked_timeout, mocked_getuid, mocked_stat):
-        mocked_stat.return_value = MagicMock()
-        mocked_stat.return_value.st_mode = 16387
+    @patch("modules.check.check_runner.check_run")
+    def test_run_checks_run_two_separate_checks(self, mocked_check_run):
         mocked_summary = MagicMock()
         mocked_summary.result = "{}"
         mocked_check_1 = MagicMock()
         mocked_check_1.get_metadata.return_value = MagicMock()
         mocked_check_1.get_metadata.return_value.name = "check_1"
-        mocked_check_1.get_metadata.return_value.rights = "user"
+        mocked_check_1.get_metadata.return_value.timeout = 1
         mocked_check_1.get_metadata.return_value.dataReq = "{}"
-        mocked_check_1.get_summary.side_effect = [None, mocked_summary]
+        mocked_check_1.get_summary.return_value = mocked_summary
 
         mocked_check_2 = MagicMock()
         mocked_check_2.get_metadata.return_value = MagicMock()
         mocked_check_2.get_metadata.return_value.name = "check_2"
-        mocked_check_2.get_metadata.return_value.rights = "user"
+        mocked_check_2.get_metadata.return_value.timeout = 1
         mocked_check_2.get_metadata.return_value.dataReq = "{}"
-        mocked_check_2.get_summary.side_effect = [None, mocked_summary]
+        mocked_check_2.get_summary.return_value = mocked_summary
 
         run_checks([mocked_check_1, mocked_check_2])
 
         expected_calls = [
-            call(mocked_check_1.run),
-            call()(mocked_check_1, {}),
-            call(mocked_check_2.run),
-            call()(mocked_check_2, {})
+            call(mocked_check_2, {}),
+            call(mocked_check_1, {})
         ]
-        mocked_timeout.assert_has_calls(expected_calls)
+        mocked_check_run.assert_has_calls(expected_calls, any_order=True)
 
 
 if __name__ == '__main__':
