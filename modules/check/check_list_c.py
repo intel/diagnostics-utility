@@ -59,7 +59,7 @@ class CheckListC(Sequence[Check]):
             checker_pointers: ctypes.POINTER(ctypes.POINTER(Check))) -> List[Check]:
         result: List[Check] = []
         i = 0
-        while(checker_pointers[i]):
+        while (checker_pointers[i]):
             result.append(checker_pointers[i].contents)
             i += 1
         return result

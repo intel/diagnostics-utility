@@ -30,7 +30,6 @@ set(SOURCES_INSTALL_PREFIX install/ CACHE PATH "..." FORCE)
 option(BUILD_TESTS "Build test programs" OFF)
 option(COVERAGE "Add coverage flags" OFF)
 option(BUILD_DOCS "Build html documents" OFF)
-# option(DEV_PACKAGE "Build dev package" OFF)
 
 if(NOT DEFINED OS)
   set(OS "linux")
@@ -172,6 +171,23 @@ endif()
 include_directories(${JSON_C_BASE_DIR} "${JSON_C_BASE_DIR}/json-c-build")
 
 if(BUILD_TESTS)
+  if(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_C_FLAGS " \
+        ${CMAKE_C_FLAGS} \
+        -fPIC"
+      )
+
+    set(CMAKE_CXX_FLAGS " \
+        ${CMAKE_CXX_FLAGS} \
+        -fPIC"
+      )
+
+    if(COVERAGE)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+    endif()
+  endif()
   set(GTEST_BASE_DIR "${CMAKE_BUILD_DIR}/gtest")
   FetchContent_Declare(
       googletest
@@ -263,12 +279,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
       ${SECURITY_COMPILATION_FLAGS} \
       ${INTEGER_OVERFLOW_AND_COMPARISON_FLAGS}"
     )
-
-  if(COVERAGE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-  endif()
 endif()
 
 if(MSVC)
@@ -288,13 +298,6 @@ if(MSVC)
       /NXCOMPAT \
       /GUARD:CF"
     )
-
-  # if(NOT DEV_PACKAGE AND NOT BUILD_TESTS)
-  #   set(SECURITY_LINK_FLAGS " \
-  #       ${SECURITY_LINK_FLAGS} \
-  #       /INTEGRITYCHECK"
-  #     )
-  # endif()
 
   set(SECURITY_EXE_LINK_FLAGS " \
       /ALLOWISOLATION"

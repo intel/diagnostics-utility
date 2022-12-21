@@ -22,12 +22,14 @@ from pathlib import Path  # noqa: E402
 from unittest.mock import patch  # noqa: E402
 
 from modules.printing.epilog_printer import print_epilog  # noqa: E402
+from modules.printing.tests.printing_test_helper import print_ex_mock  # noqa: E402
 
 
 class TestEpilogPrinter(unittest.TestCase):
 
+    @patch("modules.printing.epilog_printer.print_ex", side_effect=print_ex_mock)
     @patch("platform.node", return_value="hostname")
-    def test_print_epilog_no_txt_positive(self, mocked_node):
+    def test_print_epilog_no_txt_positive(self, mocked_node, mocked_print_ex):
         expected_stdout = "\n" + \
                           "JSON output file: output.json\n" + \
                           "\n" + \
@@ -37,8 +39,9 @@ class TestEpilogPrinter(unittest.TestCase):
             print_epilog(None, Path("output.json"), "1.0.0")
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.epilog_printer.print_ex", side_effect=print_ex_mock)
     @patch("platform.node", return_value="hostname")
-    def test_print_epilog_no_json_positive(self, mocked_node):
+    def test_print_epilog_no_json_positive(self, mocked_node, mocked_print_ex):
         expected_stdout = "\n" + \
                           "Console output file: output.txt\n" + \
                           "\n" + \
@@ -48,8 +51,9 @@ class TestEpilogPrinter(unittest.TestCase):
             print_epilog(Path("output.txt"), None, "1.0.0")
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.epilog_printer.print_ex", side_effect=print_ex_mock)
     @patch("platform.node", return_value="hostname")
-    def test_print_epilog_no_json_and_txt_positive(self, mocked_node):
+    def test_print_epilog_no_json_and_txt_positive(self, mocked_node, mocked_print_ex):
         expected_stdout = "\n" + \
                           "\n" + \
                           "This report for hostname\n" + \
@@ -58,8 +62,9 @@ class TestEpilogPrinter(unittest.TestCase):
             print_epilog(None, None, "1.0.0")
             self.assertEqual(stdout.getvalue(), expected_stdout)
 
+    @patch("modules.printing.epilog_printer.print_ex", side_effect=print_ex_mock)
     @patch("platform.node", return_value="hostname")
-    def test_print_epilog_positive(self, mocked_node):
+    def test_print_epilog_positive(self, mocked_node, mocked_print_ex):
         expected_stdout = "\n" + \
                           "Console output file: output.txt\n" + \
                           "JSON output file: output.json\n" + \

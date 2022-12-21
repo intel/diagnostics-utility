@@ -5,7 +5,7 @@ Personalizing Your Own Group of Checks
 ======================================
 
 To create your own personal set of checks for diagnosing your system,
-use the --config option. Create the configuration JSON file and specify name of each check file.
+use the ``--config`` option. Create the configuration JSON file and specify name of each check file.
 
 - Optional: You can specify the absolute or relative path to check file if this check won't be loaded by default.
 

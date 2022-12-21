@@ -122,6 +122,62 @@ class TestGpuHelper(unittest.TestCase):
 
         self.assertEqual(expected, value)
 
+    def is_lz_initialized_positive(self):
+        expected = True
+
+        input = {
+            "gpu_backend_check": {
+                "Value": {
+                    "GPU": {
+                        "Value": {
+                            "Intel® oneAPI Level Zero Driver": {
+                                "Value": {
+                                    "Driver is loaded.": {
+                                        "RetVal": "PASS"
+                                    },
+                                    "Driver information": {
+                                       "RetVal": "INFO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        value = gpu_helper.is_level_zero_initialized(input)
+
+        self.assertEqual(expected, value)
+
+    def is_lz_initialized_negative(self):
+        expected = False
+
+        input = {
+            "gpu_backend_check": {
+                "Value": {
+                    "GPU": {
+                        "Value": {
+                            "Intel® oneAPI Level Zero Driver": {
+                                "Value": {
+                                    "Driver is loaded.": {
+                                        "RetVal": "ERROR"
+                                    },
+                                    "Driver information": {
+                                       "RetVal": "ERROR"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        value = gpu_helper.is_level_zero_initialized(input)
+
+        self.assertEqual(expected, value)
+
 
 if __name__ == '__main__':
     unittest.main()

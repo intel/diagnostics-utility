@@ -5,16 +5,16 @@
     "databases": {
         "compatibility": [
             {
-                "name": "compatibility_map_02022022.db",
+                "name": "compatibility_map_12202022.db",
                 "installation_name": "compatibility_map.db",
-                "version": "2022.1.2",
-                "date_of_creation": "02022022",
+                "version": "2023.0.0",
+                "date_of_creation": "12202022",
                 "compatibility": {
                     "driver_compatibility_check": [
                         1
                     ]
                 },
-                "hash": "ffe711b687b6732c637cd2f2306b5fb5a9381bc924518e014aa4741fb16c2a02c9b282bad96385244ba8ee0a3e18c7ea"
+                "hash": "7aab1a5578a2aae37b1c67b78a241acffc85b778a53ce7af05044979b133dc374680fcb91fb79aeb8e7d0cb016c0e2ce"
             }
         ]
     }

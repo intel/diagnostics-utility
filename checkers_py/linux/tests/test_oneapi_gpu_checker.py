@@ -491,13 +491,17 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
 
     @patch("subprocess.Popen")
     def test_get_dmesg_i915_init_errors_info_with_initialization_errors(self, mocked_open):
+        self.maxDiff = None
         expected = {
             "dmesg doesn't contain i915 errors": {
                 "Value": "",
                 "RetVal": "FAIL",
                 "Command": "dmesg -T | grep i915 | grep failed",
                 "Message": "Initialization errors seen in i915 driver.",
-                "HowToFix": "Check dmesg logs for more details."
+                "HowToFix": "Check related dmesg logs above for more details.",
+                "Logs": [
+                    " [    2.451145] i915 0000:03:00.0: Device initialization failed (-19)"
+                ]
             }
         }
         dmesg_mock = MagicMock()
@@ -641,7 +645,11 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
                 "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                            "Please -e segfault | tail -20",
                 "Message": "Found i915 usage errors.",
-                "HowToFix": "Check dmesg logs for more details."
+                "HowToFix": "Check related dmesg logs above for more details.",
+                "Logs": [
+                    "[248947.306671] [drm] GPU HANG: ecode 9:1:0xeeffefa1, in Xorg [551],"
+                    " reason: Hang on bcs0, action: reset"
+                ]
             }
         }
 
@@ -757,7 +765,7 @@ class TestCompileTestMatmul(unittest.TestCase):
                 "RetVal": "ERROR",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
-                "Message": "icpx not found",
+                "Message": "Matmul compilation failed - icpx not found.",
                 "HowToFix": "Try to install Intel® C++ Compiler based on "
                             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
                 }
@@ -997,14 +1005,14 @@ class TestCompileTestBinoption(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen", side_effect=Exception("test"))
-    def test__compile_test_matmul_raised_exception(self, mocked_open):
+    def test__compile_test_binoption_raised_exception(self, mocked_open):
         expected = {
             "Compile test binoption": {
                 "Value": "",
                 "RetVal": "ERROR",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
-                "Message": "icpx not found",
+                "Message": "Binoption compilation failed - icpx not found.",
                 "HowToFix": "Try to install Intel® C++ Compiler based on "
                             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
                 }
@@ -1852,7 +1860,7 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
                 "RetVal": "ERROR",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code",
-                "Message": "DPC++ (dpcpp) not found.",
+                "Message": "Sycl code compilation failed - DPC++ (dpcpp) not found.",
                 "HowToFix": "Try to install Intel® oneAPI Data Parallel C++ Compiler based on "
                             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
             }
@@ -2104,7 +2112,7 @@ class TestCompileParallelForProgram(unittest.TestCase):
                 "RetVal": "ERROR",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
-                "Message": "DPC++ (dpcpp) not found.",
+                "Message": "Parallel code compilation failed - DPC++ (dpcpp) not found.",
                 "HowToFix": "Try to install Intel® oneAPI Data Parallel C++ Compiler based on "
                             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
             }

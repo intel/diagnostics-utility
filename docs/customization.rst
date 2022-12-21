@@ -1,11 +1,11 @@
 .. _customization:
 
-===================================
-Customizing the Diagnostics Utility
-===================================
+================================
+Diagnostic Utility Check Options
+================================
 
 
-The arguments below allow you to further customize your check. Multiple
+The arguments below describe options for running your check. Multiple
 arguments may be added or they can be used one at a time. To use an argument,
 follow this syntax:
 

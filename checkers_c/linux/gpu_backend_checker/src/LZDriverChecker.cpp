@@ -472,12 +472,12 @@ static void add_memory_bandwidth(json_object *device, ze_device_handle_t device_
 	zes_mem_bandwidth_t pMemBandwidth;
 	result = fp_zesMemoryGetBandwidth(pMemHandles[0], &pMemBandwidth);
 	if (result != ZE_RESULT_SUCCESS) {
-		JsonNode::AddJsonNode(device, "Memory bandwidth, GB/s", ERROR, "message", "zesMemoryGetBandwidth(pMemHandle, &pMemBandwidth)", 1, "unknown");
+		JsonNode::AddJsonNode(device, "Memory bandwidth, GB/s", ERROR, "Driver cannot get memory bandwidth", "zesMemoryGetBandwidth(pMemHandle, &pMemBandwidth)", 1, "unknown");
 		delete[] pMemHandles;
 		return;
 	}
-	int raw_bandwidth = pMemBandwidth.maxBandwidth;
-	double bandwidth = double(raw_bandwidth) / double(1024 * 1024 * 1024); // convert B/s to GB/s
+	uint64_t raw_bandwidth = pMemBandwidth.maxBandwidth;
+	long double bandwidth = (long double)(raw_bandwidth) / (long double)(1024 * 1024 * 1024); // convert B/s to GB/s
 	JsonNode::AddJsonNode(device, "Memory bandwidth, GB/s", INFO, "", "zesMemoryGetBandwidth(pMemHandle, &pMemBandwidth)", 1, std::to_string(bandwidth));
 
 	delete[] pMemHandles;
@@ -493,12 +493,12 @@ static void add_pci_bandwidth(json_object *device, ze_device_handle_t device_han
 		JsonNode::AddJsonNode(device, "PCIe bandwidth, GB/s", ERROR, "Cannot get PCIe information", "zesDevicePciGetProperties(hSysmanDevice, &pPCIProps)", 1, "unknown");
 		return;
 	}
-	int raw_bandwidth = pPCIProps.maxSpeed.maxBandwidth;
+	int64_t raw_bandwidth = pPCIProps.maxSpeed.maxBandwidth;
 	if (raw_bandwidth == -1) {
 		JsonNode::AddJsonNode(device, "PCIe bandwidth, GB/s", ERROR, "Driver cannot get PCIe bandwidth", "zesDevicePciGetProperties(hSysmanDevice, &pPCIProps)", 1, "unknown");
 		return;
 	}
-	double bandwidth = double(raw_bandwidth) / double(1024 * 1024 * 1024); // convert B/s to GB/s
+	long double bandwidth = (long double)(raw_bandwidth) / (long double)(1024 * 1024 * 1024); // convert B/s to GB/s
 	JsonNode::AddJsonNode(device, "PCIe bandwidth, GB/s", INFO, "", "zesDevicePciGetProperties(hSysmanDevice, &pPCIProps)", 1, std::to_string(bandwidth));
 }
 

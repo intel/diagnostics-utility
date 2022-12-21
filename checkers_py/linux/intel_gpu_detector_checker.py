@@ -178,8 +178,14 @@ def _get_initializedGPU(json_node: Dict) -> None:
                 "Verbosity": 1,
                 "Command": f"cat {path}/i915_gpu_info | grep -i 'HuC firmware' | awk '{{print $3}}' | "
                            "xargs basename"
-
-        }}
+            },
+            "GPU type": {
+                "Value": "Discrete" if output["is_dgfx"] == "yes" else "Integrated",
+                "RetVal": "INFO",
+                "Verbosity": 1,
+                "Command": f"cat {path}/i915_gpu_info | grep -i 'is_dgfx' | awk '{{print $0}}'"
+            }
+        }
         _get_topology_path(gpu, bus)
         _get_tile_count(gpu, path)
         gpu_info = {f"Intel GPU #{counter_loop}": {
@@ -275,8 +281,8 @@ def get_gpu_info(json_node: Dict) -> None:
                         "Value": "",
                         "RetVal": "ERROR",
                         "Message": str(error),
-                        "HowToFix": f"{error}. Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
-                                    f"with administrative privileges."
+                        "HowToFix": "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
+                                    "with administrative privilege or join the video and render groups."
                     }
                 })
             except Exception as error:
@@ -313,8 +319,8 @@ def get_gpu_info(json_node: Dict) -> None:
                         "Value": "",
                         "RetVal": "ERROR",
                         "Message": str(error),
-                        "HowToFix": f"{error}. Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
-                                    f"with administrative privileges."
+                        "HowToFix": "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
+                                    "with administrative privilege or join the video and render groups."
                     }
                 })
             except Exception as error:

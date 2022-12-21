@@ -16,14 +16,21 @@ from pathlib import Path
 from typing import Optional
 
 from modules.printing.printer_helper import Colors
+STDOUT_PRINTING = True
 
 
-def print_ex(message: str, file_path: Optional[Path], color: str = Colors.Default,
+def enable_stdout_printing(status: bool) -> None:
+    global STDOUT_PRINTING
+    STDOUT_PRINTING = status
+
+
+def print_ex(message: str, file_path: Optional[Path] = None, color: str = Colors.Default,
              end: str = "\n") -> None:
 
     is_colored = True if color != Colors.Default else False
     colored_message = f"{color}{message}{Colors.Default}" if is_colored else message
-    print(colored_message.encode("utf-8").decode(sys.stdout.encoding), end=end)
+    if STDOUT_PRINTING:
+        print(colored_message.encode("utf-8").decode(sys.stdout.encoding), end=end)
     if file_path is not None:
         file = open(file_path, "a", encoding="utf-8")
         file.write(message.encode("utf-8").decode(sys.stdout.encoding) + end)

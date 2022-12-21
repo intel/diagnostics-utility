@@ -214,7 +214,7 @@ class TestSaveJsonOutputFile(unittest.TestCase):
         mocked_loads.side_effect = [self.mock_check_c_1_result, self.mock_check_c_2_result]
         mocked_open.return_value.__enter__.return_value = expected_file
 
-        files_helper.save_json_output_file([self.mock_check_c_1, self.mock_check_c_2], MagicMock())
+        files_helper.save_json_output_file([self.mock_check_c_1, self.mock_check_c_2], MagicMock(), False)
 
         mocked_dump.assert_called_once_with(expected_output, expected_file, indent=4)
 
@@ -233,7 +233,7 @@ class TestSaveJsonOutputFile(unittest.TestCase):
         mocked_loads.side_effect = [self.mock_check_c_1_result, ValueError()]
         mocked_open.return_value.__enter__.return_value = expected_file
 
-        files_helper.save_json_output_file([self.mock_check_c_1, self.mock_check_c_2], MagicMock())
+        files_helper.save_json_output_file([self.mock_check_c_1, self.mock_check_c_2], MagicMock(), False)
 
         mocked_dump.assert_called_once_with(expected_output, expected_file, indent=4)
         mocked_print.assert_called_once()

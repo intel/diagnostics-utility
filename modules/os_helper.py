@@ -14,11 +14,11 @@ from typing import Dict, List, Tuple
 
 
 SUPPORTED_OS: Dict[str, List[str]] = {
-    "Ubuntu": ["18.04", "20.04"],
-    "Red Hat Enterprise Linux": ["8.2", "8.3"],
-    "SLES": ["15.2", "15.3"],
+    "Ubuntu": ["20.04", "22.04"],
+    "Red Hat Enterprise Linux": ["8.2", "8.3", "9.0"],
+    "SLES": ["15.2", "15.3", "15.4"],
     "Windows": ["10", "11", "Server 2022"],
-    "Rocky Linux": ["8.5"]
+    "Rocky Linux": ["8.5", "9.0"]
 }
 
 

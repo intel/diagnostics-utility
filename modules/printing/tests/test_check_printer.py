@@ -363,6 +363,61 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
         real_string_format = self.check_printer._string_format("String" * 10, 3, [False, True, False, True])
         self.assertEqual(expected_string_format, real_string_format)
 
+    def test__list_format_depth_out_positive(self):
+        expected_string_format = [
+            "    │ │ String1                                    ",
+            "    │ │ String2                                    "
+        ]
+        real_string_format = self.check_printer._list_format(["String1", "String2"], 3,
+                                                             [False, True, False, True])
+        self.assertEqual(expected_string_format, real_string_format)
+
+    def test__list_format_depth_noout_positive(self):
+        expected_string_format = [
+            "    │ │ String1                                    ",
+            "    │ │ String2                                    "
+        ]
+        real_string_format = self.check_printer._list_format(["String1", "String2"], 3,
+                                                             [False, True, False, False])
+        self.assertEqual(expected_string_format, real_string_format)
+
+    def test__list_format_depth_long_string_positive(self):
+        expected_string_format = [
+            "    │ │ String1String1String1String1String1Strin   ",
+            "    │ │ g1String1String1                           ",
+            "    │ │ String2String2String2String2String2Strin   ",
+            "    │ │ g2String2String2                           "
+        ]
+        real_string_format = self.check_printer._list_format(["String1" * 8, "String2" * 8], 3,
+                                                             [False, True, False, True])
+        self.assertEqual(expected_string_format, real_string_format)
+
+    def test__list_format_zero_depth_out_positive(self):
+        expected_string_format = [
+            "  String1                                          ",
+            "  String2                                          "
+        ]
+        real_string_format = self.check_printer._list_format(["String1", "String2"], 0, [True])
+        self.assertEqual(expected_string_format, real_string_format)
+
+    def test__list_format_zero_depth_noout_positive(self):
+        expected_string_format = [
+            "  String1                                          ",
+            "  String2                                          ",
+        ]
+        real_string_format = self.check_printer._list_format(["String1", "String2"], 0, [False])
+        self.assertEqual(expected_string_format, real_string_format)
+
+    def test__list_format_zero_depth_long_string_positive(self):
+        expected_string_format = [
+            "  String1String1String1String1String1String1Stri   ",
+            "  ng1String1String1String1                         ",
+            "  String2String2String2String2String2String2Stri   ",
+            "  ng2String2String2String2                         "
+        ]
+        real_string_format = self.check_printer._list_format(["String1" * 10, "String2" * 10], 0, [True])
+        self.assertEqual(expected_string_format, real_string_format)
+
     def test__message_format_positive(self):
         expected_message_format = [
             "  Message: String                                  "

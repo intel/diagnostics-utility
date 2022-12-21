@@ -32,7 +32,7 @@ project = 'Diagnostics Utility for Intel® oneAPI Toolkits User Guide'
 copyright = 'Intel Corporation'
 
 # The full version, including alpha/beta/rc tags
-release = '2022.0'
+release = '2022.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -40,9 +40,9 @@ release = '2022.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx_tabs.tabs'
-]
+# extensions = [
+#   'sphinx_tabs.tabs'
+# ]
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -59,10 +59,24 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 
-html_theme = "sphinx_book_theme"
+# html_theme = "sphinx_book_theme"
 # html_theme_path = [
 #    "_themes"
 # ]
+
+rst_prolog = r"""
+.. |intel_r| replace:: Intel\ :superscript:`®`
+.. |vtune_tm| replace:: VTune\ :superscript:`tm`
+.. |tm| unicode:: U+2122 .. trademark
+.. |opencl| replace:: OpenCL\ :superscript:`tm`
+.. |onemkl| replace:: oneAPI Math Kernel Library (oneMKL)
+.. |onednn| replace:: oneAPI Deep Neural Network Library (oneDNN)
+.. |trade| replace:: :superscript:`TM`
+""" + (
+    r'.. |irisxe| replace:: Intel\ :superscript:`®`'
+    r' Iris\ :superscript:`®` X\ :superscript:`e`'
+)
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -89,12 +103,17 @@ ditaxml_topic_meta["menu"] = \
 ditaxml_topic_meta["menu parent page"] = "/content/www/us/en/developer/tools/oneapi/toolkits"
 ditaxml_topic_meta["operating system"] = \
     "guid:etm-cf0ee1fba3374ceea048ddac3e923cab,guid:etm-e9827d867eda46abb846aa3d8062b7f0"
-ditaxml_topic_meta["programming language"] = "guid:etm-e759606e77ad42549ba71c380d6d61e2"
+
+ditaxml_topic_meta["programming language"] = (
+    "guid:etm-e759606e77ad42549ba71c380d6d61e2;"
+    "guid:etm-bd7e6ab0b34d4e95901e82eaa67c07a8;"
+    "guid:etm-e9ad772b023840f09a3bb94d6251ea2c"
+)
 ditaxml_topic_meta["software"] = \
     "guid:etm-dba967177bfa477ca933d10533b04c38,guid:etm-4c7a4593bba04ee2940ff6a1bc1bc95a"
 ditaxml_topic_meta["primaryOwner"] = "Moore, Benjamin D (benjamin.d.moore@intel.com)"
 ditaxml_topic_meta["programidentifier"] = "idz"
-ditaxml_topic_meta["published date"] = "12/07/2021"
+ditaxml_topic_meta["published date"] = "04/11/2022"
 ditaxml_topic_meta["resourcetypeTag"] = "guid:etm-6d0f0d9ff2b54ee4a65b84789754d34e"
 ditaxml_topic_meta["secondary contenttype"] = \
     "emtcontenttype:document/guide/developerguide/developergettingstartedguide"
@@ -107,7 +126,7 @@ ditaxml_topic_meta["noindexfollowarchive"] = "false"
 ditaxml_topic_meta["technology"] = "guid:etm-6b088d69d83243a0aa3b986645a7e74b"
 ditaxml_prod_info = {}
 ditaxml_prod_info["prodname"] = ""
-ditaxml_prod_info["version"] = "2022.0"
+ditaxml_prod_info["version"] = "2022.2"
 ditaxml_data_about = {}
 ditaxml_data_about["intelswd_aliasprefix"] = {
     "datatype": "webAttr", "value": "get-started-with-intel-time-coordinated-computing-tools-0-11"}

@@ -21,7 +21,7 @@ from typing import List, Dict, Optional, Tuple
 
 from modules.check import BaseCheck
 from modules.files_helper import get_json_content_from_file
-
+from modules.printing.printer import print_ex
 
 DEFAULT_DATABASES_FOLDER = Path(__file__).parent.parent.resolve() / "databases"
 DOWNLOADED_DATABASES_FOLDER = Path.home() / "intel" / "diagnostics" / "databases"
@@ -128,10 +128,10 @@ def update_databases(
         resource: Optional[str], metadata: Dict, databases: Dict) -> int:
     return_code = 0
     if resource is None:
-        print("Cannot connect to update server to check for updates.")
+        print_ex("Cannot connect to update server to check for updates.")
         return 1
     if not len(databases):
-        print("No available updates for existing databases.")
+        print_ex("No available updates for existing databases.")
         return return_code
     for db_type, db_list in databases.items():
         database = db_list[0]
@@ -159,19 +159,19 @@ def update_databases(
             return_code += 1
     with open(f"{DOWNLOADED_DATABASES_FOLDER}/metadata.json", "w") as outfile:
         json.dump(metadata, outfile, indent=4)
-    print(f"Compatibility database is updated successfully in {DOWNLOADED_DATABASES_FOLDER}.")
+    print_ex(f"Compatibility database is updated successfully in {DOWNLOADED_DATABASES_FOLDER}.")
     return return_code
 
 
 def print_available_updates(databases: Dict) -> None:
     if not len(databases):
-        print("No available updates for existing databases.")
+        print_ex("No available updates for existing databases.")
         return
     checks_with_new_db = set()
     for db_list in databases.values():
         database = db_list[0]
         checks_with_new_db = checks_with_new_db | set(database["compatibility"].keys())
-    print()
-    print(f"""New databases are available for checks: {", ".join(checks_with_new_db)}""")
-    print("Run ./diagnostics.py --update to update databases.")
-    print()
+    print_ex("")
+    print_ex(f"""New databases are available for checks: {", ".join(checks_with_new_db)}""")
+    print_ex("Run ./diagnostics.py --update to update databases.")
+    print_ex("")

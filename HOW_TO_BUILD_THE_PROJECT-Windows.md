@@ -4,23 +4,7 @@
 
 ### Project dependencies
 
-For linux:
-
-1. Install system development packages
-
-   ```bash
-      # Make sure that these packages are installed
-      # Build tools
-      $ sudo apt install cmake
-      # Database
-      $ sudo apt install libsqlite3-dev
-      # Documentation
-      $ sudo apt install doxygen graphviz sphinx-common
-   ```
-
-For windows:
-
-1. Install Visual Studio with Spectre-mitigated libs
+1. Install Visual Studio with Spectre-mitigated libraries
 2. Install CMake
 
 ### Documentation dependencies
@@ -30,7 +14,7 @@ For windows:
 
      ```bash
      # Installing with Python package manager
-     $ pip install -r docs/requirements.txt
+     $ python3 -M pip install -r docs/requirements.txt
      ```
 
 ## Build options
@@ -44,26 +28,6 @@ Cmake build options:
 | `‑DBUILD_DOCS=ON`  |`OFF`  | Install HTML documentation package.            |
 
 ## Build procudure
-
-### Linux
-
-```bash
-# Go to root directory of git repository
-$ cd .../applications.validation.one-diagnostics.source
-
-# Create a build directory
-$ mkdir build
-$ cd build
-
-# Create the build files
-$ cmake -DOS=LINUX ..
-
-# Compile C checks and install tool
-$ make install
-# The `install` folder should be packed in the  `build` directory
-```
-
-### Windows
 
 ```powershell
 # Go to root directory of git repository
@@ -82,19 +46,6 @@ PS> cmake --build . --target INSTALL --config Release
 ```
 
 👉 The application should be available to test in the root directory:
-
-Linux:
-
-```bash
-$ cd .../applications.validation.one-diagnostics.source
-$ ./diagnostics.py --help
-usage: diagnostics.py [--filter FILTER [FILTER ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-s | -u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
-
-Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
-...
-```
-
-Windows:
 
 ```powershell
 PS> cd .../applications.validation.one-diagnostics.source

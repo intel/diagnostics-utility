@@ -12,6 +12,7 @@
 import shutil
 import json
 import logging
+import itertools
 
 from pathlib import Path
 from textwrap import wrap
@@ -118,9 +119,32 @@ class CheckSummaryPrinter:
                 else format_lines.append(shift_in + line + end)
         return format_lines
 
+    def _list_format(self, strings: List[str], depth: int, out: List[bool]) -> List[str]:
+        prefix = PREFIX_IN
+        shift = "  "
+        if depth > 0:
+            for depth_out in out[1:-1]:
+                shift += "  " if depth_out else PREFIX_IN
+        shift_in = shift if depth == 0 else shift + PREFIX_IN
+        shift_out = shift if depth == 0 else shift + prefix
+        string_lines = list(itertools.chain(*
+                            (wrap(s, self.key_width + self.value_width - len(shift_in) - 3)
+                                for s in strings)))
+        format_lines = []
+        for num, line in enumerate(string_lines):
+            num_end = self.key_width + self.value_width - len(line) - len(shift_in)
+            end = " " * num_end
+            format_lines.append(shift_out + line + end) if num == len(string_lines) - 1 \
+                else format_lines.append(shift_in + line + end)
+        return format_lines
+
     def _message_format(self, message: str, depth: int, out: List[bool]) -> List[str]:
         message = f'Message: {message}'
         return self._string_format(message, depth, out)
+
+    def _logs_format(self, logs: List[str], depth: int, out: List[bool]) -> List[str]:
+        logs.insert(0, 'Logs: ')
+        return self._list_format(logs, depth, out)
 
     def _command_format(self, command: str, depth: int, out: List[bool]) -> List[str]:
         command = f'Command: {command}'
@@ -166,6 +190,13 @@ class CheckSummaryPrinter:
     def print_message(self, message: str, color, depth: int, out: List[bool]) -> None:
         message_format_lines = self._message_format(message, depth, out)
         for line in message_format_lines:
+            print_ex(SEPARATOR, self.output_file, end="")
+            print_ex(line, self.output_file, color=color, end="")
+            print_ex(self._result_format("")[0] + SEPARATOR, self.output_file)
+
+    def print_logs(self, logs: List[str], color, depth: int, out: List[bool]) -> None:
+        logs_format_lines = self._logs_format(logs, depth, out)
+        for line in logs_format_lines:
             print_ex(SEPARATOR, self.output_file, end="")
             print_ex(line, self.output_file, color=color, end="")
             print_ex(self._result_format("")[0] + SEPARATOR, self.output_file)
@@ -218,6 +249,7 @@ class CheckSummaryPrinter:
             if isinstance(data['Value'], dict):
                 command_exist = True if 'Command' in data and data['Command'] != "" else False
                 message_exist = True if 'Message' in data and data['Message'] != "" else False
+                logs_exist = True if 'Logs' in data and data['Logs'] != "" else False
                 how_to_fix_exist = True if 'HowToFix' in data and data['HowToFix'] != "" else False
                 automation_fix_exist = True if 'AutomationFix' in data and data['AutomationFix'] != "" \
                     else False
@@ -234,6 +266,8 @@ class CheckSummaryPrinter:
                     self.print_command(data['Command'], depth, out+[command_out])
                 if message_exist:
                     self.print_message(data['Message'], color, depth, out+[message_out])
+                if logs_exist:
+                    self.print_logs(data['Logs'], color, depth, out)
                 if print_solution_description:
                     how_to_fix_message = data["HowToFix"] if how_to_fix_exist else how_to_fix_default_message
                     self.print_how_to_fix(how_to_fix_message, color, depth, out+[how_to_fix_out])
@@ -259,6 +293,7 @@ class CheckSummaryPrinter:
             else:
                 command_exist = True if 'Command' in data and data['Command'] != "" else False
                 message_exist = True if 'Message' in data and data['Message'] != "" else False
+                logs_exist = True if 'Logs' in data and data['Logs'] != "" else False
                 how_to_fix_exist = True if 'HowToFix' in data and data['HowToFix'] != "" else False
                 automation_fix_exist = True if 'AutomationFix' in data and data['AutomationFix'] != "" \
                     else False
@@ -275,6 +310,8 @@ class CheckSummaryPrinter:
                     self.print_command(data['Command'], depth, out+[command_out])
                 if message_exist:
                     self.print_message(data['Message'], color, depth, out+[message_out])
+                if logs_exist:
+                    self.print_logs(data['Logs'], color, depth, out)
                 if print_solution_description:
                     how_to_fix_message = data["HowToFix"] if how_to_fix_exist else how_to_fix_default_message
                     self.print_how_to_fix(how_to_fix_message, color, depth, out+[how_to_fix_out])

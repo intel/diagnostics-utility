@@ -1,3 +1,4 @@
+#!/bin/bash
 # /*******************************************************************************
 # Copyright Intel Corporation.
 # This software and the related documents are Intel copyrighted materials, and your use of them
@@ -8,3 +9,5 @@
 # other than those that are expressly stated in the License.
 #
 # *******************************************************************************/
+
+sphinx-build -b html . _build/html

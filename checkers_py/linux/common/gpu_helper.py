@@ -12,7 +12,7 @@
 import os
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 
 def get_card_devices() -> List[Path]:
@@ -50,3 +50,18 @@ def intel_gpus_not_found_handler(json_node: Dict) -> None:
                        "the intel_gpu_detector_check failed."
         }
     })
+
+
+def is_level_zero_initialized(data: Dict) -> Tuple[bool, str]:
+    lz_driver_message = ''
+    lz_driver_loaded_retval = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver is loaded."]["RetVal"]  # noqa: E501
+    if lz_driver_loaded_retval == "ERROR":
+        lz_driver_message = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver is loaded."]["Message"]  # noqa: E501
+    else:
+        lz_driver_info_retval = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver information"]["RetVal"]  # noqa: E501
+        if lz_driver_info_retval == "ERROR":
+            lz_driver_message = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver information"]["Message"]  # noqa: E501
+
+    is_level_zero_initialized = lz_driver_loaded_retval == "PASS" and lz_driver_info_retval == "INFO"
+
+    return is_level_zero_initialized, lz_driver_message

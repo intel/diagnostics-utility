@@ -7,20 +7,12 @@ Get Started
 
 To run the Diagnostics Utility for Intel® oneAPI Toolkits:
 
-1. Open a terminal and navigate to the directory where oneAPI products is installed.
-
-   If you installed to the default directory,
-   the utility will be located at ``/opt/intel/oneapi/``.
-
-
-2. Change to the diagnostics directory:
-
-::
-
-  cd diagnostics/latest/
+1. Open a terminal. Put the location of the diagnostic utility in the PATH.
+   If you installed you oneAPI toolkit in the default directory, then the
+   utility will be located in `/opt/intel/oneapi/diagnostics/latest`.
 
 
-3. Run the Diagnostics Utility for Intel® oneAPI Toolkits using this syntax:
+2. Run the Diagnostics Utility for Intel® oneAPI Toolkits using this syntax:
 
 ``python3 diagnostics.py --filter <ARGUMENT_NAME>``
 
@@ -34,14 +26,20 @@ example, you will run all available checks, using the ``all`` argument:
   python3 diagnostics.py --filter all
 
 
-The output will display in two places:
+The output will display in the active console and in:
 
-* the active console
-* a JSON file
+* a text file (.txt)
+* a JSON file (.json)
+
+Checks listed at the top of the list have higher priority and may have
+dependent checks further down the list. When diagnosing problems, start by
+troubleshooting the checks at the top of the list.
 
 The default directory of the output files is
-$HOME/intel/diagnostics/logs for Linux and
-C:\Users\<username>\intel\diagnostics\logs for Windows.
+$HOME/intel/diagnostics/logs for Linux.
+
+.. and C:\\Users\\<username>\\intel\\diagnostics\\logs for Windows.
+
 To customize the default directory, see :ref:`customization`.
 
 
@@ -52,8 +50,9 @@ To increase the amount of detail, add the -v argument:
   python3 diagnostics.py --filter all -v
 
 
-The Diagnostics Utility for Intel® oneAPI Toolkits can be customized to output only the data you need.
-Use these methods to customize the command for your needs:
+The Diagnostics Utility for Intel® oneAPI Toolkits can be customized to output
+only the data you need. Use these methods to customize the command for your
+needs:
 
 - :ref:`Run a group of related checks <group-checks>`
 - :ref:`Run a single check <single-check>`
@@ -66,23 +65,28 @@ Use these methods to customize the command for your needs:
 List of Checks by Check Name
 ----------------------------
 
-  Note: the checks below are all supported on Linux. For Windows, only the
-  `base_system_check`` is supported.
+  Note: the checks below are all supported on Linux.
+
+.. For Windows, only the `base_system_check` is supported.
+
+
+
+.. list-table::
+
+   * - **Check Name**
+     - the name of the diagnostic check that can be run in the command line.
+   * - **Group**
+     -  Checks are grouped together so that you can run multiple checks using
+        one command. For example, you can run all checks associated with
+        GPUs by using the GPU argument.
+   * - **Rights**
+     - the permissions needed to run this check.
+   * - **Description**
+     - a short description of the check.
 
 
 The table below shows the list of  **checks** and which  **groups** can
 also be used to run that check.
-
-**Check Name**: the name of the diagnostic check that can be run in the command line.
-
-**Group**:  Checks are grouped together
-so that you can run multiple checks using
-one command. For example, you can run all checks associated with
-GPUs by using the GPU argument.
-
-**Rights**: the permissions needed to run this check.
-
-**Description**: a short description of the check.
 
 
 
@@ -154,7 +158,7 @@ GPUs by using the GPU argument.
        |  ``target``
      - This check shows which Intel GPU(s) is on the system based on lspci
        information and internal table.
-     * - ``oneapi_env_check``
+   * - ``oneapi_env_check``
      - |  ``compile``
        |  ``default``
        |  ``host``
@@ -188,8 +192,15 @@ GPUs by using the GPU argument.
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - user
      - This check shows limits of each resource.
+   * -  ``sys_check``
+     - |  ``not included in any groups``
+     - Some oneAPI components may have checks specific to that component.
+       These checks will be available after setting environment variables using
+       the `setvars`_ script. Run the script and then run the Diagnostics
+       Utility with the  `sys_check` name to see checks that are specific
+       to installed components.
+
 
 
 To learn more about the output, see :ref:`diagnose`.
@@ -292,3 +303,4 @@ to run the **check**, see :ref:`check-table`.
        |  ``user_group_check``
        |  ``intel_gpu_detector_check``
 
+.. _setvars: https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi-development-environment-setup/use-the-setvars-script-with-linux-or-macos.html

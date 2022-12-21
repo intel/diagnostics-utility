@@ -405,7 +405,8 @@ class TestGetInitializedGPU(unittest.TestCase):
                                                               "EU total        : 96\n"
                                                               "Platform        : DG1\n"
                                                               "GuC firmware    : dg1_guc_62.0.3.bin\n"
-                                                              "HuC firmware    : dg1_huc_7.9.3.bin\n")
+                                                              "HuC firmware    : dg1_huc_7.9.3.bin\n"
+                                                              "is_dgfx         : yes\n")
     @patch("checkers_py.linux.intel_gpu_detector_checker._check_gpu_info_path")
     def test__get_initializedGPU_positive(self, mocked_gpu_info_path, mocked_open, mocked_topology_path,
                                           mocked_tile_count):
@@ -451,6 +452,13 @@ class TestGetInitializedGPU(unittest.TestCase):
                                 "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | "
                                 "grep -i 'HuC firmware' | awk '{print $3}' | xargs basename"
 
+                            },
+                            "GPU type": {
+                                "Value": "Discrete",
+                                "RetVal": "INFO",
+                                "Verbosity": 1,
+                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'is_dgfx' | "
+                                           "awk '{print $0}'"
                             },
                             "PCI bus-tree": {
                                 "Value": "0000:03:00.0",

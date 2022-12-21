@@ -124,12 +124,12 @@ def get_dmesg_i915_init_errors_info(json_node: Dict) -> None:
         stdout, _ = grep_i915_process.communicate()
         if grep_i915_process.returncode not in [0, 1]:
             raise Exception("Cannot get information about i915 initialization errors.")
-        for line in stdout.splitlines():
-            if "failed" in line:
-                value["RetVal"] = "FAIL"
-                value["Message"] = "Initialization errors seen in i915 driver."
-                value["HowToFix"] = "Check dmesg logs for more details."
-                break
+        lines_with_errors = [line for line in stdout.splitlines() if "failed" in line]
+        if lines_with_errors:
+            value["RetVal"] = "FAIL"
+            value["Message"] = "Initialization errors seen in i915 driver."
+            value["Logs"] = lines_with_errors
+            value["HowToFix"] = "Check related dmesg logs above for more details."
 
     except Exception as error:
         value["RetVal"] = "ERROR"
@@ -169,10 +169,13 @@ def get_gpu_errors_info(json_node: Dict) -> None:
         stdout, _ = tail_process.communicate()
         if tail_process.returncode != 0:
             raise Exception("Cannot get information about the last i915 usage errors.")
-        if stdout.splitlines():
+        lines_with_errors = stdout.splitlines()
+        if lines_with_errors:
             value["RetVal"] = "FAIL"
             value["Message"] = "Found i915 usage errors."
-            value["HowToFix"] = "Check dmesg logs for more details."
+            value["Logs"] = lines_with_errors
+            value["HowToFix"] = "Check related dmesg logs above for more details."
+
     except Exception as error:
         value["RetVal"] = "ERROR"
         value["Message"] = str(error)
@@ -210,7 +213,7 @@ def _compile_test_matmul(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile test matmul"]["RetVal"] = "ERROR"
-        result["Compile test matmul"]["Message"] = "icpx not found"
+        result["Compile test matmul"]["Message"] = "Matmul compilation failed - icpx not found."
         result["Compile test matmul"]["HowToFix"] = "Try to install Intel® C++ Compiler based on " \
             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
     json_node.update(result)
@@ -312,7 +315,7 @@ def _compile_test_binoption(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile test binoption"]["RetVal"] = "ERROR"
-        result["Compile test binoption"]["Message"] = "icpx not found"
+        result["Compile test binoption"]["Message"] = "Binoption compilation failed - icpx not found." # noqa E501
         result["Compile test binoption"]["HowToFix"] = "Try to install Intel® C++ Compiler based on " \
             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
     json_node.update(result)
@@ -434,7 +437,7 @@ def _compile_simple_sycl_code(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile simple SYCL code"]["RetVal"] = "ERROR"
-        result["Compile simple SYCL code"]["Message"] = "DPC++ (dpcpp) not found."
+        result["Compile simple SYCL code"]["Message"] = "Sycl code compilation failed - DPC++ (dpcpp) not found." # noqa E501
         result["Compile simple SYCL code"]["HowToFix"] = \
             "Try to install Intel® oneAPI Data Parallel C++ Compiler based on " \
             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
@@ -538,7 +541,7 @@ def _compile_parallel_for_program(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile parallel for program"]["RetVal"] = "ERROR"
-        result["Compile parallel for program"]["Message"] = "DPC++ (dpcpp) not found."
+        result["Compile parallel for program"]["Message"] = "Parallel code compilation failed - DPC++ (dpcpp) not found." # noqa E501
         result["Compile parallel for program"]["HowToFix"] = \
             "Try to install Intel® oneAPI Data Parallel C++ Compiler based on " \
             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501

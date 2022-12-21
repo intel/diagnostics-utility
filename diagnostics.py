@@ -28,8 +28,9 @@ from modules.parse_args import create_parser
 from modules.log import configure_logger, configure_file_logging
 
 from modules.printing import print_metadata, print_summary, print_epilog
+from modules.printing.printer import print_ex, enable_stdout_printing
 
-VERSION = "2022.1.0"
+VERSION = "2023.0.0"
 API_VERSION = "0.1"
 
 
@@ -37,7 +38,9 @@ def main():
     # Parse command line arguments
     parser = create_parser(VERSION)
     args = parser.parse_args()
-
+    # Disable printing to STDOUT
+    if args.json:
+        enable_stdout_printing(False)
     # Check that OS is supported
     if not args.force:
         check_that_os_is_supported()
@@ -80,18 +83,20 @@ def main():
             if checks_metadate[i].name == metadata.name
         ]
         if len(the_same_name_checks_metadate) > 0:
-            print(f"Several checks of the same {metadata.name} name was loaded:")
-            print(f"on path {checks_paths[checks_metadate.index(metadata)]} with version {metadata.version}")
+            print_ex(f"Several checks of the same {metadata.name} name was loaded:", txt_output_file)
+            print_ex(f"on path {checks_paths[checks_metadate.index(metadata)]} with version  \
+                     {metadata.version}", txt_output_file)
             for m in the_same_name_checks_metadate:
-                print(f"on path {checks_paths[checks_metadate.index(m)]} with version {m.version}")
+                print_ex(f"on path {checks_paths[checks_metadate.index(m)]} with version {m.version}",
+                         txt_output_file)
             exit(1)
 
     # If checks we not specified, tool should say that it runs with limited set pf checks
     is_filter_not_initialized = len(args.filter) == 1 and args.filter[0] == "not_initialized"
     if not args.list and is_filter_not_initialized and not args.config and not args.update:
-        print("Default checks will be run. For information on how to run other checks, "
-              "see 'python3 diagnostics.py --help'")
-        print()
+        print_ex("Default checks will be run. For information on how to run other checks, "
+                 "see 'python3 diagnostics.py --help'", txt_output_file)
+        print_ex("", txt_output_file)
 
     # --list argument processing
     if args.list:
@@ -105,14 +110,14 @@ def main():
 
     # Check DB updates
     if not args.skip_update:
-        print("Checking for available updates of compatibility database...")
+        print_ex("Checking for available updates of compatibility database...", txt_output_file)
         resource, metadata, databases = are_database_updates_available(loaded_checks)
-        print("Checking for available updates completed successfully.")
+        print_ex("Checking for available updates completed successfully.", txt_output_file)
         if args.update:
             exit(update_databases(resource, metadata, databases))
         else:
             print_available_updates(databases)
-            print()
+            print_ex("", txt_output_file)
 
     # Filter processing: Run all checks from config or set default filter if it is not initialized
     filter = set()
@@ -127,9 +132,10 @@ def main():
     if len(checks_to_print) != len(checks_to_run):
         checks_to_run_without_print = " ".join(
             set([check.get_metadata().name for check in checks_to_run]) - set(checks_to_print))
-        print("Some checks have dependencies that are not on the list of checks to run.")
-        print(f"The following checks will run, but will not be displayed: {checks_to_run_without_print}")
-        print()
+        print_ex("Some checks have dependencies that are not on the list of checks to run.", txt_output_file)
+        print_ex(f"The following checks will run, but will not be displayed: {checks_to_run_without_print}",
+                 txt_output_file)
+        print_ex("", txt_output_file)
 
     # Run selected checks
     run_checks(checks_to_run)
@@ -138,9 +144,13 @@ def main():
     print_summary(get_filtered_checks(checks_to_run, checks_to_print), args.verbosity, txt_output_file)
 
     if json_output_file and txt_output_file:
-        save_json_output_file(checks_to_run, json_output_file)
+        save_json_output_file(checks_to_run, json_output_file, False)
 
     print_epilog(txt_output_file, json_output_file, VERSION)
+
+    # Print json onto STDOUT
+    if args.json:
+        save_json_output_file(checks_to_run, None, True)
 
 
 if __name__ == "__main__":

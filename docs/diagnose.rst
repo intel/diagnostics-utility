@@ -1,35 +1,46 @@
 .. _diagnose:
 
-=========================================
-Resolving ERROR, FAIL, and WARNING Status
-=========================================
+===============================
+ERROR, FAIL, and WARNING Status
+===============================
+
+Checks listed at the top of the list have higher priority and may have
+dependent checks further down the list. When diagnosing problems, start by
+troubleshooting the checks at the top of the list.
 
 The output shows these items:
 
-**Check Name** : Name of the  **check**  that ran.
 
-**Description** : A brief description of what information the  **check**
-is reporting.
++-------------------+--------------------------------------------------------------------------------------------------------+
+| **Check Name**    | Name of the  **check**  that ran.                                                                      |
++-------------------+--------------------------------------------------------------------------------------------------------+
+| **Description**   | A brief description of what information the  **check** is reporting.                                   |
++-------------------+--------------------------------------------------------------------------------------------------------+
+| **Result status** | | **PASS**  - the  **check**  found the expected result.                                               |
+|                   | | **FAIL**  -  **check**  ran successfully but the  **check** found a problem with the expected result.|
+|                   | | **WARNING**  -  **check**  ran successfully and but found incompatible or incorrect information.     |
+|                   | | **ERROR**  -  **check**  was not able to run. See below for possible causes.                         |
++-------------------+--------------------------------------------------------------------------------------------------------+
 
-**Result status** : A brief description of what information the  **check**
-is reporting:
 
-- **PASS**  - the  **check**  found the expected result. If the check was
-  to find information such as a version number, that information will be
-  displayed.
-- **FAIL**  -  **check**  ran successfully but the  **check**
-  found a problem with the expected result. For example, if a GPU check
-  is run on a system that does not
-  have a GPU, the check will fail. A brief description will indicate why the
-  check failed.
-- **WARNING**  -  **check**  ran successfully and but found incompatible
-  or incorrect information. A brief description will indicate why.
-- **ERROR**  -  **check**  was not able to run. Possible causes:
+Examples of **Result Status**
+
+- [+] **PASS**  - If the check was to find information such as a version number,
+  a passing check will display that information.
+
+- [-] **FAIL**  - If the check was to run a GPU check on a system that does not
+  have a GPU, the check will fail and the description will indicate that the
+  GPU is not present.
+
+- /!\\ **WARNING**  -  If the check successfully runs, but can't parse the
+  incompatible or incomplete result, there will be a warning with a
+  brief description as to why the information is incomplete or incompatible.
+
+- (-) **ERROR**  -  check was not able to run. Possible causes:
     - current user does not have permissions to access information that
-      the check is looking for. (Exmaple: check is looking for driver version,
-      but the driver is not accessible to the
-      current user)
-    - software or hardware is not initialized
+      the check is looking for such as a driver version,
+      but the driver is not accessible to the current user.
+    - software or hardware is not initialized.
 
 
 .. _update-db:
@@ -53,6 +64,8 @@ To update the database, run the  ``--update`` argument:
 .. code-block:: python
 
   python3 diagnostics.py --update
+
+
 
 
 

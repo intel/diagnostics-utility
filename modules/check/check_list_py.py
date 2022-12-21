@@ -29,7 +29,7 @@ class CheckListPy(Sequence[CheckMetadataPy]):
         self.checkers = self.checker_module.get_check_list()
 
     def __reduce__(self):
-        return(self.__class__, (self.module_name,))
+        return (self.__class__, (self.module_name,))
 
     def __getitem__(self, key: int) -> CheckMetadataPy:
         if isinstance(key, slice):

@@ -72,7 +72,7 @@ def get_files_list_from_folder(path_to_folder: Path) -> List[Path]:
     return []
 
 
-def save_json_output_file(checks: List[BaseCheck], file: Path) -> None:
+def save_json_output_file(checks: List[BaseCheck], file: Path, print_json: bool) -> None:
     # Save results into log file
     # Need to save command line + results in json + result in text
     # Save into json file
@@ -85,8 +85,11 @@ def save_json_output_file(checks: List[BaseCheck], file: Path) -> None:
         except ValueError:  # includes simplejson.decoder.JSONDecodeError
             print("Decoding JSON has failed\n\n")
             continue
-    with open(file, 'w') as outfile:
-        json.dump(json_output, outfile, indent=4)
+    if file:
+        with open(file, 'w') as outfile:
+            json.dump(json_output, outfile, indent=4)
+    if print_json:
+        print(json_output)
 
 
 def _args_string(args) -> str:

@@ -4,19 +4,20 @@
 Run a Group of Checks
 =====================
 
+..
   Note: running a group of checks is supported on Linux. For Windows, only the
-  `base_system_check`` is supported so there is not a group checks
+  `base_system_check` is supported so there is not a group checks
   that can be run.
 
-The Diagnostics Utility for Intel® oneAPI Toolkits organizes checks in groups or categories.
+The Diagnostics Utility for Intel® oneAPI Toolkits organizes checks in groups or categories. These groups are called "Tags". 
 To choose specific groups you want to run, use the List of Checks.
 
-For example, use the  ``gpu``  argument to run mulitple checks related
+For example, use the  ``gpu``  argument (tag) to run multiple checks related
 to GPU hardware and
 software. The  ``gpu``  argument will output these details:
 
 - OpenCL and LevelZero driver details
-- Identify if VTune is ready to do analysis on GPUs
+- Identify if VTune\ :superscript:`TM` Analyzer is ready to do analysis on GPUs
 - Identify Intel GPUs on this system
 - State of hangcheck option: enabled or disabled
 - Identify if the current user is in the same group as the GPU(s)

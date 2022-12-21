@@ -143,4 +143,8 @@ def create_parser(version: str):
         action="help",
         help="Show this help message and exit.",
         default=argparse.SUPPRESS)
+    parser.add_argument(
+        "-j", "--json",
+        action="store_true",
+        help="Print json onto STDOUT.")
     return parser
