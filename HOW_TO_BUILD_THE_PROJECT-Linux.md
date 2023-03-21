@@ -16,6 +16,12 @@
     $ sudo apt install doxygen graphviz sphinx-common
     ```
 
+Please note that the required package is named "libsqlite3-dev" on Ubuntu,
+but it may have a different name if you are using another OS: on
+SLES/SuSE system the package name is sqlite3-devel, on RHEL the package
+name is sqlite-libs.x86_64, and on RedHat the package name is
+libsqlite3x-devel.
+
 2. Install GPGPU level-zero API (instructions derived from [Installation Guide](https://dgpu-docs.intel.com/installation-guides/index.html)):
 
     ```bash
@@ -47,7 +53,7 @@
 
     ```bash
     # Go to root directory of git repository
-    $ cd .../applications.validation.one-diagnostics.source
+    $ cd .../diagnostics-utility
     # Installing with Python package manager
     $ python3 -m pip install -r docs/requirements.txt
     ```
@@ -66,7 +72,7 @@ Cmake build options:
 
 ```bash
 # Go to root directory of git repository
-$ cd .../applications.validation.one-diagnostics.source
+$ cd .../diagnostics-utility
 # Create a build directory
 $ mkdir build
 $ cd build
@@ -81,7 +87,7 @@ $ make install
 👉 The application should be available to test in the root directory:
 
 ```bash
-$ cd .../applications.validation.one-diagnostics.source
+$ cd .../diagnostics-utility
 $ ./diagnostics.py --help
 usage: diagnostics.py [--filter FILTER [FILTER ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-s | -u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 
