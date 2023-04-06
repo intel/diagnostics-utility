@@ -12,6 +12,9 @@ Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose t
 - SLES 15 SP2
 - SLES 15 SP3
 - SLES 15 SP4
+- SLED 15 SP2
+- SLED 15 SP3
+- SLED 15 SP4
 - Rocky Linux 8.5
 - Rocky Linux 9.0
 

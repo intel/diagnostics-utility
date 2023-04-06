@@ -5,10 +5,8 @@ omit =
     */.local/*
     /usr/*
     */test_*
-    # FIXME: Will be enabled when GSE cover this files
     checkers_py/intel_gpu_detector_checker.py
     checkers_py/oneapi_gpu_checker.py
-    # FIXME: Will be enabled later
     modules/db_downloader.py
 
 source =

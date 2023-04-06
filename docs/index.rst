@@ -43,10 +43,15 @@ Supported Operating Systems
 •	RHEL 8.3
 •	SLES 15 SP2
 •	SLES 15 SP3
+•	SLES 15 SP4
+•	SLED 15 SP2
+•	SLED 15 SP3
+•	SLED 15 SP4
 •	Rocky Linux 8.5
 
-Windows support is not included in the oneAPI toolkits. 
-Very limited Windows support is available when building from the `public open source release <https://github.com/intel/diagnostics-utility>`_. 
+Diagnostics Utility for Intel® oneAPI Toolkits is not supported on oneAPI Windows
+systems at this time. Very limited Windows support is available when building from
+the public open source release `public open source release <https://github.com/intel/diagnostics-utility>`_.
 
 •	Windows 10
 •	Windows 11
@@ -59,11 +64,11 @@ Requirements
 * Python 3.6 and newer
 
 If your system meets the Diagnostics Utility for Intel® oneAPI Toolkits
-requirements, click here to :ref:`cli-options`.
+requirements, please see Get Started.
 
-After running the Diagnostics Utility for Intel® oneAPI Toolkits for the first time,
-explore :ref:`group-checks` and :ref:`verbosity` to see the flexibility of this
-utility.
+After running the Diagnostics Utility for Intel® oneAPI Toolkits for the
+first time, explore Run a Group of Checks and Verbose Mode Options to
+see the flexibility of this utility.
 
 ``---------------------``
 
@@ -78,6 +83,7 @@ utility.
    customization
    custom-check
    pkg-contents
+   notices-and-disclaimers
 
 .. you may also add to the toctree, :caption: Contents
 

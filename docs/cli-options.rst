@@ -119,8 +119,8 @@ also be used to run that check.
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - This check verifies compatibility of oneAPI products versions and
-       GPU drivers versions.
+     - This check makes sure the i915 Linux graphics driver is loaded and
+       also looks for i915 Linux graphics driver error messages.
    * -  ``oneapi_gpu_check``
      - |  ``gpu``
        |  ``sysinfo``
@@ -156,8 +156,9 @@ also be used to run that check.
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - This check shows which Intel GPU(s) is on the system based on lspci
-       information and internal table.
+     - When using the i915 Linux kernel graphics driver this check shows
+       which Intel GPU(s) is on the system based on lspci information and
+       internal table.
    * - ``oneapi_env_check``
      - |  ``compile``
        |  ``default``
@@ -202,6 +203,42 @@ also be used to run that check.
        to installed components.
 
 
+Information about product-specific sys_check's can be found in the table below:  
+
+.. list-table::
+   :header-rows: 1
+
+   * - Check Name
+     - Product
+     - What check is doing?
+     - Toolkit
+   * -  ``debugger_sys_check``
+     - Intel® Distribution for GDB*
+     - This check verifies platform readiness for `GPU workloads debugging`_. 
+       It checks presence of libipt and libiga, version of Linux* kernel,
+       correctness of required environment variables and i915 debug 
+       support in kernel 
+     - | Intel® oneAPI Base Toolkit 
+       |
+       | Intel® oneAPI HPC Toolkit 
+   * -  ``advisor_sys_check``
+     - Intel® Advisor
+     - This check verifies version of Linux kernel and state of dev.i915.perf_stream_paranoid option
+     - | Intel® oneAPI Base Toolkit 
+   * -  ``vtune_sys_check``
+     - Intel® VTune™ Profiler
+     - This check verifies platform readiness for `GPU analysis`_.
+     - | Intel® oneAPI Base Toolkit 
+   * -  ``dpcpp_ct_sys_check``
+     - Intel® DPC++ Compatibility Tool
+     - This check verifies presence of installed Python 3 on machine.
+     - | Intel® oneAPI Base Toolkit 
+   * -  ``dpcpp_compiler_sys_check``
+     - Intel® oneAPI DPC++/C++ Compiler
+     - During this check Diagnostics Utility verifies presence of gcc compiler, its version and platform configuration for FPGA bitstream generation 
+     - | Intel® oneAPI Base Toolkit 
+       |
+       | Intel® oneAPI HPC Toolkit
 
 To learn more about the output, see :ref:`diagnose`.
 
@@ -303,4 +340,8 @@ to run the **check**, see :ref:`check-table`.
        |  ``user_group_check``
        |  ``intel_gpu_detector_check``
 
+
+
 .. _setvars: https://www.intel.com/content/www/us/en/develop/documentation/oneapi-programming-guide/top/oneapi-development-environment-setup/use-the-setvars-script-with-linux-or-macos.html
+.. _`GPU analysis`: https://www.intel.com/content/www/us/en/develop/documentation/vtune-help/top/installation/set-up-system-for-gpu-analysis.html
+.. _`GPU workloads debugging`: https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-debugging-dpcpp-linux/top.html

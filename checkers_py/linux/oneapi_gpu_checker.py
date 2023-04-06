@@ -25,6 +25,10 @@ TMP_MATMUL_FILE = os.path.join(tempfile.mkdtemp(), "matmul")
 TMP_BINOPTION_FILE = os.path.join(tempfile.mkdtemp(), "binoption")
 TMP_SIMPLE_SYCL_CODE_FILE = os.path.join(tempfile.mkdtemp(), "simple-sycl-code")
 TMP_PARALLEL_FOR_1D_FILE = os.path.join(tempfile.mkdtemp(), "parallel-for-1D")
+MISSING_COMPILER_MESSAGE = "Try to: " \
+                           "1) install Intel® C++ Compiler based on " \
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
+                           "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
 
 
 def get_i915_driver_loaded_info(json_node: Dict) -> None:
@@ -214,8 +218,7 @@ def _compile_test_matmul(json_node: Dict) -> int:
         error_code += 1
         result["Compile test matmul"]["RetVal"] = "ERROR"
         result["Compile test matmul"]["Message"] = "Matmul compilation failed - icpx not found."
-        result["Compile test matmul"]["HowToFix"] = "Try to install Intel® C++ Compiler based on " \
-            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+        result["Compile test matmul"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
 
@@ -315,9 +318,8 @@ def _compile_test_binoption(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile test binoption"]["RetVal"] = "ERROR"
-        result["Compile test binoption"]["Message"] = "Binoption compilation failed - icpx not found." # noqa E501
-        result["Compile test binoption"]["HowToFix"] = "Try to install Intel® C++ Compiler based on " \
-            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+        result["Compile test binoption"]["Message"] = "Binoption compilation failed - icpx not found."  # noqa E501
+        result["Compile test binoption"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
 
@@ -437,10 +439,8 @@ def _compile_simple_sycl_code(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile simple SYCL code"]["RetVal"] = "ERROR"
-        result["Compile simple SYCL code"]["Message"] = "Sycl code compilation failed - DPC++ (dpcpp) not found." # noqa E501
-        result["Compile simple SYCL code"]["HowToFix"] = \
-            "Try to install Intel® oneAPI Data Parallel C++ Compiler based on " \
-            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+        result["Compile simple SYCL code"]["Message"] = "Sycl code compilation failed - DPC++ (dpcpp) not found."  # noqa E501
+        result["Compile simple SYCL code"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
 
@@ -541,10 +541,8 @@ def _compile_parallel_for_program(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile parallel for program"]["RetVal"] = "ERROR"
-        result["Compile parallel for program"]["Message"] = "Parallel code compilation failed - DPC++ (dpcpp) not found." # noqa E501
-        result["Compile parallel for program"]["HowToFix"] = \
-            "Try to install Intel® oneAPI Data Parallel C++ Compiler based on " \
-            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+        result["Compile parallel for program"]["Message"] = "Parallel code compilation failed - DPC++ (dpcpp) not found."  # noqa
+        result["Compile parallel for program"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
 
