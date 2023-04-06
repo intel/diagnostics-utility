@@ -7,7 +7,7 @@
             {
                 "name": "compatibility_map_04052023.db",
                 "installation_name": "compatibility_map.db",
-                "version": "2023.1.0",
+                "version": "2022.3.0",
                 "date_of_creation": "04052023",
                 "compatibility": {
                     "driver_compatibility_check": [
