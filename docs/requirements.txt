@@ -1,5 +1,5 @@
 docutils ~= 0.16.0
-Sphinx < 4, >= 3.5.4
+Sphinx
 sphinx-tabs
 sphinx-book-theme
 sphinxcontrib-spelling

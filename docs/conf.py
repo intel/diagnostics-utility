@@ -32,7 +32,7 @@ project = 'Diagnostics Utility for Intel® oneAPI Toolkits User Guide'
 copyright = 'Intel Corporation'
 
 # The full version, including alpha/beta/rc tags
-release = '2022.2'
+release = '2022.3'
 
 
 # -- General configuration ---------------------------------------------------
@@ -89,44 +89,42 @@ ditaxml_shorten_alias = True
 
 ditaxml_topic_meta = {}
 ditaxml_topic_meta["audience"] = \
-    "guid:etm-aa2a8ffb0e5b41fe85bf2f5d50a71cf2"
-ditaxml_topic_meta["content type"] = "User Guide"
+    "etm-aa2a8ffb0e5b41fe85bf2f5d50a71cf2"
 ditaxml_topic_meta["description"] = "Identify problems with your toolkit installation."
-ditaxml_topic_meta["document title"] = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
-ditaxml_topic_meta["download url"] = ""
-ditaxml_topic_meta["IDZ custom tags"] = "guid:etm-086ec8c4b4074875b84ba0e35d214cf5"
+ditaxml_topic_meta["document_title"] = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
 ditaxml_topic_meta["keywords"] = "None"
-ditaxml_topic_meta["language"] = "en"
-ditaxml_topic_meta["location"] = "us"
+ditaxml_topic_meta["locale"] = "en-us"
 ditaxml_topic_meta["menu"] = \
     "/content/data/globalelements/US/en/sub-navigation/idz/developer-sub-navigation-breadcrumb"
-ditaxml_topic_meta["menu parent page"] = "/content/www/us/en/developer/tools/oneapi/toolkits"
-ditaxml_topic_meta["operating system"] = \
-    "guid:etm-cf0ee1fba3374ceea048ddac3e923cab,guid:etm-e9827d867eda46abb846aa3d8062b7f0"
-
-ditaxml_topic_meta["programming language"] = (
-    "guid:etm-e759606e77ad42549ba71c380d6d61e2;"
-    "guid:etm-bd7e6ab0b34d4e95901e82eaa67c07a8;"
-    "guid:etm-e9ad772b023840f09a3bb94d6251ea2c"
+ditaxml_topic_meta["menu_parent"] = "/content/www/us/en/developer/tools/oneapi/toolkits"
+ditaxml_topic_meta["primary_tags"] = (
+    "etm-086ec8c4b4074875b84ba0e35d214cf5,"
+    "etm-cf0ee1fba3374ceea048ddac3e923cab,"
+    "etm-e9827d867eda46abb846aa3d8062b7f0,"
+    "etm-e759606e77ad42549ba71c380d6d61e2,"
+    "etm-bd7e6ab0b34d4e95901e82eaa67c07a8,"
+    "etm-e9ad772b023840f09a3bb94d6251ea2c,"
+    "etm-dba967177bfa477ca933d10533b04c38,"
+    "etm-4c7a4593bba04ee2940ff6a1bc1bc95a,"
+    "etm-c326ac0dddbc45cbb916bec3c0e56d03,"
+    "etm-6b088d69d83243a0aa3b986645a7e74b"
 )
-ditaxml_topic_meta["software"] = \
-    "guid:etm-dba967177bfa477ca933d10533b04c38,guid:etm-4c7a4593bba04ee2940ff6a1bc1bc95a"
-ditaxml_topic_meta["primaryOwner"] = "Moore, Benjamin D (benjamin.d.moore@intel.com)"
-ditaxml_topic_meta["programidentifier"] = "idz"
-ditaxml_topic_meta["published date"] = "04/11/2022"
-ditaxml_topic_meta["resourcetypeTag"] = "guid:etm-6d0f0d9ff2b54ee4a65b84789754d34e"
-ditaxml_topic_meta["secondary contenttype"] = \
-    "emtcontenttype:document/guide/developerguide/developergettingstartedguide"
-ditaxml_topic_meta["security classification"] = "Public Content"
-ditaxml_topic_meta["shortDescription"] = "Identify problems with your toolkit installation."
-ditaxml_topic_meta["shortTitle"] = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
-ditaxml_topic_meta["entitlement"] = "intel_usr,iot_tcc"
-ditaxml_topic_meta["entitlementtype"] = "any"
+ditaxml_topic_meta["content_type"] = "etm-6d0f0d9ff2b54ee4a65b84789754d34e"  # Install Guide
+ditaxml_topic_meta["primary_owner"] = "Moore, Benjamin D (benjamin.d.moore@intel.com)"
+ditaxml_topic_meta["primary_business_owner"] = "Feldhousen, Jeanette S (jeanette.s.feldhousen@intel.com)"
+ditaxml_topic_meta["notification_dl"] = "benjamin.d.moore@intel.com,taryn.e.apel@intel.com,infodev.book.publishing.notices@intel.com"  # noqa: E501
+ditaxml_topic_meta["program_identifier"] = "idz"
+ditaxml_topic_meta["publish_date"] = "2023-03-31"
+ditaxml_topic_meta["revision_date"] = "2023-03-31"
+ditaxml_topic_meta["classification_type"] = "Public"
+ditaxml_topic_meta["content_classification"] = "Public"
+ditaxml_topic_meta["metadata_classification"] = "Public"
 ditaxml_topic_meta["noindexfollowarchive"] = "false"
-ditaxml_topic_meta["technology"] = "guid:etm-6b088d69d83243a0aa3b986645a7e74b"
+ditaxml_topic_meta["latest_version"] = "true"
+ditaxml_topic_meta["group_content_id"] = "771725"  # 771725_771726 for 2023.0
+ditaxml_topic_meta["publication_content_id"] = "773660"  # 771726 = 2023.0
+ditaxml_topic_meta["publication_root_node"] = "oneapi"
+ditaxml_topic_meta["publication_name"] = "user-guide-diagnostic-utility"
 ditaxml_prod_info = {}
 ditaxml_prod_info["prodname"] = ""
-ditaxml_prod_info["version"] = "2022.2"
-ditaxml_data_about = {}
-ditaxml_data_about["intelswd_aliasprefix"] = {
-    "datatype": "webAttr", "value": "get-started-with-intel-time-coordinated-computing-tools-0-11"}
+ditaxml_prod_info["version"] = "2022.3"

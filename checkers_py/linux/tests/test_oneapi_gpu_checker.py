@@ -766,8 +766,10 @@ class TestCompileTestMatmul(unittest.TestCase):
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                 "Message": "Matmul compilation failed - icpx not found.",
-                "HowToFix": "Try to install Intel® C++ Compiler based on "
-                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+                "HowToFix": "Try to: " \
+                           "1) install Intel® C++ Compiler based on " \
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
+                           "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
                 }
         }
         expected_error_code = 1
@@ -1013,8 +1015,10 @@ class TestCompileTestBinoption(unittest.TestCase):
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                 "Message": "Binoption compilation failed - icpx not found.",
-                "HowToFix": "Try to install Intel® C++ Compiler based on "
-                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+                "HowToFix": "Try to: " \
+                           "1) install Intel® C++ Compiler based on " \
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
+                           "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
                 }
         }
         expected_error_code = 1
@@ -1861,8 +1865,10 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code",
                 "Message": "Sycl code compilation failed - DPC++ (dpcpp) not found.",
-                "HowToFix": "Try to install Intel® oneAPI Data Parallel C++ Compiler based on "
-                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+                "HowToFix": "Try to: " \
+                            "1) install Intel® C++ Compiler based on " \
+                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
+                            "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
             }
         }
 
@@ -2113,8 +2119,10 @@ class TestCompileParallelForProgram(unittest.TestCase):
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
                 "Message": "Parallel code compilation failed - DPC++ (dpcpp) not found.",
-                "HowToFix": "Try to install Intel® oneAPI Data Parallel C++ Compiler based on "
-                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html" # noqa E501
+                "HowToFix": "Try to: " \
+                            "1) install Intel® C++ Compiler based on " \
+                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
+                            "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
             }
         }
         expected_error_code = 1

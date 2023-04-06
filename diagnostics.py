@@ -30,7 +30,7 @@ from modules.log import configure_logger, configure_file_logging
 from modules.printing import print_metadata, print_summary, print_epilog
 from modules.printing.printer import print_ex, enable_stdout_printing
 
-VERSION = "2022.2"
+VERSION = "2022.3.0"
 API_VERSION = "0.1"
 
 
