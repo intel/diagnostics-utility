@@ -281,7 +281,7 @@ def update_metadata(
     with open(db_file, "rb") as database:
         db_hash = sha384(database.read()).hexdigest()
 
-    curr_date = date.today().strftime("%m%d%Y")
+    curr_date = date.today().strftime("%Y%m%d")
 
     metadata_content = {}
     with open(existing_metadata, "r") as metadata:
