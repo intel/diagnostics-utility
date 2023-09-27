@@ -15,12 +15,7 @@
     # Documentation
     $ sudo apt install doxygen graphviz sphinx-common
     ```
-
-Please note that the required package is named "libsqlite3-dev" on Ubuntu,
-but it may have a different name if you are using another OS: on
-SLES/SuSE system the package name is sqlite3-devel, on RHEL the package
-name is sqlite-libs.x86_64, and on RedHat the package name is
-libsqlite3x-devel.
+    Please note: Version of CMake should be 3.11.x or greater
 
 2. Install GPGPU level-zero API (instructions derived from [Installation Guide](https://dgpu-docs.intel.com/installation-guides/index.html)):
 
@@ -89,7 +84,7 @@ $ make install
 ```bash
 $ cd .../diagnostics-utility
 $ ./diagnostics.py --help
-usage: diagnostics.py [--filter FILTER [FILTER ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-s | -u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
+usage: diagnostics.py [--select SELECTION [SELECTION ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 
 Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
 ...

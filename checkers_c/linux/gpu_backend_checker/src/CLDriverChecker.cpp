@@ -53,7 +53,6 @@ CL_DriverChecker::~CL_DriverChecker() {
 	// TODO Auto-generated destructor stub
 }
 
-
 bool CL_DriverChecker::Load(string& message) {
     void *handle;
     char *error;

@@ -18,10 +18,10 @@ from typing import List
 def run_checker1(data: dict) -> CheckSummary:
     check_summary = CheckSummary(
         result=json.dumps({
-            "Value": {
+            "CheckResult": {
                 "Python sample check 1": {
-                    "Value": "Python sample value 1",
-                    "RetVal": "PASS"
+                    "CheckResult": "Python sample value 1",
+                    "CheckStatus": "PASS"
                 }
             }})
     )
@@ -30,19 +30,19 @@ def run_checker1(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="py_check_sample_1",
         type="Data",
-        tags="sample,python",
+        groups="sample,python",
         descr="This is a description of python check sample #1.",
         dataReq="{}",
         merit=0,
         timeout=5,
-        version=1,
+        version=2,
         run="run_checker1"
     )
     return [someCheck]

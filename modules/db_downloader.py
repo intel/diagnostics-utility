@@ -124,15 +124,13 @@ def are_database_updates_available(all_checks: List[BaseCheck]) -> Tuple[Optiona
     return available_resource, downloaded_metadata_content, newer_databases
 
 
-def update_databases(
-        resource: Optional[str], metadata: Dict, databases: Dict) -> int:
-    return_code = 0
+def update_databases(loaded_checks: List[BaseCheck]):
+    resource, metadata, databases = are_database_updates_available(loaded_checks)
     if resource is None:
-        print_ex("Cannot connect to update server to check for updates.")
-        return 1
+        return
     if not len(databases):
         print_ex("No available updates for existing databases.")
-        return return_code
+        return
     for db_type, db_list in databases.items():
         database = db_list[0]
         try:
@@ -152,15 +150,13 @@ def update_databases(
                 f"Cannot download database from ({database_url}) due to: {error}"
             )
             metadata["databases"].pop(db_type)
-            return_code += 1
         except ValueError as error:
             logging.error(str(error))
             metadata["databases"].pop(db_type)
-            return_code += 1
     with open(f"{DOWNLOADED_DATABASES_FOLDER}/metadata.json", "w") as outfile:
         json.dump(metadata, outfile, indent=4)
     print_ex(f"Compatibility database is updated successfully in {DOWNLOADED_DATABASES_FOLDER}.")
-    return return_code
+    return
 
 
 def print_available_updates(databases: Dict) -> None:

@@ -36,7 +36,7 @@ For example:
 
  ::
 
-  python3 diagnostics.py --filter intel_gpu_detector_check
+  python3 diagnostics.py --select intel_gpu_detector_check
 
 You will see output similar to this:
 
@@ -50,7 +50,7 @@ For example:
 
  ::
 
-  python3 diagnostics.py --filter intel_gpu_detector_check -v
+  python3 diagnostics.py --select intel_gpu_detector_check -v
 
 You will see output similar to this:
 

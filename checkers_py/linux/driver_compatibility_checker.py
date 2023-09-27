@@ -18,7 +18,7 @@ import re
 from typing import List, Dict
 
 
-CHECK_VERSION = 1
+CHECK_VERSION = 2
 CHECK_NAME = "driver_compatibility_check"
 PACKAGE_DATABASE = Path(__file__).parent.parent.resolve() / "databases" / "compatibility_map.db"
 PACKAGE_DATABASE_METADATA = Path(__file__).parent.parent.resolve() / "databases" / "metadata.json"
@@ -66,7 +66,7 @@ def _is_regression(driver_name: str, driver_version: str, cursor) -> bool:
     return True if row else False
 
 
-def _is_latest_version(driver_name: str, driver_version: str, cursor) -> bool:
+def _is_ge_then_latest_version_in_db(driver_name: str, driver_version: str, cursor) -> bool:
     cursor.execute(
         """
         SELECT lv.Version FROM LatestVersion AS lv INNER JOIN Component AS com
@@ -76,20 +76,21 @@ def _is_latest_version(driver_name: str, driver_version: str, cursor) -> bool:
         """ % (driver_name,)
     )
     row = cursor.fetchone()
-    return True if row == driver_version else False
+    driver_version_in_db = row[0]
+    return True if driver_version >= driver_version_in_db else False
 
 
 def get_gpu_driver_version(data: Dict) -> Dict:
     gpu_drivers = {}
     try:
-        level_zero_version = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver information"]["Value"]["Driver # 0"]["Value"]["Driver version"]["Value"]  # noqa: E501
+        level_zero_version = data["gpu_backend_check"]["CheckResult"]["GPU"]["CheckResult"]["Intel® oneAPI Level Zero Driver"]["CheckResult"]["Driver information"]["CheckResult"]["Driver # 0"]["CheckResult"]["Driver version"]["CheckResult"]  # noqa: E501
     except Exception:
         pass
     else:
         gpu_drivers["Intel® oneAPI Level Zero"] = level_zero_version
 
     try:
-        opencl_version = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["OpenCL™ Driver"]["Value"]["Driver information"]["Value"]["Platform # 0"]["Value"]["Devices"]["Value"]["Device # 0"]["Value"]["Driver version"]["Value"]  # noqa: E501
+        opencl_version = data["gpu_backend_check"]["CheckResult"]["GPU"]["CheckResult"]["OpenCL™ Driver"]["CheckResult"]["Driver information"]["CheckResult"]["Platform # 0"]["CheckResult"]["Devices"]["CheckResult"]["Device # 0"]["CheckResult"]["Driver version"]["CheckResult"]  # noqa: E501
     except Exception:
         pass
     else:
@@ -100,13 +101,13 @@ def get_gpu_driver_version(data: Dict) -> Dict:
 def get_product_versions_install(data: Dict) -> Dict:
     product_versions = {}
     try:
-        products = data["oneapi_app_check"]["Value"]["APP"]["Value"]["oneAPI products"]["Value"]
+        products = data["oneapi_app_check"]["CheckResult"]["APP"]["CheckResult"]["oneAPI products"]["CheckResult"]  # noqa: E501
     except Exception:
         pass
     else:
         if isinstance(products, dict):
             product_versions = {
-                product_name.strip(): value["Value"]["Version"]["Value"]
+                product_name.strip(): value["CheckResult"]["Version"]["CheckResult"]
                 for product_name, value in products.items()
             }
     return product_versions
@@ -115,120 +116,120 @@ def get_product_versions_install(data: Dict) -> Dict:
 def get_product_versions_env(data: Dict) -> Dict:
     product_versions = {}
     try:
-        products = data["oneapi_env_check"]["Value"]["oneAPI products installed in the environment"]["Value"]
+        products = data["oneapi_env_check"]["CheckResult"]["oneAPI products installed in the environment"]["CheckResult"]  # noqa: E501
     except Exception:
         pass
     else:
         if isinstance(products, dict):
             product_versions = {
-                product_name.strip(): value["Value"]["Version"]["Value"]
+                product_name.strip(): value["CheckResult"]["Version"]["CheckResult"]
                 for product_name, value in products.items()
             }
     return product_versions
 
 
 def _check_regression(json_node: Dict, driver_name: str, driver_version: str,  cursor):
-    value = {"Value": "Undefined", "RetVal": "PASS"}
+    check_result = {"CheckResult": "Undefined", "CheckStatus": "PASS"}
     try:
         if _is_regression(driver_name, driver_version, cursor):
-            value["Value"] = "Yes"
-            value["RetVal"] = "FAIL"
-            value["Message"] = f"Installed version of {driver_name} is regression."
+            check_result["CheckResult"] = "Yes"
+            check_result["CheckStatus"] = "FAIL"
+            check_result["Message"] = f"Installed version of {driver_name} is regression."
         else:
-            value["Value"] = "No"
+            check_result["CheckResult"] = "No"
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
 
-    json_node.update({"Regression": value})
+    json_node.update({"Regression": check_result})
 
 
 def _check_drivers(json_node: Dict, gpu_driver_versions: Dict, cursor):
-    value = {"Value": {}, "RetVal": "INFO"}
+    check_result = {"CheckResult": {}, "CheckStatus": "INFO"}
     if not gpu_driver_versions:
-        value["RetVal"] = "WARNING"
-        value["Message"] = "There is no information about GPU driver(s)."
+        check_result["CheckStatus"] = "WARNING"
+        check_result["Message"] = "There is no information about GPU driver(s)."
     else:
         try:
             for driver_name, driver_version in gpu_driver_versions.items():
-                driver_value = {
-                    "Value": {
+                driver_check_result = {
+                    "CheckResult": {
                         "Version": {
-                            "Value": driver_version,
-                            "RetVal": "INFO"
+                            "CheckResult": driver_version,
+                            "CheckStatus": "INFO"
                         }
                     },
-                    "RetVal": "INFO"
+                    "CheckStatus": "INFO"
                 }
-                if not _is_latest_version(driver_name, driver_version, cursor):
+                if not _is_ge_then_latest_version_in_db(driver_name, driver_version, cursor):
                     level_zero_link = "https://dgpu-docs.intel.com/technologies/level-zero.html"
                     opecl_link = "https://www.intel.com/content/www/us/en/developer/tools/opencl-sdk/overview.html"  # noqa: E501
                     link = level_zero_link if driver_name == "Intel® oneAPI Level Zero" else \
                         opecl_link if driver_name == "OpenCL™" else ""
-                    driver_value["Value"]["Version"]["RetVal"] = "WARNING"
-                    driver_value["Value"]["Version"]["Message"] = \
+                    driver_check_result["CheckResult"]["Version"]["CheckStatus"] = "WARNING"
+                    driver_check_result["CheckResult"]["Version"]["Message"] = \
                         f"{driver_version} is not the latest available version of {driver_name} driver. " \
                         f"To get the latest version, visit {link}."
-                _check_regression(driver_value["Value"], driver_name, driver_version, cursor)
-                value["Value"].update({driver_name: driver_value})
+                _check_regression(driver_check_result["CheckResult"], driver_name, driver_version, cursor)
+                check_result["CheckResult"].update({driver_name: driver_check_result})
         except Exception as error:
-            value["RetVal"] = "ERROR"
-            value["Message"] = str(error)
-            value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                                "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                                "https://github.com/intel/diagnostics-utility."
+            check_result["CheckStatus"] = "ERROR"
+            check_result["Message"] = str(error)
+            check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+                "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+                "https://github.com/intel/diagnostics-utility."
 
-    json_node.update({"GPU drivers information": value})
+    json_node.update({"GPU drivers information": check_result})
 
 
 def _check_compatibilities(json_node: Dict, product_versions: Dict, gpu_driver_versions: Dict, install: bool, cursor):  # noqa: E501
-    value = {"Value": {}, "RetVal": "PASS"}
+    check_result = {"CheckResult": {}, "CheckStatus": "PASS"}
     if not product_versions:
-        value["RetVal"] = "WARNING"
-        value["Message"] = "There are no products detected."
+        check_result["CheckStatus"] = "WARNING"
+        check_result["Message"] = "There are no products detected."
     elif not gpu_driver_versions:
-        value["RetVal"] = "WARNING"
-        value["Message"] = "There is no information about GPU driver(s)."
+        check_result["CheckStatus"] = "WARNING"
+        check_result["Message"] = "There is no information about GPU driver(s)."
     else:
         try:
             for product, product_version in product_versions.items():
-                product_value = {"Value": "Undefined", "RetVal": "PASS"}
+                product_check_result = {"CheckResult": "Undefined", "CheckStatus": "PASS"}
                 product_version_pattern = re.compile(r"([0-9.]+)-.+")
                 product_version_match = re.search(product_version_pattern, product_version)
                 product_version = product_version_match.group(1) if product_version_match else product_version
                 product_compatibilities = _get_compatibilities_for_product(product, product_version, cursor)
                 if not product_compatibilities:
-                    product_value["RetVal"] = "WARNING"
-                    product_value["Message"] = \
+                    product_check_result["CheckStatus"] = "WARNING"
+                    product_check_result["Message"] = \
                         f"There is no information about {product} compatibilities. " \
                         "To get the latest version of oneAPI products, visit https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-linux/top/installation.html."  # noqa: E501
                 for comp, comp_version in product_compatibilities.items():
                     if comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] != comp_version:
-                        product_value["Value"] = "No"
-                        product_value["RetVal"] = "FAIL"
-                        product_value["Message"] = \
+                        product_check_result["CheckResult"] = "No"
+                        product_check_result["CheckStatus"] = "FAIL"
+                        product_check_result["Message"] = \
                             f"Installed version of {comp} not compatible with the version of the {product}."
                         break
                     elif comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] == comp_version:
-                        product_value["Value"] = "Yes"
-                value["Value"].update({f"{product}-{product_version}": product_value})
+                        product_check_result["CheckResult"] = "Yes"
+                check_result["CheckResult"].update({f"{product}-{product_version}": product_check_result})
         except Exception as error:
-            value["RetVal"] = "ERROR"
-            value["Message"] = str(error)
-            value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                                "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                                "https://github.com/intel/diagnostics-utility."
+            check_result["CheckStatus"] = "ERROR"
+            check_result["Message"] = str(error)
+            check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+                "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+                "https://github.com/intel/diagnostics-utility."
 
     node_name = "Compatibility of the installed products" if install else \
                 "Compatibility of the products in the environment"
-    json_node.update({node_name: value})
+    json_node.update({node_name: check_result})
 
 
 def check_compatibilities(json_node: Dict, data: Dict) -> None:
-    value = {"Value": {}, "RetVal": "PASS"}
+    check_result = {"CheckResult": {}, "CheckStatus": "PASS"}
     try:
         database_file = DOWNLOADED_DATABASE if DOWNLOADED_DATABASE.exists() else PACKAGE_DATABASE
         database_metadata_file = DOWNLOADED_DATABASE_METADATA if DOWNLOADED_DATABASE.exists() else \
@@ -242,25 +243,27 @@ def check_compatibilities(json_node: Dict, data: Dict) -> None:
         gpu_driver_versions = get_gpu_driver_version(data)
         product_versions_install = get_product_versions_install(data)
         product_versions_env = get_product_versions_env(data)
-        _check_drivers(value["Value"], gpu_driver_versions, cursor)
-        _check_compatibilities(value["Value"], product_versions_install, gpu_driver_versions, True, cursor)
-        _check_compatibilities(value["Value"], product_versions_env, gpu_driver_versions, False, cursor)
+        _check_drivers(check_result["CheckResult"], gpu_driver_versions, cursor)
+        _check_compatibilities(check_result["CheckResult"],
+                               product_versions_install, gpu_driver_versions, True, cursor)
+        _check_compatibilities(check_result["CheckResult"],
+                               product_versions_env, gpu_driver_versions, False, cursor)
         connection.commit()
         connection.close()
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
 
-    json_node.update({"oneAPI products compatibilities with drivers": value})
+    json_node.update({"oneAPI products compatibilities with drivers": check_result})
 
 
 def run_driver_compatibility_check(data: Dict) -> CheckSummary:
-    result_json = {"Value": {}, "RetVal": "PASS"}
+    result_json = {"CheckResult": {}, "CheckStatus": "PASS"}
 
-    check_compatibilities(result_json["Value"], data)
+    check_compatibilities(result_json["CheckResult"], data)
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -270,16 +273,16 @@ def run_driver_compatibility_check(data: Dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name=CHECK_NAME,
         type="Data",
-        tags="default,sysinfo,compile,runtime,host,target",
+        groups="default,sysinfo,compile,runtime,host,target",
         descr="This check verifies compatibility of oneAPI products versions and GPU drivers versions.",
-        dataReq="{\"gpu_backend_check\": 1, \"oneapi_env_check\": 1 , \"oneapi_app_check\": 1}",
+        dataReq="{\"gpu_backend_check\": 2, \"oneapi_env_check\": 2 , \"oneapi_app_check\": 2}",
         merit=60,
         timeout=5,
         version=CHECK_VERSION,

@@ -36,16 +36,16 @@ def get_render_devices() -> List[Path]:
 
 
 def are_intel_gpus_found(data: Dict) -> bool:
-    intel_gpu_slice = data["intel_gpu_detector_check"]["Value"]["GPU information"]["Value"]["Intel GPU(s) is present on the bus"]  # noqa: E501
-    is_intel_gpu_found = intel_gpu_slice["RetVal"] == "PASS"
+    intel_gpu_slice = data["intel_gpu_detector_check"]["CheckResult"]["GPU information"]["CheckResult"]["Intel GPU(s) is present on the bus"]  # noqa: E501
+    is_intel_gpu_found = intel_gpu_slice["CheckStatus"] == "PASS"
     return is_intel_gpu_found
 
 
 def intel_gpus_not_found_handler(json_node: Dict) -> None:
     json_node.update({
         "Warning message": {
-            "Value": "",
-            "RetVal": "WARNING",
+            "CheckResult": "",
+            "CheckStatus": "WARNING",
             "Message": "The checker might show irrelevant information for your system because "
                        "the intel_gpu_detector_check failed."
         }
@@ -54,14 +54,14 @@ def intel_gpus_not_found_handler(json_node: Dict) -> None:
 
 def is_level_zero_initialized(data: Dict) -> Tuple[bool, str]:
     lz_driver_message = ''
-    lz_driver_loaded_retval = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver is loaded."]["RetVal"]  # noqa: E501
-    if lz_driver_loaded_retval == "ERROR":
-        lz_driver_message = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver is loaded."]["Message"]  # noqa: E501
+    lz_driver_loaded_check_status = data["gpu_backend_check"]["CheckResult"]["GPU"]["CheckResult"]["Intel® oneAPI Level Zero Driver"]["CheckResult"]["Driver is loaded."]["CheckStatus"]  # noqa: E501
+    if lz_driver_loaded_check_status == "ERROR":
+        lz_driver_message = data["gpu_backend_check"]["CheckResult"]["GPU"]["CheckResult"]["Intel® oneAPI Level Zero Driver"]["CheckResult"]["Driver is loaded."]["Message"]  # noqa: E501
     else:
-        lz_driver_info_retval = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver information"]["RetVal"]  # noqa: E501
-        if lz_driver_info_retval == "ERROR":
-            lz_driver_message = data["gpu_backend_check"]["Value"]["GPU"]["Value"]["Intel® oneAPI Level Zero Driver"]["Value"]["Driver information"]["Message"]  # noqa: E501
+        lz_driver_info_check_status = data["gpu_backend_check"]["CheckResult"]["GPU"]["CheckResult"]["Intel® oneAPI Level Zero Driver"]["CheckResult"]["Driver information"]["CheckStatus"]  # noqa: E501
+        if lz_driver_info_check_status == "ERROR":
+            lz_driver_message = data["gpu_backend_check"]["CheckResult"]["GPU"]["CheckResult"]["Intel® oneAPI Level Zero Driver"]["CheckResult"]["Driver information"]["Message"]  # noqa: E501
 
-    is_level_zero_initialized = lz_driver_loaded_retval == "PASS" and lz_driver_info_retval == "INFO"
+    is_level_zero_initialized = lz_driver_loaded_check_status == "PASS" and lz_driver_info_check_status == "INFO"  # noqa: E501
 
     return is_level_zero_initialized, lz_driver_message

@@ -31,7 +31,7 @@ Cmake build options:
 
 ```powershell
 # Go to root directory of git repository
-PS> cd ...\diagnostics-utility
+PS> cd .../diagnostics-utility
 
 # Create a build directory
 PS> md build
@@ -50,7 +50,7 @@ PS> cmake --build . --target INSTALL --config Release
 ```powershell
 PS> cd .../diagnostics-utility
 PS> python diagnostics.py --help
-usage: diagnostics.py [--filter FILTER [FILTER ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-s | -u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
+usage: diagnostics.py [--select SELECTION [SELECTION ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 
 Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
 ...

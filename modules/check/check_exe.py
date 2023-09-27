@@ -38,7 +38,7 @@ class CheckExe(BaseCheck):
         self.metadata = CheckMetadataPy(
             name=metadata_dict["name"],
             type=metadata_dict["type"],
-            tags=metadata_dict["tags"],
+            groups=metadata_dict["groups"],
             descr=metadata_dict["descr"],
             dataReq=metadata_dict["dataReq"],
             merit=metadata_dict["merit"],
@@ -54,9 +54,10 @@ class CheckExe(BaseCheck):
     def run(self, data: Dict) -> CheckSummary:
         if bool(data):
             raise NotImplementedError("Unable to pass data to the exe module. Implement the exe module.")
-        summary_dict = json.loads(_run_check(self.path, "--get_summary"))
+        get_summary = _run_check(self.path, "--get_summary").replace("\n", "")
+        summary_dict = json.loads(get_summary)
         return CheckSummary(
-            result=summary_dict["result"]
+            result=json.dumps(summary_dict["result"])
         )
 
 

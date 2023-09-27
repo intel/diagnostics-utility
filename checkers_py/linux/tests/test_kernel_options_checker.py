@@ -31,34 +31,34 @@ class TestKernelBootOptionsCheckerApiTest(unittest.TestCase):
 
         mocked_get_kernel_settings.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_kernel_boot_options.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = kernel_options_checker.run_kernel_check({})
+        actual = kernel_options_checker.run_kernel_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = kernel_options_checker.get_api_version()
+        actual = kernel_options_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = kernel_options_checker.get_check_list()
+        check_list = kernel_options_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -68,8 +68,8 @@ class TestCheckPerfStreamParanoid(unittest.TestCase):
     def test_check_perf_stream_paranoid_positive(self, mocked_open):
         expected = {"Perf stream paranoid": {
             "Command": "sysctl -n dev.i915.perf_stream_paranoid",
-            "RetVal": "INFO",
-            "Value": "0"
+            "CheckStatus": "INFO",
+            "CheckResult": "0"
         }}
 
         process = MagicMock()
@@ -78,33 +78,33 @@ class TestCheckPerfStreamParanoid(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        kernel_options_checker._check_perf_stream_paranoid(value)
+        actual = {}
+        kernel_options_checker._check_perf_stream_paranoid(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_check_perf_stream_paranoid_popen_raise_exception(self, mocked_open):
         expected = {"Perf stream paranoid": {
             "Command": "sysctl -n dev.i915.perf_stream_paranoid",
             "Message": "test message",
-            "RetVal": "ERROR",
-            "Value": "Undefined",
+            "CheckStatus": "ERROR",
+            "CheckResult": "Undefined",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
         }}
 
-        value = {}
-        kernel_options_checker._check_perf_stream_paranoid(value)
+        actual = {}
+        kernel_options_checker._check_perf_stream_paranoid(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
     @patch("subprocess.Popen")
     def test_check_perf_stream_paranoid_return_code_1(self, mocked_open):
         expected = {"Perf stream paranoid": {
             "Command": "sysctl -n dev.i915.perf_stream_paranoid",
             "Message": "Cannot get information about operating sysctl option",
-            "RetVal": "ERROR",
-            "Value": "Undefined",
+            "CheckStatus": "ERROR",
+            "CheckResult": "Undefined",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
         }}
 
@@ -114,10 +114,10 @@ class TestCheckPerfStreamParanoid(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        kernel_options_checker._check_perf_stream_paranoid(value)
+        actual = {}
+        kernel_options_checker._check_perf_stream_paranoid(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
 
 class TestGetKernelSettings(unittest.TestCase):
@@ -126,24 +126,24 @@ class TestGetKernelSettings(unittest.TestCase):
     def test_get_kernel_settings_positive(self, mocked__check_perf_stream_paranoid):
         expected = {
             "Kernel settings": {
-                "Value": {
-                    "Check 1": {"Value": "Value", "RetVal": "INFO"}
+                "CheckResult": {
+                    "Check 1": {"CheckResult": "some data", "CheckStatus": "INFO"}
                 },
-                "RetVal": "INFO"
+                "CheckStatus": "INFO"
             }
         }
 
         mocked__check_perf_stream_paranoid.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = {}
-        kernel_options_checker.get_kernel_settings(value)
+        actual = {}
+        kernel_options_checker.get_kernel_settings(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetKernelBootOptions(unittest.TestCase):
@@ -158,15 +158,15 @@ class TestGetKernelBootOptions(unittest.TestCase):
     def test_get_kernel_boot_options_positive(self, mocked_open):
         expected = {
             "Kernel boot options": {
-                "Value": {
-                    "BOOT_IMAGE": {"Value": "/boot/vmlinuz-5.11.0-34-generic", "RetVal": "INFO"},
-                    "root": {"Value": "UUID=1bad49ce-1ba9-4855-a25d-2eb0713f51b8", "RetVal": "INFO"},
-                    "ro": {"Value": "", "RetVal": "INFO"},
-                    "quiet": {"Value": "", "RetVal": "INFO"},
-                    "splash": {"Value": "", "RetVal": "INFO"},
-                    "vt.handoff": {"Value": "7", "RetVal": "INFO"}
+                "CheckResult": {
+                    "BOOT_IMAGE": {"CheckResult": "/boot/vmlinuz-5.11.0-34-generic", "CheckStatus": "INFO"},
+                    "root": {"CheckResult": "UUID=1bad49ce-1ba9-4855-a25d-2eb0713f51b8", "CheckStatus": "INFO"},   # noqa: E501
+                    "ro": {"CheckResult": "", "CheckStatus": "INFO"},
+                    "quiet": {"CheckResult": "", "CheckStatus": "INFO"},
+                    "splash": {"CheckResult": "", "CheckStatus": "INFO"},
+                    "vt.handoff": {"CheckResult": "7", "CheckStatus": "INFO"}
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": "cat /proc/cmdline"
             }
         }
@@ -177,35 +177,35 @@ class TestGetKernelBootOptions(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        kernel_options_checker.get_kernel_boot_options(value)
+        actual = {}
+        kernel_options_checker.get_kernel_boot_options(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_get_kernel_boot_options_popen_raise_exception(self, mocked_open):
         expected = {
             "Kernel boot options": {
-                "Value": "Undefined",
+                "CheckResult": "Undefined",
                 "Message": "test message",
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Command": "cat /proc/cmdline",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
-        value = {}
-        kernel_options_checker.get_kernel_boot_options(value)
+        actual = {}
+        kernel_options_checker.get_kernel_boot_options(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
     @patch("subprocess.Popen")
     def test_get_kernel_boot_options_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Kernel boot options": {
-                "Value": "Undefined",
+                "CheckResult": "Undefined",
                 "Message": "Cannot get information about kernel boot options",
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Command": "cat /proc/cmdline",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
@@ -217,10 +217,10 @@ class TestGetKernelBootOptions(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        kernel_options_checker.get_kernel_boot_options(value)
+        actual = {}
+        kernel_options_checker.get_kernel_boot_options(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":

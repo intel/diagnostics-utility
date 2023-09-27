@@ -28,11 +28,11 @@ TMP_PARALLEL_FOR_1D_FILE = os.path.join(tempfile.mkdtemp(), "parallel-for-1D")
 MISSING_COMPILER_MESSAGE = "Try to: " \
                            "1) install Intel® C++ Compiler based on " \
                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                           "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
+                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
 
 
 def get_i915_driver_loaded_info(json_node: Dict) -> None:
-    value = {"Value": "", "RetVal": "PASS", "Command": "lsmod | grep i915"}
+    check_result = {"CheckResult": "", "CheckStatus": "PASS", "Command": "lsmod | grep i915"}
     try:
         lsmod_process = subprocess.Popen(
             ["lsmod"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
@@ -48,35 +48,35 @@ def get_i915_driver_loaded_info(json_node: Dict) -> None:
         if grep_process.returncode not in [0, 1]:
             raise Exception("Cannot get information about whether the Intel® Graphics Driver is loaded.")
         if not stdout.splitlines():
-            value["RetVal"] = "FAIL"
-            value["Message"] = "Module i915 is not loaded."
-            value["HowToFix"] = "Try to load the i915 module with the following command: modprobe i915."
-            value["AutomationFix"] = "modprobe i915"
+            check_result["CheckStatus"] = "FAIL"
+            check_result["Message"] = "Module i915 is not loaded."
+            check_result["HowToFix"] = "Try to load the i915 module with the following command: modprobe i915."  # noqa: E501
+            check_result["AutomationFix"] = "modprobe i915"
 
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
-    json_node.update({"Intel® Graphics Driver is loaded.": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
+    json_node.update({"Intel® Graphics Driver is loaded.": check_result})
 
 
 def get_intel_device_is_available_info(json_node: Dict) -> None:
-    value = {"Value": "", "RetVal": "PASS", "Command": "ls /dev/dri/ | grep renderD"}
+    check_result = {"CheckResult": "", "CheckStatus": "PASS", "Command": "ls /dev/dri/ | grep renderD"}
 
     render_devices = get_render_devices()
 
     if len(render_devices) == 0:
-        value["RetVal"] = "FAIL"
-        value["Message"] = "Intel Graphics Device is not detected."
-        value["HowToFix"] = "Check if the graphics driver is installed."
+        check_result["CheckStatus"] = "FAIL"
+        check_result["Message"] = "Intel Graphics Device is not detected."
+        check_result["HowToFix"] = "Check if the graphics driver is installed."
 
-    json_node.update({"Intel Graphics Device is available": value})
+    json_node.update({"Intel Graphics Device is available": check_result})
 
 
 def get_permissions_to_render_info(json_node: Dict) -> None:
-    value = {"Value": "", "RetVal": "PASS", "Command": "ls -l /dev/dri/ | grep renderD"}
+    check_result = {"CheckResult": "", "CheckStatus": "PASS", "Command": "ls -l /dev/dri/ | grep renderD"}
 
     render_devices = get_render_devices()
 
@@ -85,17 +85,17 @@ def get_permissions_to_render_info(json_node: Dict) -> None:
         access_to_render = access_to_render or os.access(render_device, os.R_OK)
 
     if not access_to_render:
-        value["RetVal"] = "FAIL"
-        value["Message"] = "Current user does not have access to any render device."
-        value["HowToFix"] = "Try to run the diagnostics with administrative privileges " \
-                            "or add user to render group."
-        value["AutomationFix"] = "sudo gpasswd -a ${{USER}} render && newgrp render"
+        check_result["CheckStatus"] = "FAIL"
+        check_result["Message"] = "Current user does not have access to any render device."
+        check_result["HowToFix"] = "Try to run the diagnostics with administrative privileges " \
+            "or add user to render group."
+        check_result["AutomationFix"] = "sudo gpasswd -a ${{USER}} render && newgrp render"
 
-    json_node.update({"Render device accessible to current user.": value})
+    json_node.update({"Render device accessible to current user.": check_result})
 
 
 def get_permissions_to_card_info(json_node: Dict) -> None:
-    value = {"Value": "", "RetVal": "PASS", "Command": "ls -l /dev/dri/ | grep card"}
+    check_result = {"CheckResult": "", "CheckStatus": "PASS", "Command": "ls -l /dev/dri/ | grep card"}
 
     card_devices = get_card_devices()
 
@@ -104,16 +104,16 @@ def get_permissions_to_card_info(json_node: Dict) -> None:
         access_to_card = access_to_card or os.access(card_device, os.R_OK)
 
     if not access_to_card:
-        value["RetVal"] = "FAIL"
-        value["Message"] = "Current user does not have access to any card device."
-        value["HowToFix"] = "Try to run the diagnostics with administrative privileges " \
-                            "or check if the graphics driver is installed."
+        check_result["CheckStatus"] = "FAIL"
+        check_result["Message"] = "Current user does not have access to any card device."
+        check_result["HowToFix"] = "Try to run the diagnostics with administrative privileges " \
+            "or check if the graphics driver is installed."
 
-    json_node.update({"Card device accessible to current user": value})
+    json_node.update({"Card device accessible to current user": check_result})
 
 
 def get_dmesg_i915_init_errors_info(json_node: Dict) -> None:
-    value = {"Value": "", "RetVal": "PASS", "Command": "dmesg -T | grep i915 | grep failed"}
+    check_result = {"CheckResult": "", "CheckStatus": "PASS", "Command": "dmesg -T | grep i915 | grep failed"}
     try:
         dmesg_process = subprocess.Popen(
             ["dmesg", "-T"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
@@ -130,25 +130,26 @@ def get_dmesg_i915_init_errors_info(json_node: Dict) -> None:
             raise Exception("Cannot get information about i915 initialization errors.")
         lines_with_errors = [line for line in stdout.splitlines() if "failed" in line]
         if lines_with_errors:
-            value["RetVal"] = "FAIL"
-            value["Message"] = "Initialization errors seen in i915 driver."
-            value["Logs"] = lines_with_errors
-            value["HowToFix"] = "Check related dmesg logs above for more details."
+            check_result["CheckStatus"] = "FAIL"
+            check_result["Message"] = "Initialization errors seen in i915 driver."
+            check_result["Logs"] = lines_with_errors
+            check_result["HowToFix"] = "Check related dmesg logs above for more details."
 
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "Try to re-run this check with administrative privileges. " \
+            "If issue persists, please report it to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
 
-    json_node.update({"dmesg doesn't contain i915 errors": value})
+    json_node.update({"dmesg doesn't contain i915 errors": check_result})
 
 
 def get_gpu_errors_info(json_node: Dict) -> None:
-    value = {
-        "Value": "",
-        "RetVal": "PASS",
+    check_result = {
+        "CheckResult": "",
+        "CheckStatus": "PASS",
         "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                    "Please -e segfault | tail -20"
     }
@@ -175,26 +176,27 @@ def get_gpu_errors_info(json_node: Dict) -> None:
             raise Exception("Cannot get information about the last i915 usage errors.")
         lines_with_errors = stdout.splitlines()
         if lines_with_errors:
-            value["RetVal"] = "FAIL"
-            value["Message"] = "Found i915 usage errors."
-            value["Logs"] = lines_with_errors
-            value["HowToFix"] = "Check related dmesg logs above for more details."
+            check_result["CheckStatus"] = "FAIL"
+            check_result["Message"] = "Found i915 usage errors."
+            check_result["Logs"] = lines_with_errors
+            check_result["HowToFix"] = "Check related dmesg logs above for more details."
 
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "Try to re-run this check with administrative privileges. " \
+            "If issue persists, please report it to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
 
-    json_node.update({"dmesg doesn't contain user errors related to GPU operations": value})
+    json_node.update({"dmesg doesn't contain user errors related to GPU operations": check_result})
 
 
 def _compile_test_matmul(json_node: Dict) -> int:
     error_code = 0
     result = {"Compile test matmul": {
-        "Value": "",
-        "RetVal": "PASS",
+        "CheckResult": "",
+        "CheckStatus": "PASS",
         "Command": f"icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                    f"{PATH_TO_SOURCE_OFFLOAD}/matmul_offload.cpp -o {TMP_MATMUL_FILE}"
     }}
@@ -207,7 +209,7 @@ def _compile_test_matmul(json_node: Dict) -> int:
 
         if compile.wait() != 0:
             error_code += 1
-            result["Compile test matmul"]["RetVal"] = "FAIL"
+            result["Compile test matmul"]["CheckStatus"] = "FAIL"
             result["Compile test matmul"]["Message"] = \
                 "Non zero return code from command: " \
                 "'icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ " \
@@ -216,7 +218,7 @@ def _compile_test_matmul(json_node: Dict) -> int:
                 "Check compiled source file for syntax errors."
     except Exception:
         error_code += 1
-        result["Compile test matmul"]["RetVal"] = "ERROR"
+        result["Compile test matmul"]["CheckStatus"] = "ERROR"
         result["Compile test matmul"]["Message"] = "Matmul compilation failed - icpx not found."
         result["Compile test matmul"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
@@ -229,24 +231,24 @@ def _run_test_matmul(compile_status: int, json_node: Dict) -> int:
     test_env["OMP_TARGET_OFFLOAD"] = "MANDATORY"
     result = {
         "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 {TMP_MATMUL_FILE}"
         },
         "Test simple matrix multiplication with OpenCL™.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL {TMP_MATMUL_FILE}"
         }
     }
     if compile_status != 0:
         error_code += 1
-        result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+        result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"
         result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["Message"] = \
             "Check failed because compile test matmul failed."
         result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["HowToFix"] = \
             "Check compiled source file for syntax errors."
-        result["Test simple matrix multiplication with OpenCL™."]["RetVal"] = "FAIL"
+        result["Test simple matrix multiplication with OpenCL™."]["CheckStatus"] = "FAIL"
         result["Test simple matrix multiplication with OpenCL™."]["Message"] = \
             "Check failed because compile test matmul failed."
         result["Test simple matrix multiplication with OpenCL™."]["HowToFix"] = \
@@ -258,7 +260,7 @@ def _run_test_matmul(compile_status: int, json_node: Dict) -> int:
         run_level_zero_stdout, _ = run_level_zero.communicate()
         if run_level_zero.returncode != 0 or run_level_zero_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+            result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"
             if run_level_zero.returncode != 0:
                 result["Test simple matrix multiplication with Intel® oneAPI Level Zero."]["Message"] = \
                     f"An error occurred while running {TMP_MATMUL_FILE}. " \
@@ -277,7 +279,7 @@ def _run_test_matmul(compile_status: int, json_node: Dict) -> int:
         run_opencl_stdout, _ = run_opencl.communicate()
         if run_opencl.returncode != 0 or run_opencl_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple matrix multiplication with OpenCL™."]["RetVal"] = "FAIL"
+            result["Test simple matrix multiplication with OpenCL™."]["CheckStatus"] = "FAIL"
             if run_opencl.returncode != 0:
                 result["Test simple matrix multiplication with OpenCL™."]["Message"] = \
                     f"An error occurred while running {TMP_MATMUL_FILE}. ExitCode: {run_opencl.returncode}"
@@ -295,8 +297,8 @@ def _run_test_matmul(compile_status: int, json_node: Dict) -> int:
 def _compile_test_binoption(json_node: Dict) -> int:
     error_code = 0
     result = {"Compile test binoption": {
-        "Value": "",
-        "RetVal": "PASS",
+        "CheckResult": "",
+        "CheckStatus": "PASS",
         "Command": f"icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                    f"{PATH_TO_SOURCE_OFFLOAD}/binoption_standalone.cpp -o {TMP_BINOPTION_FILE}"
     }}
@@ -308,7 +310,7 @@ def _compile_test_binoption(json_node: Dict) -> int:
             stderr=subprocess.DEVNULL)
         if compile.wait() != 0:
             error_code += 1
-            result["Compile test binoption"]["RetVal"] = "FAIL"
+            result["Compile test binoption"]["CheckStatus"] = "FAIL"
             result["Compile test binoption"]["Message"] = \
                 "Non zero return code from command: " \
                 "'icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ " \
@@ -317,7 +319,7 @@ def _compile_test_binoption(json_node: Dict) -> int:
                 "Check compiled source file for syntax errors."
     except Exception:
         error_code += 1
-        result["Compile test binoption"]["RetVal"] = "ERROR"
+        result["Compile test binoption"]["CheckStatus"] = "ERROR"
         result["Compile test binoption"]["Message"] = "Binoption compilation failed - icpx not found."  # noqa E501
         result["Compile test binoption"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
@@ -330,24 +332,24 @@ def _run_test_binoption(compile_status: int, json_node: Dict) -> int:
     test_env["OMP_TARGET_OFFLOAD"] = "MANDATORY"
     result = {
         "Test simple binary options program with Intel® oneAPI Level Zero.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 {TMP_BINOPTION_FILE}"
         },
         "Test simple binary options program with OpenCL™.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL {TMP_BINOPTION_FILE}"
         }
     }
     if compile_status != 0:
         error_code += 1
-        result["Test simple binary options program with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+        result["Test simple binary options program with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"
         result["Test simple binary options program with Intel® oneAPI Level Zero."]["Message"] = \
             "Check failed because compile test binoption failed."
         result["Test simple binary options program with Intel® oneAPI Level Zero."]["HowToFix"] = \
             "Check compiled source file for syntax errors."
-        result["Test simple binary options program with OpenCL™."]["RetVal"] = "FAIL"
+        result["Test simple binary options program with OpenCL™."]["CheckStatus"] = "FAIL"
         result["Test simple binary options program with OpenCL™."]["Message"] = \
             "Check failed because compile test binoption failed."
         result["Test simple binary options program with OpenCL™."]["HowToFix"] = \
@@ -360,7 +362,7 @@ def _run_test_binoption(compile_status: int, json_node: Dict) -> int:
         run_binoption_level_zero_stdout, _ = run_binoption_level_zero.communicate()
         if run_binoption_level_zero.returncode != 0 or run_binoption_level_zero_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple binary options program with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+            result["Test simple binary options program with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"  # noqa: E501
             if run_binoption_level_zero.returncode != 0:
                 result["Test simple binary options program with Intel® oneAPI Level Zero."]["Message"] = \
                     f"An error occurred while running {TMP_BINOPTION_FILE}. " \
@@ -380,7 +382,7 @@ def _run_test_binoption(compile_status: int, json_node: Dict) -> int:
         run_binoption_opencl_stdout, _ = run_binoption_opencl.communicate()
         if run_binoption_opencl.returncode != 0 or run_binoption_opencl_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple binary options program with OpenCL™."]["RetVal"] = "FAIL"
+            result["Test simple binary options program with OpenCL™."]["CheckStatus"] = "FAIL"
             if run_binoption_opencl.returncode != 0:
                 result["Test simple binary options program with OpenCL™."]["Message"] = \
                     f"An error occurred while running {TMP_BINOPTION_FILE}. " \
@@ -398,27 +400,27 @@ def _run_test_binoption(compile_status: int, json_node: Dict) -> int:
 
 def get_openmp_offload_info(json_node: Dict) -> None:
     error_code = 0
-    value = {"Value": {}, "RetVal": "PASS"}
+    check_result = {"CheckResult": {}, "CheckStatus": "PASS"}
 
-    compile_matmul_status = _compile_test_matmul(value["Value"])
-    error_code += _run_test_matmul(compile_matmul_status, value["Value"])
+    compile_matmul_status = _compile_test_matmul(check_result["CheckResult"])
+    error_code += _run_test_matmul(compile_matmul_status, check_result["CheckResult"])
 
-    compile_binoption_status = _compile_test_binoption(value["Value"])
-    error_code += _run_test_binoption(compile_binoption_status, value["Value"])
+    compile_binoption_status = _compile_test_binoption(check_result["CheckResult"])
+    error_code += _run_test_binoption(compile_binoption_status, check_result["CheckResult"])
 
     if error_code != 0:
-        value["RetVal"] = "FAIL"
-        value["Message"] = "Some checks below failed."
-        value["HowToFix"] = "Review output of checks for more details."
+        check_result["CheckStatus"] = "FAIL"
+        check_result["Message"] = "Some checks below failed."
+        check_result["HowToFix"] = "Review output of checks for more details."
 
-    json_node.update({"OpenMP GPU pipeline tests": value})
+    json_node.update({"OpenMP GPU pipeline tests": check_result})
 
 
 def _compile_simple_sycl_code(json_node: Dict) -> int:
     error_code = 0
     result = {"Compile simple SYCL code": {
-        "Value": "",
-        "RetVal": "PASS",
+        "CheckResult": "",
+        "CheckStatus": "PASS",
         "Command": f"dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp "
                    f"-o {TMP_SIMPLE_SYCL_CODE_FILE}"
     }}
@@ -430,7 +432,7 @@ def _compile_simple_sycl_code(json_node: Dict) -> int:
             stderr=subprocess.DEVNULL)
         if compile.wait() != 0:
             error_code += 1
-            result["Compile simple SYCL code"]["RetVal"] = "FAIL"
+            result["Compile simple SYCL code"]["CheckStatus"] = "FAIL"
             result["Compile simple SYCL code"]["Message"] = \
                 f"'dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp " \
                 f"-o {TMP_SIMPLE_SYCL_CODE_FILE}'"
@@ -438,7 +440,7 @@ def _compile_simple_sycl_code(json_node: Dict) -> int:
                 "Check compiled source file for syntax errors."
     except Exception:
         error_code += 1
-        result["Compile simple SYCL code"]["RetVal"] = "ERROR"
+        result["Compile simple SYCL code"]["CheckStatus"] = "ERROR"
         result["Compile simple SYCL code"]["Message"] = "Sycl code compilation failed - DPC++ (dpcpp) not found."  # noqa E501
         result["Compile simple SYCL code"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
@@ -450,24 +452,24 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
     error_code = 0
     result = {
         "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"SYCL_DEVICE_FILTER=level_zero:gpu {TMP_SIMPLE_SYCL_CODE_FILE}"
         },
         "Test simple DPC++ program with OpenCL™.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"SYCL_DEVICE_FILTER=opencl:gpu {TMP_SIMPLE_SYCL_CODE_FILE}"
         }
     }
     if compile_status != 0:
         error_code += 1
-        result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+        result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"
         result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["Message"] = \
             "Check failed because compile simple SYCL code failed."
         result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["HowToFix"] = \
             "Check compiled source file for syntax errors."
-        result["Test simple DPC++ program with OpenCL™."]["RetVal"] = "FAIL"
+        result["Test simple DPC++ program with OpenCL™."]["CheckStatus"] = "FAIL"
         result["Test simple DPC++ program with OpenCL™."]["Message"] = \
             "Check failed because compile simple SYCL code failed."
         result["Test simple DPC++ program with OpenCL™."]["HowToFix"] = \
@@ -480,7 +482,7 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
         run_level_zero_stdout, _ = run_level_zero.communicate()
         if run_level_zero.returncode != 0 or run_level_zero_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+            result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"
             if run_level_zero.returncode != 0:
                 result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["Message"] = \
                     f"An error occurred while running {TMP_SIMPLE_SYCL_CODE_FILE}. " \
@@ -500,7 +502,7 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
         run_opencl_stdout, _ = run_opencl.communicate()
         if run_opencl.returncode != 0 or run_opencl_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple DPC++ program with OpenCL™."]["RetVal"] = "FAIL"
+            result["Test simple DPC++ program with OpenCL™."]["CheckStatus"] = "FAIL"
             if run_opencl.returncode != 0:
                 result["Test simple DPC++ program with OpenCL™."]["Message"] = \
                     f"An error occurred while running {TMP_SIMPLE_SYCL_CODE_FILE}. " \
@@ -519,8 +521,8 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
 def _compile_parallel_for_program(json_node: Dict) -> int:
     error_code = 0
     result = {"Compile parallel for program": {
-        "Value": "",
-        "RetVal": "PASS",
+        "CheckResult": "",
+        "CheckStatus": "PASS",
         "Command": f"dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp "
                    f"-o {TMP_PARALLEL_FOR_1D_FILE}"
     }}
@@ -532,7 +534,7 @@ def _compile_parallel_for_program(json_node: Dict) -> int:
             stderr=subprocess.DEVNULL)
         if compile.wait() != 0:
             error_code += 1
-            result["Compile parallel for program"]["RetVal"] = "FAIL"
+            result["Compile parallel for program"]["CheckStatus"] = "FAIL"
             result["Compile parallel for program"]["Message"] = \
                 f"dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp " \
                 f"-o {TMP_PARALLEL_FOR_1D_FILE}"
@@ -540,7 +542,7 @@ def _compile_parallel_for_program(json_node: Dict) -> int:
                 "Check compiled source file for syntax errors."
     except Exception:
         error_code += 1
-        result["Compile parallel for program"]["RetVal"] = "ERROR"
+        result["Compile parallel for program"]["CheckStatus"] = "ERROR"
         result["Compile parallel for program"]["Message"] = "Parallel code compilation failed - DPC++ (dpcpp) not found."  # noqa
         result["Compile parallel for program"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
@@ -552,24 +554,24 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
     error_code = 0
     result = {
         "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"SYCL_DEVICE_FILTER=level_zero:gpu {TMP_PARALLEL_FOR_1D_FILE}"
         },
         "Test simple DPC++ parallel-for program with OpenCL™.": {
-            "Value": "",
-            "RetVal": "PASS",
+            "CheckResult": "",
+            "CheckStatus": "PASS",
             "Command": f"SYCL_DEVICE_FILTER=opencl:gpu {TMP_PARALLEL_FOR_1D_FILE}"
         }
     }
     if compile_status != 0:
         error_code += 1
-        result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+        result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"   # noqa: E501
         result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["Message"] = \
             "Check failed because compile parallel for program failed."
         result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["HowToFix"] = \
             "Check compiled source file for syntax errors."
-        result["Test simple DPC++ parallel-for program with OpenCL™."]["RetVal"] = "FAIL"
+        result["Test simple DPC++ parallel-for program with OpenCL™."]["CheckStatus"] = "FAIL"
         result["Test simple DPC++ parallel-for program with OpenCL™."]["Message"] = \
             "Check failed because compile parallel for program failed."
         result["Test simple DPC++ parallel-for program with OpenCL™."]["HowToFix"] = \
@@ -582,7 +584,7 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
         run_level_zero_stdout, _ = run_level_zero.communicate()
         if run_level_zero.returncode != 0 or run_level_zero_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["RetVal"] = "FAIL"
+            result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["CheckStatus"] = "FAIL"   # noqa: E501
             if run_level_zero.returncode != 0:
                 result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["Message"] \
                     = f"An error occurred while running {TMP_PARALLEL_FOR_1D_FILE}. " \
@@ -602,7 +604,7 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
         run_opencl_stdout, _ = run_opencl.communicate()
         if run_opencl.returncode != 0 or run_opencl_stdout.strip() != "PASSED":
             error_code += 1
-            result["Test simple DPC++ parallel-for program with OpenCL™."]["RetVal"] = "FAIL"
+            result["Test simple DPC++ parallel-for program with OpenCL™."]["CheckStatus"] = "FAIL"
             if run_opencl.returncode != 0:
                 result["Test simple DPC++ parallel-for program with OpenCL™."]["Message"] = \
                     f"An error occurred while running {TMP_PARALLEL_FOR_1D_FILE}. " \
@@ -620,35 +622,35 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
 
 def get_dpcpp_offload_info(json_node: Dict) -> None:
     error_code = 0
-    value = {"Value": {}, "RetVal": "PASS"}
+    check_result = {"CheckResult": {}, "CheckStatus": "PASS"}
 
-    compile_simple_sycl_status = _compile_simple_sycl_code(value["Value"])
-    error_code += _run_simple_sycl_code(compile_simple_sycl_status, value["Value"])
-    compile_parallel_for_status = _compile_parallel_for_program(value["Value"])
-    error_code += _run_parallel_for_program(compile_parallel_for_status, value["Value"])
+    compile_simple_sycl_status = _compile_simple_sycl_code(check_result["CheckResult"])
+    error_code += _run_simple_sycl_code(compile_simple_sycl_status, check_result["CheckResult"])
+    compile_parallel_for_status = _compile_parallel_for_program(check_result["CheckResult"])
+    error_code += _run_parallel_for_program(compile_parallel_for_status, check_result["CheckResult"])
 
     if error_code != 0:
-        value["RetVal"] = "FAIL"
-        value["Message"] = "Some checks below failed."
-        value["HowToFix"] = "Review output of checks for more details."
+        check_result["CheckStatus"] = "FAIL"
+        check_result["Message"] = "Some checks below failed."
+        check_result["HowToFix"] = "Review output of checks for more details."
 
-    json_node.update({"DPC++ GPU pipeline tests": value})
+    json_node.update({"DPC++ GPU pipeline tests": check_result})
 
 
 def run_oneapi_gpu_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}}
+    result_json = {"CheckResult": {}}
 
     if not are_intel_gpus_found(data):
-        intel_gpus_not_found_handler(result_json["Value"])
+        intel_gpus_not_found_handler(result_json["CheckResult"])
 
-    get_i915_driver_loaded_info(result_json["Value"])
-    get_intel_device_is_available_info(result_json["Value"])
-    get_permissions_to_card_info(result_json["Value"])
-    get_permissions_to_render_info(result_json["Value"])
-    get_dmesg_i915_init_errors_info(result_json["Value"])
-    get_gpu_errors_info(result_json["Value"])
-    get_openmp_offload_info(result_json["Value"])
-    get_dpcpp_offload_info(result_json["Value"])
+    get_i915_driver_loaded_info(result_json["CheckResult"])
+    get_intel_device_is_available_info(result_json["CheckResult"])
+    get_permissions_to_card_info(result_json["CheckResult"])
+    get_permissions_to_render_info(result_json["CheckResult"])
+    get_dmesg_i915_init_errors_info(result_json["CheckResult"])
+    get_gpu_errors_info(result_json["CheckResult"])
+    get_openmp_offload_info(result_json["CheckResult"])
+    get_dpcpp_offload_info(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -658,19 +660,19 @@ def run_oneapi_gpu_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="oneapi_gpu_check",
         type="Data",
-        tags="gpu,sysinfo",
+        groups="gpu,sysinfo",
         descr="This check runs GPU workloads and verifies readiness to run applications on GPU(s).",
-        dataReq="{\"intel_gpu_detector_check\": 1}",
+        dataReq="{\"intel_gpu_detector_check\": 2}",
         merit=60,
         timeout=30,
-        version=1,
+        version=2,
         run="run_oneapi_gpu_check"
     )
     return [someCheck]

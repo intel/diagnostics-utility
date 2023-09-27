@@ -13,7 +13,7 @@ To run a check to find out which Intel GPUs are on this system, use the
 
  ::
 
-  python3 diagnostics.py --filter intel_gpu_detector_check
+  python3 diagnostics.py --select intel_gpu_detector_check
 
 You will see output similar to this:
 
@@ -28,7 +28,7 @@ To get more information, use ``-v`` to activate verbose mode:
 
  ::
 
-  python3 diagnostics.py --filter intel_gpu_detector_check -v
+  python3 diagnostics.py --select intel_gpu_detector_check -v
 
 You will see output similar to this:
 

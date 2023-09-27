@@ -19,98 +19,98 @@ from typing import List, Dict
 
 
 def get_hostname(json_node: Dict) -> None:
-    value = {
-        "Value": platform.node(),
-        "RetVal": "INFO"
+    check_result = {
+        "CheckResult": platform.node(),
+        "CheckStatus": "INFO"
     }
-    json_node.update({"Hostname": value})
+    json_node.update({"Hostname": check_result})
 
 
 def _get_bios_vendor(json_node: Dict) -> None:
-    value = {"BIOS vendor": {
-        "Value": "Undefined",
-        "RetVal": "INFO"
+    check_result = {"BIOS vendor": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO"
     }}
     bios_reg_key = r"HARDWARE\DESCRIPTION\System\BIOS"
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, bios_reg_key) as key:
             bios_vendor = winreg.QueryValueEx(key, "BIOSVendor")[0]
-            value["BIOS vendor"]["Value"] = bios_vendor
+            check_result["BIOS vendor"]["CheckResult"] = bios_vendor
     except Exception as error:
-        value["BIOS vendor"]["RetVal"] = "ERROR"
-        value["BIOS vendor"]["Message"] = str(error)
-        value["BIOS vendor"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
-                                           "Ignore this error."
-    json_node.update(value)
+        check_result["BIOS vendor"]["CheckStatus"] = "ERROR"
+        check_result["BIOS vendor"]["Message"] = str(error)
+        check_result["BIOS vendor"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
+            "Ignore this error."  # noqa: E501
+    json_node.update(check_result)
 
 
 def _get_bios_version(json_node: Dict) -> None:
-    value = {"BIOS version": {
-        "Value": "Undefined",
-        "RetVal": "INFO"
+    check_result = {"BIOS version": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO"
     }}
     bios_reg_key = r"HARDWARE\DESCRIPTION\System\BIOS"
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, bios_reg_key) as key:
             bios_version = winreg.QueryValueEx(key, "BIOSVersion")[0]
-            value["BIOS version"]["Value"] = bios_version
+            check_result["BIOS version"]["CheckResult"] = bios_version
     except Exception as error:
-        value["BIOS version"]["RetVal"] = "ERROR"
-        value["BIOS version"]["Message"] = str(error)
-        value["BIOS version"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
-                                            "Ignore this error."
-    json_node.update(value)
+        check_result["BIOS version"]["CheckStatus"] = "ERROR"
+        check_result["BIOS version"]["Message"] = str(error)
+        check_result["BIOS version"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
+            "Ignore this error."  # noqa: E501
+    json_node.update(check_result)
 
 
 def _get_bios_release(json_node: Dict) -> None:
-    value = {"BIOS release": {
-        "Value": "Undefined",
-        "RetVal": "INFO"
+    check_result = {"BIOS release": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO"
     }}
     bios_reg_key = r"HARDWARE\DESCRIPTION\System\BIOS"
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, bios_reg_key) as key:
             bios_release_major = str(winreg.QueryValueEx(key, "BiosMajorRelease")[0])
             bios_release_minor = str(winreg.QueryValueEx(key, "BiosMinorRelease")[0])
-            value["BIOS release"]["Value"] = {
+            check_result["BIOS release"]["CheckResult"] = {
                 "Major": {
-                    "Value": bios_release_major,
-                    "RetVal": "INFO"
+                    "CheckResult": bios_release_major,
+                    "CheckStatus": "INFO"
                 },
                 "Minor": {
-                    "Value": bios_release_minor,
-                    "RetVal": "INFO"
+                    "CheckResult": bios_release_minor,
+                    "CheckStatus": "INFO"
                 }
             }
     except Exception as error:
-        value["BIOS release"]["RetVal"] = "ERROR"
-        value["BIOS release"]["Message"] = str(error)
-        value["BIOS release"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
-                                            "Ignore this error."
-    json_node.update(value)
+        check_result["BIOS release"]["CheckStatus"] = "ERROR"
+        check_result["BIOS release"]["Message"] = str(error)
+        check_result["BIOS release"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
+            "Ignore this error."  # noqa: E501
+    json_node.update(check_result)
 
 
 def _get_bios_date(json_node: Dict) -> None:
-    value = {"BIOS date": {
-        "Value": "Undefined",
-        "RetVal": "INFO"
+    check_result = {"BIOS date": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO"
     }}
     bios_reg_key = r"HARDWARE\DESCRIPTION\System\BIOS"
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, bios_reg_key) as key:
             bios_date = winreg.QueryValueEx(key, "BIOSReleaseDate")[0]
-            value["BIOS date"]["Value"] = bios_date
-            value["BIOS date"]["Verbosity"] = 2
+            check_result["BIOS date"]["CheckResult"] = bios_date
+            check_result["BIOS date"]["Verbosity"] = 2
     except Exception as error:
-        value["BIOS date"]["RetVal"] = "ERROR"
-        value["BIOS date"]["Message"] = str(error)
-        value["BIOS date"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
-                                         "Ignore this error."
-    json_node.update(value)
+        check_result["BIOS date"]["CheckStatus"] = "ERROR"
+        check_result["BIOS date"]["Message"] = str(error)
+        check_result["BIOS date"]["HowToFix"] = "The Windows registry does not contain information about BIOS. " \
+            "Ignore this error."  # noqa: E501
+    json_node.update(check_result)
 
 
 def get_bios_information(json_node: Dict) -> None:
-    value = {"Value": "Undefined", "RetVal": "INFO"}
+    check_result = {"CheckResult": "Undefined", "CheckStatus": "INFO"}
     bios_info = {}
 
     _get_bios_vendor(bios_info)
@@ -118,79 +118,79 @@ def get_bios_information(json_node: Dict) -> None:
     _get_bios_release(bios_info)
     _get_bios_date(bios_info)
 
-    value["Value"] = bios_info
-    json_node.update({"BIOS information": value})
+    check_result["CheckResult"] = bios_info
+    json_node.update({"BIOS information": check_result})
 
 
 def _get_os_edition(json_node: Dict) -> None:
-    value = {
+    check_result = {
         "Edition": {
-            "Value": "Undefined",
-            "RetVal": "INFO"
+            "CheckResult": "Undefined",
+            "CheckStatus": "INFO"
         }
     }
     os_edition_reg_key = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion"
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, os_edition_reg_key) as key:
             edition = winreg.QueryValueEx(key, "EditionID")[0]
-            value["Edition"]["Value"] = edition
+            check_result["Edition"]["CheckResult"] = edition
     except Exception as error:
-        value["Edition"]["RetVal"] = "ERROR"
-        value["Edition"]["Message"] = str(error)
-        value["Edition"]["HowToFix"] = "The Windows registry does not contain information about windows " \
-                                       "edition. Ignore this error."
-    json_node.update(value)
+        check_result["Edition"]["CheckStatus"] = "ERROR"
+        check_result["Edition"]["Message"] = str(error)
+        check_result["Edition"]["HowToFix"] = "The Windows registry does not contain information about windows " \
+            "edition. Ignore this error."  # noqa: E501
+    json_node.update(check_result)
 
 
 def _get_os_machine(json_node: Dict) -> None:
-    value = {
+    check_result = {
         "Machine": {
-            "Value": "Undefined",
-            "RetVal": "INFO"
+            "CheckResult": "Undefined",
+            "CheckStatus": "INFO"
         }
     }
     cpu_arh_key = r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, cpu_arh_key) as key:
             machine = winreg.QueryValueEx(key, "PROCESSOR_ARCHITECTURE")[0]
-            value["Machine"]["Value"] = machine
+            check_result["Machine"]["CheckResult"] = machine
     except Exception as error:
-        value["Machine"]["RetVal"] = "ERROR"
-        value["Machine"]["Message"] = str(error)
-        value["Machine"]["HowToFix"] = "The Windows registry does not contain information about processor " \
-                                       "architecture. Ignore this error."
-    json_node.update(value)
+        check_result["Machine"]["CheckStatus"] = "ERROR"
+        check_result["Machine"]["Message"] = str(error)
+        check_result["Machine"]["HowToFix"] = "The Windows registry does not contain information about processor " \
+            "architecture. Ignore this error."  # noqa: E501
+    json_node.update(check_result)
 
 
 def get_os_information(json_node: Dict) -> None:
     uname = platform.uname()
-    value = {
-        "Value": {
+    check_result = {
+        "CheckResult": {
             "System": {
-                "Value": uname.system,
-                "RetVal": "INFO"
+                "CheckResult": uname.system,
+                "CheckStatus": "INFO"
             },
             "Release": {
-                "Value": uname.release,
-                "RetVal": "INFO"
+                "CheckResult": uname.release,
+                "CheckStatus": "INFO"
             },
             "Version": {
-                "Value": uname.version,
-                "RetVal": "INFO"
+                "CheckResult": uname.version,
+                "CheckStatus": "INFO"
             }
         },
-        "RetVal": "INFO"
+        "CheckStatus": "INFO"
     }
-    _get_os_edition(value["Value"])
-    _get_os_machine(value["Value"])
-    json_node.update({"Operating system information": value})
+    _get_os_edition(check_result["CheckResult"])
+    _get_os_machine(check_result["CheckResult"])
+    json_node.update({"Operating system information": check_result})
 
 
 def get_cpu_frequency(cpu_reg_key: str, json_node: Dict) -> None:
     verbosity_level = 1
-    value = {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Verbosity": verbosity_level
     }
     try:
@@ -201,36 +201,36 @@ def get_cpu_frequency(cpu_reg_key: str, json_node: Dict) -> None:
                 try:
                     core_reg_key = winreg.EnumKey(key, core_number)
                     cpu_core_frequency_value = {
-                        "Value": "Undefined",
-                        "RetVal": "INFO",
+                        "CheckResult": "Undefined",
+                        "CheckStatus": "INFO",
                         "Verbosity": verbosity_level
                     }
                     try:
                         with winreg.OpenKey(
                                 winreg.HKEY_LOCAL_MACHINE, f"{cpu_reg_key}\\{core_reg_key}") as core_key:
                             frequency = winreg.QueryValueEx(core_key, "~MHz")[0]
-                            cpu_core_frequency_value["Value"] = f"{frequency} MHz"
+                            cpu_core_frequency_value["CheckResult"] = f"{frequency} MHz"
                     except Exception as error:
-                        cpu_core_frequency_value["RetVal"] = "ERROR"
+                        cpu_core_frequency_value["CheckStatus"] = "ERROR"
                         cpu_core_frequency_value["Message"] = str(error)
                         cpu_core_frequency_value["Verbosity"] = 0
                     cpu_frequency.update({f"Core {core_number}": cpu_core_frequency_value})
                     core_number += 1
                 except Exception:
                     break
-        value["Value"] = cpu_frequency
+        check_result["CheckResult"] = cpu_frequency
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "The Windows registry does not contain information about CPU frequency. " \
-                            "Ignore this error."
-    json_node.update({"CPU frequency": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "The Windows registry does not contain information about CPU frequency. " \
+            "Ignore this error."
+    json_node.update({"CPU frequency": check_result})
 
 
 def get_cpu_info(json_node: Dict) -> None:
-    value = {
-        "Value": "Undefined",
-        "RetVal": "INFO"
+    check_result = {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO"
     }
     cpu_reg_key = r"HARDWARE\DESCRIPTION\System\CentralProcessor"
     try:
@@ -249,27 +249,27 @@ def get_cpu_info(json_node: Dict) -> None:
             cpu_vendor = winreg.QueryValueEx(key, "VendorIdentifier")[0]
 
         cpu_info = {}
-        cpu_info.update({"Model identifier": {"Value": cpu_model_identifier, "RetVal": "INFO"}})
-        cpu_info.update({"Model name": {"Value": cpu_model_name, "RetVal": "INFO"}})
-        cpu_info.update({"Vendor": {"Value": cpu_vendor, "RetVal": "INFO", "Verbosity": 1}})
-        cpu_info.update({"CPU count": {"Value": cpu_count, "RetVal": "INFO"}})
+        cpu_info.update({"Model identifier": {"CheckResult": cpu_model_identifier, "CheckStatus": "INFO"}})
+        cpu_info.update({"Model name": {"CheckResult": cpu_model_name, "CheckStatus": "INFO"}})
+        cpu_info.update({"Vendor": {"CheckResult": cpu_vendor, "CheckStatus": "INFO", "Verbosity": 1}})
+        cpu_info.update({"CPU count": {"CheckResult": cpu_count, "CheckStatus": "INFO"}})
         get_cpu_frequency(cpu_reg_key, cpu_info)
-        value["Value"] = cpu_info
+        check_result["CheckResult"] = cpu_info
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "The Windows registry does not contain information about CPU. " \
-                            "Ignore this error."
-    json_node.update({"CPU information": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "The Windows registry does not contain information about CPU. " \
+            "Ignore this error."
+    json_node.update({"CPU information": check_result})
 
 
 def run_base_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}}
+    result_json = {"CheckResult": {}}
 
-    get_hostname(result_json["Value"])
-    get_cpu_info(result_json["Value"])
-    get_bios_information(result_json["Value"])
-    get_os_information(result_json["Value"])
+    get_hostname(result_json["CheckResult"])
+    get_cpu_info(result_json["CheckResult"])
+    get_bios_information(result_json["CheckResult"])
+    get_os_information(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -279,19 +279,19 @@ def run_base_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="base_system_check",
         type="Data",
-        tags="default,sysinfo,compile,runtime,host,target",
+        groups="default,sysinfo,compile,runtime,host,target",
         descr="This check shows information about hostname, CPU, BIOS and the operating system.",
         dataReq="{}",
         merit=0,
         timeout=5,
-        version=1,
+        version=2,
         run="run_base_check"
     )
     return [someCheck]

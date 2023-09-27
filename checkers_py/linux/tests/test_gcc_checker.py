@@ -24,34 +24,33 @@ from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 class TestGccCheckerApiTest(unittest.TestCase):
 
-    @patch("checkers_py.linux.gcc_checker.get_gcc_version")
-    def test_run_positive(self, mocked_get_gcc_version):
+    @patch("checkers_py.linux.gcc_checker.gcc_check")
+    def test_run_positive(self, mocked_gcc_check):
         expected = CheckSummary
-
-        mocked_get_gcc_version.side_effect = lambda node: node.update({
+        mocked_gcc_check.side_effect = lambda node: node.update({
             "Check": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "gcc check data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = gcc_checker.run_gcc_check({})
+        actual = gcc_checker.run_gcc_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = gcc_checker.get_api_version()
+        actual = gcc_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = gcc_checker.get_check_list()
+        check_list = gcc_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -69,8 +68,8 @@ class TestGetGccVersion(unittest.TestCase):
         expected = {
             "GCC compiler version": {
                 "Command": "gcc --version",
-                "RetVal": "INFO",
-                "Value": "8.4.0"
+                "CheckStatus": "INFO",
+                "CheckResult": "8.4.0"
             }
         }
 
@@ -80,10 +79,10 @@ class TestGetGccVersion(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        gcc_checker.get_gcc_version(value)
+        actual = {}
+        gcc_checker.get_gcc_version(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_get_gcc_version_popen_raise_exception(self, mocked_open):
@@ -91,18 +90,18 @@ class TestGetGccVersion(unittest.TestCase):
             "GCC compiler version": {
                 "Command": "gcc --version",
                 "Message": "test message",
-                "RetVal": "ERROR",
-                "Value": "Undefined",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
                 "HowToFix": "This error is unexpected. Please report the issue to "
                             "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
                             "https://github.com/intel/diagnostics-utility."
             }
         }
 
-        value = {}
-        gcc_checker.get_gcc_version(value)
+        actual = {}
+        gcc_checker.get_gcc_version(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
 
     @patch("subprocess.Popen")
     def test_get_gcc_version_return_code_is_not_zero(self, mocked_open):
@@ -110,8 +109,8 @@ class TestGetGccVersion(unittest.TestCase):
             "GCC compiler version": {
                 "Command": "gcc --version",
                 "Message": "Cannot get information about GCC compiler version.",
-                "RetVal": "ERROR",
-                "Value": "Undefined",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
                 "HowToFix": "This error is unexpected. Please report the issue to "
                             "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
                             "https://github.com/intel/diagnostics-utility."
@@ -124,10 +123,152 @@ class TestGetGccVersion(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        gcc_checker.get_gcc_version(value)
+        actual = {}
+        gcc_checker.get_gcc_version(actual)
 
-        self.assertEqual(value, expected)
+        self.assertEqual(actual, expected)
+
+
+class TestGetGccLocation(unittest.TestCase):
+
+    def setUp(self):
+        self.gcc_output = "/usr/bin/gcc\n"
+
+    @patch("subprocess.Popen")
+    def test_get_gcc_location_positive(self, mocked_open):
+        expected = {
+            "GCC compiler location": {
+                "Command": "which gcc",
+                "CheckStatus": "INFO",
+                "CheckResult": "/usr/bin/gcc"
+            }
+        }
+
+        process = MagicMock()
+        process.communicate.return_value = (self.gcc_output, None)
+        process.returncode = 0
+
+        mocked_open.return_value = process
+
+        actual = {}
+        gcc_checker.get_gcc_location(actual)
+
+        self.assertEqual(actual, expected)
+
+    @patch("subprocess.Popen", side_effect=Exception("test message"))
+    def test_get_gcc_location_popen_raise_exception(self, mocked_open):
+        expected = {
+            "GCC compiler location": {
+                "Command": "which gcc",
+                "Message": "test message",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
+                "HowToFix": "This error is unexpected. Please report the issue to "
+                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "https://github.com/intel/diagnostics-utility."
+            }
+        }
+
+        actual = {}
+        gcc_checker.get_gcc_location(actual)
+
+        self.assertEqual(actual, expected)
+
+    @patch("subprocess.Popen")
+    def test_get_gcc_location_return_code_is_not_zero(self, mocked_open):
+        expected = {
+            "GCC compiler location": {
+                "Command": "which gcc",
+                "Message": "Cannot get information about GCC compiler location",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
+                "HowToFix": "This error is unexpected. Please report the issue to "
+                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "https://github.com/intel/diagnostics-utility."
+            }
+        }
+
+        process = MagicMock()
+        process.communicate.return_value = (self.gcc_output, None)
+        process.returncode = 1
+
+        mocked_open.return_value = process
+
+        actual = {}
+        gcc_checker.get_gcc_location(actual)
+
+        self.assertEqual(actual, expected)
+
+
+class TestGetLibGccLocation(unittest.TestCase):
+
+    def setUp(self):
+        self.libgcc_output = "/usr/lib/gcc/x86_64-linux-gnu/9/libgcc.a\n"
+
+    @patch("subprocess.Popen")
+    def test_get_libgcc_location_positive(self, mocked_open):
+        expected = {
+            "GCC companion library location": {
+                "Command": "gcc -print-libgcc-file-name",
+                "CheckStatus": "INFO",
+                "CheckResult": "/usr/lib/gcc/x86_64-linux-gnu/9/libgcc.a"
+            }
+        }
+
+        process = MagicMock()
+        process.communicate.return_value = (self.libgcc_output, None)
+        process.returncode = 0
+
+        mocked_open.return_value = process
+
+        actual = {}
+        gcc_checker.get_libgcc_location(actual)
+
+        self.assertEqual(actual, expected)
+
+    @patch("subprocess.Popen", side_effect=Exception("test message"))
+    def test_get_gcc_location_popen_raise_exception(self, mocked_open):
+        expected = {
+            "GCC companion library location": {
+                "Command": "gcc -print-libgcc-file-name",
+                "Message": "test message",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
+                "HowToFix": "This error is unexpected. Please report the issue to "
+                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "https://github.com/intel/diagnostics-utility."
+            }
+        }
+
+        actual = {}
+        gcc_checker.get_libgcc_location(actual)
+
+        self.assertEqual(actual, expected)
+
+    @patch("subprocess.Popen")
+    def test_get_libgcc_location_return_code_is_not_zero(self, mocked_open):
+        expected = {
+            "GCC companion library location": {
+                "Command": "gcc -print-libgcc-file-name",
+                "Message": "Cannot get information about the GCC companion library location",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
+                "HowToFix": "This error is unexpected. Please report the issue to "
+                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "https://github.com/intel/diagnostics-utility."
+            }
+        }
+
+        process = MagicMock()
+        process.communicate.return_value = (self.libgcc_output, None)
+        process.returncode = 1
+
+        mocked_open.return_value = process
+
+        actual = {}
+        gcc_checker.get_libgcc_location(actual)
+
+        self.assertEqual(actual, expected)
 
 
 if __name__ == '__main__':

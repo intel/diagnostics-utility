@@ -18,7 +18,7 @@ to the terminal:
 
 ::
 
-  python3 diagnostics.py --filter intel_gpu_detector_check -t -v
+  python3 diagnostics.py --select intel_gpu_detector_check -t -v
 
 .. list-table::
    :widths: 25 50 25
@@ -28,15 +28,15 @@ to the terminal:
      - Description
      - Example
 
-   * - ``--filter``
-     - Filter checker results by tag or checker name tags, combine
-       one or more checkers into groups. Each checker can be marked with one or more
-       tags. For a full list of available checks and tags, see :ref:`check-table`.
-     -  ``python3 diagnostics.py -filter oneapi_app_check``
+   * - ``--select``
+     - Select checks to run by group or check name.
+       Each check can be marked with one or more
+       groups. For a full list of available checks and groups, see :ref:`check-table`.
+     -  ``python3 diagnostics.py --select oneapi_app_check``
 
    * - ``--list``
      - Show list of available checks in the terminal window. You can also
-       see a list of available checks and tags in :ref:`check-table`.
+       see a list of available checks and groups in :ref:`check-table`.
      -  ``python3 diagnostics.py --list``
 
    * - ``-c PATH_TO_CONFIG``
@@ -51,10 +51,6 @@ to the terminal:
    * - ``-t``
      -  Allow output only to the terminal window without saving additional output files.
      -  ``python3 diagnostics.py -t``
-
-   * - ``-s``
-     - Skip checking for update availability for existing databases.
-     -  ``python3 diagnostics.py -s``
 
    * - ``-u``
      - Download new databases if they are available.

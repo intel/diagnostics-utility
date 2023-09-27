@@ -50,63 +50,63 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
 
         mocked_intel_gpus_not_found_handler.side_effect = lambda node: node.update({
             "Warning": {
-                "Value": "Value",
-                "RetVal": "WARNING"
+                "CheckResult": "some data",
+                "CheckStatus": "WARNING"
             }
         })
         mocked_get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_intel_device_is_available_info.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_permissions_to_card_info.side_effect = lambda node: node.update({
             "Check 3": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_permissions_to_render_info.side_effect = lambda node: node.update({
             "Check 4": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_dmesg_i915_init_errors_info.side_effect = lambda node: node.update({
             "Check 5": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_gpu_errors_info.side_effect = lambda node: node.update({
             "Check 6": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_openmp_offload_info.side_effect = lambda node: node.update({
             "Check 7": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_dpcpp_offload_info.side_effect = lambda node: node.update({
             "Check 8": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = oneapi_gpu_checker.run_oneapi_gpu_check({})
+        actual = oneapi_gpu_checker.run_oneapi_gpu_check({})
 
         mocked_are_intel_gpus_found.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     @patch("checkers_py.linux.oneapi_gpu_checker.get_dpcpp_offload_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_openmp_offload_info")
@@ -132,71 +132,71 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
 
         mocked_get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_intel_device_is_available_info.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_permissions_to_card_info.side_effect = lambda node: node.update({
             "Check 3": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_permissions_to_render_info.side_effect = lambda node: node.update({
             "Check 4": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_dmesg_i915_init_errors_info.side_effect = lambda node: node.update({
             "Check 5": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_gpu_errors_info.side_effect = lambda node: node.update({
             "Check 6": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_openmp_offload_info.side_effect = lambda node: node.update({
             "Check 7": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_dpcpp_offload_info.side_effect = lambda node: node.update({
             "Check 8": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = oneapi_gpu_checker.run_oneapi_gpu_check({})
+        actual = oneapi_gpu_checker.run_oneapi_gpu_check({})
 
         mocked_are_intel_gpus_found.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = oneapi_gpu_checker.get_api_version()
+        actual = oneapi_gpu_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = oneapi_gpu_checker.get_check_list()
+        actual = oneapi_gpu_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in actual:
             self.assertIsInstance(metadata, expected)
 
 
@@ -207,8 +207,8 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         expected = {
             "Intel® Graphics Driver is loaded.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
         }
@@ -231,18 +231,18 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.side_effect = [lsmod_mock, grep_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_i915_driver_loaded_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_i915_driver_loaded_info_lsmod_return_code_is_not_zero(self, mocked_open):
 
         expected = {
             "Intel® Graphics Driver is loaded.": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "Cannot get information about kernel modules that are currently loaded",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
@@ -254,18 +254,18 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.return_value = lsmod_mock
 
-        value = {}
+        actual = {}
 
-        oneapi_gpu_checker.get_i915_driver_loaded_info(value)
+        oneapi_gpu_checker.get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_i915_driver_loaded_info_grep_return_code_is_not_zero_or_one(self, mocked_open):
         expected = {
             "Intel® Graphics Driver is loaded.": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "Cannot get information about whether the Intel® Graphics Driver is loaded.",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
@@ -281,18 +281,18 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.side_effect = [lsmod_mock, grep_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_i915_driver_loaded_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_i915_driver_loaded_info_grep_return_empty_line(self, mocked_open):
 
         expected = {
             "Intel® Graphics Driver is loaded.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "lsmod | grep i915",
                 "Message": "Module i915 is not loaded.",
                 "HowToFix": "Try to load the i915 module with the following command: modprobe i915.",
@@ -311,27 +311,27 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.side_effect = [lsmod_mock, grep_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_i915_driver_loaded_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_get_i915_driver_loaded_info_subprocess_raise_exception(self, mocked_open):
 
         expected = {
             "Intel® Graphics Driver is loaded.": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "test message",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
-        value = {}
-        oneapi_gpu_checker.get_i915_driver_loaded_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetIntelDeviceAvailableInfo(unittest.TestCase):
@@ -340,31 +340,31 @@ class TestGetIntelDeviceAvailableInfo(unittest.TestCase):
     def test_get_intel_device_available_info_positive(self, mocked_render_devices):
         expected = {
             "Intel Graphics Device is available": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "ls /dev/dri/ | grep renderD"
             }
         }
 
-        value = {}
-        oneapi_gpu_checker.get_intel_device_is_available_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_intel_device_is_available_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker.get_render_devices", return_value=[])
     def test_get_intel_device_available_info_negative(self, mocked_render_devices):
         expected = {
             "Intel Graphics Device is available": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "ls /dev/dri/ | grep renderD",
                 "Message": "Intel Graphics Device is not detected.",
                 "HowToFix": "Check if the graphics driver is installed."
             }
         }
 
-        value = {}
-        oneapi_gpu_checker.get_intel_device_is_available_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_intel_device_is_available_info(actual)
+        self.assertEqual(expected, actual)
 
 
 class TestGetPermissionsToRenderInfo(unittest.TestCase):
@@ -374,23 +374,23 @@ class TestGetPermissionsToRenderInfo(unittest.TestCase):
     def test_get_permissions_to_render_info_positive(self, mocked_render_devices, mocked_access):
         expected = {
             "Render device accessible to current user.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "ls -l /dev/dri/ | grep renderD"
             }
         }
 
-        value = {}
-        oneapi_gpu_checker.get_permissions_to_render_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_permissions_to_render_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("os.access", return_value=False)
     @patch("checkers_py.linux.oneapi_gpu_checker.get_render_devices", return_value=["/dev/dri/renderD128"])
     def test_get_permissions_to_render_info_negative(self, mocked_render_devices, mocked_access):
         expected = {
             "Render device accessible to current user.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "ls -l /dev/dri/ | grep renderD",
                 "Message": "Current user does not have access to any render device.",
                 "HowToFix": "Try to run the diagnostics with administrative privileges "
@@ -399,9 +399,9 @@ class TestGetPermissionsToRenderInfo(unittest.TestCase):
             }
         }
 
-        value = {}
-        oneapi_gpu_checker.get_permissions_to_render_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_permissions_to_render_info(actual)
+        self.assertEqual(expected, actual)
 
 
 class TestGetPermissionsToCardInfo(unittest.TestCase):
@@ -411,23 +411,23 @@ class TestGetPermissionsToCardInfo(unittest.TestCase):
     def test_get_permissions_to_card_info_positive(self, mocked_render_devices, mocked_access):
         expected = {
             "Card device accessible to current user": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "ls -l /dev/dri/ | grep card"
             }
         }
 
-        value = {}
-        oneapi_gpu_checker.get_permissions_to_card_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_permissions_to_card_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("os.access", return_value=False)
     @patch("checkers_py.linux.oneapi_gpu_checker.get_card_devices", return_value=["/dev/dri/card0"])
     def test_get_permissions_to_card_info_negative(self, mocked_render_devices, mocked_access):
         expected = {
             "Card device accessible to current user": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "ls -l /dev/dri/ | grep card",
                 "Message": "Current user does not have access to any card device.",
                 "HowToFix": "Try to run the diagnostics with administrative privileges "
@@ -435,9 +435,9 @@ class TestGetPermissionsToCardInfo(unittest.TestCase):
             }
         }
 
-        value = {}
-        oneapi_gpu_checker.get_permissions_to_card_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_permissions_to_card_info(actual)
+        self.assertEqual(expected, actual)
 
 
 class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
@@ -446,11 +446,11 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
     def test_get_dmesg_i915_init_errors_info_dmesg_return_code_is_not_zero(self, mocked_open):
         expected = {
             "dmesg doesn't contain i915 errors": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dmesg -T | grep i915 | grep failed",
                 "Message": "Cannot get information about timestamp from the kernel ring buffer.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "Try to re-run this check with administrative privileges. If issue persists, please report it to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
         dmesg_mock = MagicMock()
@@ -459,20 +459,20 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
 
         mocked_open.return_value = dmesg_mock
 
-        value = {}
-        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_dmesg_i915_init_errors_info_grep_return_code_is_not_zero_or_one(self, mocked_open):
         expected = {
             "dmesg doesn't contain i915 errors": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dmesg -T | grep i915 | grep failed",
                 "Message": "Cannot get information about i915 initialization errors.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "Try to re-run this check with administrative privileges. If issue persists, please report it to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
         dmesg_mock = MagicMock()
@@ -484,18 +484,18 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_dmesg_i915_init_errors_info_with_initialization_errors(self, mocked_open):
         self.maxDiff = None
         expected = {
             "dmesg doesn't contain i915 errors": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "dmesg -T | grep i915 | grep failed",
                 "Message": "Initialization errors seen in i915 driver.",
                 "HowToFix": "Check related dmesg logs above for more details.",
@@ -517,17 +517,17 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_dmesg_i915_init_errors_info_without_initialization_errors(self, mocked_open):
         expected = {
             "dmesg doesn't contain i915 errors": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "dmesg -T | grep i915 | grep failed"
             }
         }
@@ -544,10 +544,10 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_dmesg_i915_init_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetGpuErrorsInfo(unittest.TestCase):
@@ -556,12 +556,12 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
     def test_get_gpu_errors_info_dmesg_return_code_is_not_zero(self, mocked_open):
         expected = {
             "dmesg doesn't contain user errors related to GPU operations": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                            "Please -e segfault | tail -20",
                 "Message": "Cannot get information about timestamp from the kernel ring buffer.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "Try to re-run this check with administrative privileges. If issue persists, please report it to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
@@ -571,21 +571,21 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
 
         mocked_open.return_value = dmesg_mock
 
-        value = {}
-        oneapi_gpu_checker.get_gpu_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_gpu_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_gpu_errors_info_grep_return_code_is_not_zero_or_one(self, mocked_open):
         expected = {
             "dmesg doesn't contain user errors related to GPU operations": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                            "Please -e segfault | tail -20",
                 "Message": "Cannot get information about i915 usage errors.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "Try to re-run this check with administrative privileges. If issue persists, please report it to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
@@ -601,21 +601,21 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock, tail_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_gpu_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_gpu_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_gpu_errors_info_tail_return_code_is_not_zero(self, mocked_open):
         expected = {
             "dmesg doesn't contain user errors related to GPU operations": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                            "Please -e segfault | tail -20",
                 "Message": "Cannot get information about the last i915 usage errors.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "Try to re-run this check with administrative privileges. If issue persists, please report it to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
@@ -631,17 +631,17 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock, tail_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_gpu_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_gpu_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_gpu_errors_info_tail_with_errors(self, mocked_open):
         expected = {
             "dmesg doesn't contain user errors related to GPU operations": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                            "Please -e segfault | tail -20",
                 "Message": "Found i915 usage errors.",
@@ -668,17 +668,17 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock, tail_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_gpu_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_gpu_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_gpu_errors_info_tail_without_errors(self, mocked_open):
         expected = {
             "dmesg doesn't contain user errors related to GPU operations": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "dmesg -T | grep -e HANG -e hang -e dump -e reassign -e blocked -e task: -e "
                            "Please -e segfault | tail -20"
             }
@@ -698,10 +698,10 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
 
         mocked_open.side_effect = [dmesg_mock, grep_mock, tail_mock]
 
-        value = {}
-        oneapi_gpu_checker.get_gpu_errors_info(value)
+        actual = {}
+        oneapi_gpu_checker.get_gpu_errors_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_MATMUL_FILE", "matmul")
@@ -712,8 +712,8 @@ class TestCompileTestMatmul(unittest.TestCase):
     def test__compile_test_matmul_positive(self, mocked_open):
         expected = {
             "Compile test matmul": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
             }
@@ -725,17 +725,17 @@ class TestCompileTestMatmul(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_test_matmul(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_test_matmul(actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__compile_test_matmul_icpx_return_not_zero(self, mocked_open):
         expected = {
             "Compile test matmul": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                     "Message": "Non zero return code from command: "
@@ -752,31 +752,31 @@ class TestCompileTestMatmul(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_test_matmul(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_test_matmul(actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen", side_effect=Exception("test"))
     def test__compile_test_matmul_raised_exception(self, mocked_open):
         expected = {
             "Compile test matmul": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                 "Message": "Matmul compilation failed - icpx not found.",
                 "HowToFix": "Try to: " \
                            "1) install Intel® C++ Compiler based on " \
                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                           "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
+                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
                 }
         }
         expected_error_code = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_test_matmul(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_test_matmul(actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -788,13 +788,13 @@ class TestRunTestMatmul(unittest.TestCase):
 
         expected = {
             "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
             },
             "Test simple matrix multiplication with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
             }
         }
@@ -811,24 +811,24 @@ class TestRunTestMatmul(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_matmul(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_matmul(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     def test__run_test_matmul_status_is_not_zero(self):
 
         expected = {
             "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                 "Message": "Check failed because compile test matmul failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             },
             "Test simple matrix multiplication with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                 "Message": "Check failed because compile test matmul failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
@@ -837,24 +837,24 @@ class TestRunTestMatmul(unittest.TestCase):
         expected_error_code = 1
         status = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_matmul(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_matmul(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_test_matmul_level_zero_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                 "Message": "An error occurred while running matmul. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple matrix multiplication with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
             }
         }
@@ -872,22 +872,22 @@ class TestRunTestMatmul(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_matmul(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_matmul(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_test_matmul_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
             },
             "Test simple matrix multiplication with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                 "Message": "An error occurred while running matmul. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
@@ -907,24 +907,24 @@ class TestRunTestMatmul(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_matmul(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_matmul(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_test_matmul_level_zero_and_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                 "Message": "An error occurred while running matmul. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple matrix multiplication with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                 "Message": "An error occurred while running matmul. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
@@ -944,9 +944,9 @@ class TestRunTestMatmul(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_matmul(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_matmul(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -958,8 +958,8 @@ class TestCompileTestBinoption(unittest.TestCase):
     def test__compile_test_binoption_positive(self, mocked_open):
         expected = {
             "Compile test binoption": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
             }
@@ -972,18 +972,18 @@ class TestCompileTestBinoption(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_test_binoption(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_test_binoption(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__compile_test_binoption_icpx_return_not_zero(self, mocked_open):
         expected = {
             "Compile test binoption": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                 "Message": "Non zero return code from command: "
@@ -1000,33 +1000,33 @@ class TestCompileTestBinoption(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_test_binoption(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_test_binoption(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen", side_effect=Exception("test"))
     def test__compile_test_binoption_raised_exception(self, mocked_open):
         expected = {
             "Compile test binoption": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                 "Message": "Binoption compilation failed - icpx not found.",
                 "HowToFix": "Try to: " \
                            "1) install Intel® C++ Compiler based on " \
                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                           "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
+                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
                 }
         }
         expected_error_code = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_test_binoption(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_test_binoption(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -1038,13 +1038,13 @@ class TestRunTestBinoption(unittest.TestCase):
 
         expected = {
             "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
             },
             "Test simple binary options program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
             }
         }
@@ -1061,26 +1061,26 @@ class TestRunTestBinoption(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_binoption(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_binoption(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     def test__run_test_binoption_status_is_not_zero(self):
 
         expected = {
             "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                 "Message": "Check failed because compile test binoption failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
 
             },
             "Test simple binary options program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                 "Message": "Check failed because compile test binoption failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
@@ -1089,25 +1089,25 @@ class TestRunTestBinoption(unittest.TestCase):
         expected_error_code = 1
         status = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_binoption(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_binoption(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_test_binoption_level_zero_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                 "Message": "An error occurred while running binoption. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple binary options program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
             }
         }
@@ -1125,23 +1125,23 @@ class TestRunTestBinoption(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_binoption(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_binoption(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_test_binoption_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
             },
             "Test simple binary options program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                 "Message": "An error occurred while running binoption. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
@@ -1161,25 +1161,25 @@ class TestRunTestBinoption(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_binoption(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_binoption(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_test_binoption_level_zero_and_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                 "Message": "An error occurred while running binoption. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple binary options program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                 "Message": "An error occurred while running binoption. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
@@ -1199,10 +1199,10 @@ class TestRunTestBinoption(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_test_binoption(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_test_binoption(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -1216,49 +1216,49 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                               mocked_compile_binoption, mocked_run_binoption):
         expected = {
             "OpenMP GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile test matmul": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
                     },
                     "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
                     },
                     "Test simple matrix multiplication with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
                     },
                     "Compile test binoption": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
                     },
                     "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
                     },
                     "Test simple binary options program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                     }
                 },
-                "RetVal": "PASS"
+                "CheckStatus": "PASS"
             }
         }
 
         def side_effect_compile_matmul(node):
             node.update({
                 "Compile test matmul": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
                 }
@@ -1270,13 +1270,13 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_matmul(status, node):
             node.update({
                 "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
                 },
                 "Test simple matrix multiplication with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
                 }
             })
@@ -1287,8 +1287,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_binoption(node):
             node.update({
                 "Compile test binoption": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
                 }
@@ -1300,13 +1300,13 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_binoption(status, node):
             node.update({
                 "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
                 },
                 "Test simple binary options program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                 }
                 })
@@ -1314,9 +1314,9 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
 
-        value = {}
-        oneapi_gpu_checker.get_openmp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_openmp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_test_binoption")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_test_binoption")
@@ -1326,10 +1326,10 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                                            mocked_compile_binoption, mocked_run_binoption):
         expected = {
             "OpenMP GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile test matmul": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                         "Message": "Non zero return code from command: "
@@ -1337,35 +1337,35 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul'"
                     },
                     "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                         "Message": "Check failed because compile test matmul failed."
                     },
                     "Test simple matrix multiplication with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                         "Message":  "Check failed because compile test matmul failed."
                     },
                     "Compile test binoption": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
                     },
                     "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
                     },
                     "Test simple binary options program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
             }
@@ -1374,8 +1374,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_matmul(node):
             node.update({
                 "Compile test matmul": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                     "Message": "Non zero return code from command: "
@@ -1390,14 +1390,14 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_matmul(status, node):
             node.update({
                 "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                     "Message": "Check failed because compile test matmul failed."
                 },
                 "Test simple matrix multiplication with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                     "Message": "Check failed because compile test matmul failed."
                 }
@@ -1409,8 +1409,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_binoption(node):
             node.update({
                 "Compile test binoption": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
                 }
@@ -1422,13 +1422,13 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_binoption(status, node):
             node.update({
                 "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
                 },
                 "Test simple binary options program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                 }
                 })
@@ -1436,9 +1436,9 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
 
-        value = {}
-        oneapi_gpu_checker.get_openmp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_openmp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_test_binoption")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_test_binoption")
@@ -1450,44 +1450,44 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                                                      mocked_run_binoption):
         expected = {
             "OpenMP GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile test matmul": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                         "Message": "icpx not found"
                     },
                     "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                         "Message":  "Check failed because compile test matmul failed."
                     },
                     "Test simple matrix multiplication with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                         "Message":  "Check failed because compile test matmul failed."
                     },
                     "Compile test binoption": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
                     },
                     "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
                     },
                     "Test simple binary options program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
             }
@@ -1496,8 +1496,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_matmul(node):
             node.update({
                 "Compile test matmul": {
-                    "Value": "",
-                    "RetVal": "ERROR",
+                    "CheckResult": "",
+                    "CheckStatus": "ERROR",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
                     "Message": "icpx not found"
@@ -1510,14 +1510,14 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_matmul(status, node):
             node.update({
                 "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul",
                     "Message":  "Check failed because compile test matmul failed."
                 },
                 "Test simple matrix multiplication with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul",
                     "Message":  "Check failed because compile test matmul failed."
                 }
@@ -1529,8 +1529,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_binoption(node):
             node.update({
                 "Compile test binoption": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/binoption_standalone.cpp -o binoption"
                 }
@@ -1542,13 +1542,13 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_binoption(status, node):
             node.update({
                 "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption"
                 },
                 "Test simple binary options program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                 }
                 })
@@ -1556,9 +1556,9 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
 
-        value = {}
-        oneapi_gpu_checker.get_openmp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_openmp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_test_binoption")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_test_binoption")
@@ -1568,26 +1568,26 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                                               mocked_compile_binoption, mocked_run_binoption):
         expected = {
             "OpenMP GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile test matmul": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
                     },
                     "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
                     },
                     "Test simple matrix multiplication with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
                     },
                     "Compile test binoption": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                         "Message": "Non zero return code from command: "
@@ -1595,19 +1595,19 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption'"
                     },
                     "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                         "Message": "Check failed because compile test binoption failed."
                     },
                     "Test simple binary options program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                         "Message": "Check failed because compile test binoption failed."
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
             }
@@ -1616,8 +1616,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_matmul(node):
             node.update({
                 "Compile test matmul": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
                 }
@@ -1629,13 +1629,13 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_matmul(status, node):
             node.update({
                 "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
                 },
                 "Test simple matrix multiplication with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
                 }
             })
@@ -1646,8 +1646,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_binoption(node):
             node.update({
                 "Compile test binoption": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                     "Message": "Non zero return code from command: "
@@ -1662,14 +1662,14 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_binoption(status, node):
             node.update({
                 "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                     "Message": "Check failed because compile test binoption failed."
                 },
                 "Test simple binary options program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                     "Message": "Check failed because compile test binoption failed."
                 }
@@ -1678,9 +1678,9 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
 
-        value = {}
-        oneapi_gpu_checker.get_openmp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_openmp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_test_binoption")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_test_binoption")
@@ -1692,44 +1692,44 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                                                                         mocked_run_binoption):
         expected = {
             "OpenMP GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile test matmul": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
                     },
                     "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
                     },
                     "Test simple matrix multiplication with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
                     },
                     "Compile test binoption": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                         "Message": "icpx not found"
                     },
                     "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                         "Message": "Check failed because compile test binoption failed."
                     },
                     "Test simple binary options program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                         "Message": "Check failed because compile test binoption failed."
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
             }
@@ -1738,8 +1738,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_matmul(node):
             node.update({
                 "Compile test matmul": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul"
                 }
@@ -1751,13 +1751,13 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_matmul(status, node):
             node.update({
                 "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 matmul"
                 },
                 "Test simple matrix multiplication with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL matmul"
                 }
             })
@@ -1768,8 +1768,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_compile_binoption(node):
             node.update({
                 "Compile test binoption": {
-                    "Value": "",
-                    "RetVal": "ERROR",
+                    "CheckResult": "",
+                    "CheckStatus": "ERROR",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
                     "Message": "icpx not found"
@@ -1782,14 +1782,14 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         def side_effect_run_binoption(status, node):
             node.update({
                 "Test simple binary options program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=LEVEL0 binoption",
                     "Message": "Check failed because compile test binoption failed."
                 },
                 "Test simple binary options program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                     "Message": "Check failed because compile test binoption failed."
                 }
@@ -1798,9 +1798,9 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
 
-        value = {}
-        oneapi_gpu_checker.get_openmp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_openmp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
 
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_SIMPLE_SYCL_CODE_FILE", "simple-sycl-code")
@@ -1811,8 +1811,8 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
     def test__compile_simple_sycl_code_positive(self, mocked_open):
         expected = {
             "Compile simple SYCL code": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code"
             }
@@ -1824,17 +1824,17 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_simple_sycl_code(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_simple_sycl_code(actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__compile_simple_sycl_code_dpcpp_return_not_zero(self, mocked_open):
         expected = {
             "Compile simple SYCL code": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code",
                 "Message": "'dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
@@ -1851,33 +1851,33 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_simple_sycl_code(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_simple_sycl_code(actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen", side_effect=Exception("test"))
     def test__compile_simple_sycl_code_raised_exception(self, mocked_open):
         expected = {
             "Compile simple SYCL code": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code",
                 "Message": "Sycl code compilation failed - DPC++ (dpcpp) not found.",
                 "HowToFix": "Try to: " \
                             "1) install Intel® C++ Compiler based on " \
                             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                            "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
+                            "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
             }
         }
 
         expected_error_code = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_simple_sycl_code(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_simple_sycl_code(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -1889,13 +1889,13 @@ class TestRunSimpleSyclCode(unittest.TestCase):
 
         expected = {
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
             },
             "Test simple DPC++ program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
             }
         }
@@ -1912,25 +1912,25 @@ class TestRunSimpleSyclCode(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     def test__run_simple_sycl_code_status_is_not_zero(self):
 
         expected = {
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                 "Message": "Check failed because compile simple SYCL code failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             },
             "Test simple DPC++ program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                 "Message": "Check failed because compile simple SYCL code failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
@@ -1939,25 +1939,25 @@ class TestRunSimpleSyclCode(unittest.TestCase):
         expected_error_code = 1
         status = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_simple_sycl_code_level_zero_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple DPC++ program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
             }
         }
@@ -1975,22 +1975,22 @@ class TestRunSimpleSyclCode(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_simple_sycl_code_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
             },
             "Test simple DPC++ program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
@@ -2010,25 +2010,25 @@ class TestRunSimpleSyclCode(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_simple_sycl_code_level_zero_and_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple DPC++ program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
@@ -2048,10 +2048,10 @@ class TestRunSimpleSyclCode(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_simple_sycl_code(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -2063,8 +2063,8 @@ class TestCompileParallelForProgram(unittest.TestCase):
     def test__compile_parallel_for_program_positive(self, mocked_open):
         expected = {
             "Compile parallel for program": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D"
             }
@@ -2077,18 +2077,18 @@ class TestCompileParallelForProgram(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_parallel_for_program(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_parallel_for_program(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__compile_parallel_for_program_dpcpp_return_not_zero(self, mocked_open):
         expected = {
             "Compile parallel for program": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
                 "Message": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
@@ -2104,33 +2104,33 @@ class TestCompileParallelForProgram(unittest.TestCase):
 
         mocked_open.return_value = compile_mock
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_parallel_for_program(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_parallel_for_program(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen", side_effect=Exception("test"))
     def test__compile_parallel_for_program_raised_exception(self, mocked_open):
         expected = {
             "Compile parallel for program": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
                 "Message": "Parallel code compilation failed - DPC++ (dpcpp) not found.",
                 "HowToFix": "Try to: " \
                             "1) install Intel® C++ Compiler based on " \
                             "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                            "2) set required variable by running: source /opt/intel/oneapi/setvars.sh"  # noqa E501
+                            "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
             }
         }
         expected_error_code = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._compile_parallel_for_program(value)
+        actual = {}
+        error_code = oneapi_gpu_checker._compile_parallel_for_program(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -2142,13 +2142,13 @@ class TestRunParallelForProgram(unittest.TestCase):
 
         expected = {
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
             }
         }
@@ -2165,25 +2165,25 @@ class TestRunParallelForProgram(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_parallel_for_program(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_parallel_for_program(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     def test__run_parallel_for_program_status_is_not_zero(self):
 
         expected = {
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                 "Message": "Check failed because compile parallel for program failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                 "Message": "Check failed because compile parallel for program failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
@@ -2192,26 +2192,26 @@ class TestRunParallelForProgram(unittest.TestCase):
         expected_error_code = 1
         status = 1
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_parallel_for_program(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_parallel_for_program(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_parallel_for_program_level_zero_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
                 "HowToFix":  "Look into output for more details: \n"
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
             }
         }
@@ -2229,22 +2229,22 @@ class TestRunParallelForProgram(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_parallel_for_program(status, value)
-        self.assertEqual(expected, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_parallel_for_program(status, actual)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_parallel_for_program_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
@@ -2265,26 +2265,26 @@ class TestRunParallelForProgram(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_parallel_for_program(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_parallel_for_program(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
     def test__run_simple_sycl_code_level_zero_and_opencl_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
                 "HowToFix":  "Look into output for more details: \n"
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
@@ -2305,10 +2305,10 @@ class TestRunParallelForProgram(unittest.TestCase):
 
         mocked_open.side_effect = [level_zero_mock, opencl_mock]
 
-        value = {}
-        error_code = oneapi_gpu_checker._run_parallel_for_program(status, value)
+        actual = {}
+        error_code = oneapi_gpu_checker._run_parallel_for_program(status, actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         self.assertEqual(expected_error_code, error_code)
 
 
@@ -2323,49 +2323,49 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         expected = {
             "DPC++ GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile simple SYCL code": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
                     },
                     "Test simple DPC++ program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
                     },
                     "Compile parallel for program": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
                     }
                 },
-                "RetVal": "PASS"
+                "CheckStatus": "PASS"
             }
         }
 
         def side_effect_compile_sycl(node):
             node.update({
                 "Compile simple SYCL code": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code"
                 }
@@ -2377,13 +2377,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_sycl(status, node):
             node.update({
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
                 },
                 "Test simple DPC++ program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
                 }
             })
@@ -2394,8 +2394,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_parallel(node):
             node.update({
                 "Compile parallel for program": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D"
                 }
@@ -2407,13 +2407,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_parallel(status, node):
             node.update({
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
                 }
             })
@@ -2421,9 +2421,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
-        value = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
@@ -2434,45 +2434,45 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         expected = {
             "DPC++ GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile simple SYCL code": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code",
                         "Message": "'dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code'"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Test simple DPC++ program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Compile parallel for program": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
 
@@ -2482,8 +2482,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_sycl(node):
             node.update({
                 "Compile simple SYCL code": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code",
                     "Message": "'dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
@@ -2497,14 +2497,14 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_sycl(status, node):
             node.update({
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 },
                 "Test simple DPC++ program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 }
@@ -2516,8 +2516,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_parallel(node):
             node.update({
                 "Compile parallel for program": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D"
                 }
@@ -2529,13 +2529,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_parallel(status, node):
             node.update({
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
                 }
             })
@@ -2543,9 +2543,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
-        value = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
@@ -2556,44 +2556,44 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         expected = {
             "DPC++ GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile simple SYCL code": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code",
                         "Message": "DPC++ (dpcpp) not found."
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Test simple DPC++ program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Compile parallel for program": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
 
@@ -2603,8 +2603,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_sycl(node):
             node.update({
                 "Compile simple SYCL code": {
-                    "Value": "",
-                    "RetVal": "ERROR",
+                    "CheckResult": "",
+                    "CheckStatus": "ERROR",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code",
                     "Message": "DPC++ (dpcpp) not found."
@@ -2617,14 +2617,14 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_sycl(status, node):
             node.update({
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 },
                 "Test simple DPC++ program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 }
@@ -2636,8 +2636,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_parallel(node):
             node.update({
                 "Compile parallel for program": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D"
                 }
@@ -2649,13 +2649,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_parallel(status, node):
             node.update({
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
                 }
             })
@@ -2663,9 +2663,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
-        value = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
@@ -2676,45 +2676,45 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         expected = {
             "DPC++ GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile simple SYCL code": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
                     },
                     "Test simple DPC++ program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
                     },
                     "Compile parallel for program": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D",
                         "Message": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
             }
@@ -2723,8 +2723,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_sycl(node):
             node.update({
                 "Compile simple SYCL code": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code"
                 }
@@ -2736,13 +2736,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_sycl(status, node):
             node.update({
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
                 },
                 "Test simple DPC++ program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
                 }
             })
@@ -2753,8 +2753,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_parallel(node):
             node.update({
                 "Compile parallel for program": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D",
                     "Message":  "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
@@ -2768,14 +2768,14 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_parallel(status, node):
             node.update({
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 }
@@ -2784,9 +2784,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
-        value = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
@@ -2797,44 +2797,44 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         expected = {
             "DPC++ GPU pipeline tests": {
-                "Value": {
+                "CheckResult": {
                     "Compile simple SYCL code": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
                     },
                     "Test simple DPC++ program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
                     },
                     "Compile parallel for program": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D",
                         "Message": "DPC++ (dpcpp) not found."
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     }
                 },
-                "RetVal": "FAIL",
+                "CheckStatus": "FAIL",
                 "Message": "Some checks below failed.",
                 "HowToFix": "Review output of checks for more details."
             }
@@ -2843,8 +2843,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_sycl(node):
             node.update({
                 "Compile simple SYCL code": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code"
                 }
@@ -2856,13 +2856,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_sycl(status, node):
             node.update({
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
                 },
                 "Test simple DPC++ program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "PASS",
+                    "CheckResult": "",
+                    "CheckStatus": "PASS",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
                 }
             })
@@ -2873,8 +2873,8 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_compile_parallel(node):
             node.update({
                 "Compile parallel for program": {
-                    "Value": "",
-                    "RetVal": "ERROR",
+                    "CheckResult": "",
+                    "CheckStatus": "ERROR",
                     "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D",
                     "Message":  "DPC++ (dpcpp) not found."
@@ -2887,14 +2887,14 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         def side_effect_run_parallel(status, node):
             node.update({
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
-                    "Value": "",
-                    "RetVal": "FAIL",
+                    "CheckResult": "",
+                    "CheckStatus": "FAIL",
                     "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 }
@@ -2903,9 +2903,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
 
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
-        value = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

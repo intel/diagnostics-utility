@@ -38,16 +38,16 @@ public:
 	JsonNode();
 	virtual ~JsonNode();
 
-	static void AddJsonTopNode(json_object* parent, json_object * value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, string message, string command, uint32_t verbosity, json_object * value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, string message, string command, uint32_t verbosity, string value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, string message, string command, uint32_t verbosity, uint32_t value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, uint32_t verbosity, json_object * value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, uint32_t verbosity, string value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, uint32_t verbosity, uint32_t value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, json_object * value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, string value);
-	static void AddJsonNode(json_object* parent, string name, string retVal, uint32_t value);
+	static void AddJsonTopNode(json_object* parent, json_object * check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, string message, string command, uint32_t verbosity, json_object * check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, string message, string command, uint32_t verbosity, string check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, string message, string command, uint32_t verbosity, uint32_t check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, uint32_t verbosity, json_object * check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, uint32_t verbosity, string check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, uint32_t verbosity, uint32_t check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, json_object * check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, string check_result);
+	static void AddJsonNode(json_object* parent, string name, string check_status, uint32_t check_result);
 
 	static bool ParseFile(string name, json_object** root, string message);
 	static json_object* GetObject(json_object* root, const string path);

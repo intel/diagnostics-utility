@@ -241,8 +241,8 @@ bool BInstallerChecker::FindCaches(string path, vector<string>& cashPaths, strin
 	string out;
 	// Find paths to package manager DB files within the specified path.
 	ss << "find " << path << " -name '" << DB_NAME << "' -type f 2>/dev/null";
-	int retval = CheckerHelper::RunCommand(ss.str().c_str(), out);
-	if (retval != 0 || out.size() == 0)	{
+	int exit_status = CheckerHelper::RunCommand(ss.str().c_str(), out);
+	if (exit_status != 0 || out.size() == 0)	{
 		message = "Cannot obtain paths to package manager databases.";
 		return false;
 	}

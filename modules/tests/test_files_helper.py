@@ -54,10 +54,10 @@ class TestGetJsonContentFromFile(unittest.TestCase):
         file = Mock()
         file.exists.return_value = True
 
-        value = files_helper.get_json_content_from_file(file)
+        actual = files_helper.get_json_content_from_file(file)
 
         file.exists.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", mock_open(read_data="Wrong content"))
     def test_content_is_not_json(self):
@@ -74,10 +74,10 @@ class TestReadConfigData(unittest.TestCase):
     def test_return_valid_config(self, mock_get_json_content_from_file):
         expected = [{"path": "check.so", "name": "check_name"}]
 
-        value = files_helper.read_config_data("config.json")
+        actual = files_helper.read_config_data("config.json")
 
         mock_get_json_content_from_file.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.files_helper.get_json_content_from_file",
            return_value=[{"path": "check.so"}, {"not_path_filed": "test"}])
@@ -98,17 +98,17 @@ class TestGetCheckersToLoadFromConfigData(unittest.TestCase):
         config_data = [{"path": "check.so", "name": "check_name1"}, {"name": "check_name2"}]
         expected = ["check.so"]
 
-        value = files_helper.get_checkers_to_load_from_config_data(config_data)
+        actual = files_helper.get_checkers_to_load_from_config_data(config_data)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_get_checkers_to_load_from_config_data_no_load_positive(self):
         config_data = [{"name": "check_name1"}, {"name": "check_name2"}]
         expected = []
 
-        value = files_helper.get_checkers_to_load_from_config_data(config_data)
+        actual = files_helper.get_checkers_to_load_from_config_data(config_data)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetChecksToRunFromConfigData(unittest.TestCase):
@@ -117,9 +117,9 @@ class TestGetChecksToRunFromConfigData(unittest.TestCase):
         config_data = [{"path": "check.so", "name": "check_name1"}, {"name": "check_name2"}]
         expected = {"check_name1", "check_name2"}
 
-        value = files_helper.get_checks_to_run_from_config_data(config_data)
+        actual = files_helper.get_checks_to_run_from_config_data(config_data)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetFilesListFromFolder(unittest.TestCase):
@@ -131,9 +131,9 @@ class TestGetFilesListFromFolder(unittest.TestCase):
         path.exists.return_value = True
         path.iterdir.return_value = ["file"]
 
-        value = files_helper.get_files_list_from_folder(path)
+        actual = files_helper.get_files_list_from_folder(path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_get_files_list_from_folder_path_does_not_exist(self):
         expected = []
@@ -141,9 +141,9 @@ class TestGetFilesListFromFolder(unittest.TestCase):
         path = MagicMock()
         path.exists.return_value = False
 
-        value = files_helper.get_files_list_from_folder(path)
+        actual = files_helper.get_files_list_from_folder(path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetExamineData(unittest.TestCase):
@@ -152,9 +152,9 @@ class TestGetExamineData(unittest.TestCase):
     def test_get_examine_data_positive(self, mocked_get_json_content_from_file):
         expected = {}
 
-        value = files_helper.get_examine_data(MagicMock())
+        actual = files_helper.get_examine_data(MagicMock())
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("logging.warning")
     @patch("modules.files_helper.get_json_content_from_file", side_effect=ValueError())
@@ -162,9 +162,9 @@ class TestGetExamineData(unittest.TestCase):
             self, mocked_get_json_content_from_file, mocked_log):
         expected = None
 
-        value = files_helper.get_examine_data(MagicMock())
+        actual = files_helper.get_examine_data(MagicMock())
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         mocked_log.assert_called()
 
 
@@ -174,10 +174,10 @@ class TestSaveJsonOutputFile(unittest.TestCase):
         # Example checks
         self.mock_check_c_1_name = "mocked_check_c_1"
         self.mock_check_c_1_result = {
-            "Value": {
+            "CheckResult": {
                 "Check 1": {
-                    "RetVal": "PASS",
-                    "Value": "Check 1 Value"
+                    "CheckStatus": "PASS",
+                    "CheckResult": "Check 1 Value"
                 }
             }
         }
@@ -188,10 +188,10 @@ class TestSaveJsonOutputFile(unittest.TestCase):
 
         self.mock_check_c_2_name = "mocked_check_c_2"
         self.mock_check_c_2_result = {
-            "Value": {
+            "CheckResult": {
                 "Check 2": {
-                    "RetVal": "PASS",
-                    "Value": "Check 2 Value"
+                    "CheckStatus": "PASS",
+                    "CheckResult": "Check 2 Value"
                 }
             }
         }
@@ -323,13 +323,13 @@ class TestArgsString(unittest.TestCase):
 
     def test_args_string_all_positive(self):
         args = MagicMock()
-        args.filter = ["fil"]
+        args.select = ["fil"]
         args.list = True
         args.config = Path("/home/test/config.json")
         args.force = True
         args.verbosity = 5
 
-        expected_value = "filter_fil_list_config_config_force_verbosity_5"
+        expected_value = "select_fil_list_config_config_force_verbosity_5"
 
         real_value = files_helper._args_string(args)
 
@@ -337,7 +337,7 @@ class TestArgsString(unittest.TestCase):
 
     def test_args_string_empty_positive(self):
         args = MagicMock()
-        args.filter = ["not_initialized"]
+        args.select = ["not_initialized"]
         args.list = False
         args.config = None
         args.examine = None

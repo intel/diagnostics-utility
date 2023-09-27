@@ -54,9 +54,6 @@ to date with the latest version. Updating to the latest version will provide
 updates to output messages that may give you more detail about why a check
 has a status of ERROR or FAIL.
 
-When running a check, a message will appear if the database needs to be
-updated:
-
 .. image:: images/database-needs-update.png
 
 To update the database, run the  ``--update`` argument:
@@ -77,7 +74,7 @@ A status of FAIL indicates that the check ran successfully but the result of
 the check does not meet the expected requirements. The table below shows the
 expected result and how to fix the problem.
 
-For example, running  ``python3 diagnostics.py --filter user_group_check  intel_gpu_detector_check``
+For example, running  ``python3 diagnostics.py --select user_group_check  intel_gpu_detector_check``
 may produce this output:
 
 
@@ -102,8 +99,8 @@ may produce this output:
 
   2 CHECKS, 1 PASS, 1 FAIL, 0 WARNINGS, 0 ERRORS
 
-  Console output file: /home/test/intel/diagnostics/logs/diagnostics_filter_intel_gpu_detector_check_hostname_20211123_103132327319.txt
-  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_filter_intel_gpu_detector_check_hostname_20211123_103132327361.json
+  Console output file: /home/test/intel/diagnostics/logs/diagnostics_select_intel_gpu_detector_check_hostname_20211123_103132327319.txt
+  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_intel_gpu_detector_check_hostname_20211123_103132327361.json
 
   The report was generated for the machine: hostname
   by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
@@ -129,7 +126,7 @@ check:
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | driver_compatibility_check  | Check drivers to ensure they are compatible with installed oneAPI components.                                                                      |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| gcc_version_check           | GCC compiler is not installed.                                                                                                                     |
+| gcc_compiler_check          | GCC compiler is not installed.                                                                                                                     |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | intel_gpu_detector_check    | Information only. If a gpu is found, the check will PASS. If a gpu is not found, the check will FAIL.                                              |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -165,6 +162,6 @@ relationship.
  <if all checks pass, why are they reporting to a forum?>
 
  If all checks passed, please collect all logs: run
- “python3 diagnostics.py --filter all”, find full log
+ “python3 diagnostics.py --select all”, find full log
  into $HOME/intel/diagnostics/logs (by default) and report issue to forum <link> .
 

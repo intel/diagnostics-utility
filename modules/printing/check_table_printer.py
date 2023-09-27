@@ -27,14 +27,14 @@ def print_metadata(checks, output_file: Optional[Path]) -> None:
     WIDTH_NAME_COL = max([len(check.get_metadata().name) for check in checks]) + 2 \
         if CONSOLE_WIDTH > CONSOLE_MIN \
         else min(20, max([len(check.get_metadata().name) for check in checks]) + 2)
-    WIDTH_TAGS_COL = max([len(tag) for check in checks for tag in check.get_metadata().tags.split(",")]) + 2
+    WIDTH_GROUPS_COL = max([len(group) for check in checks for group in check.get_metadata().groups.split(",")]) + 2  # noqa: E501
     WIDTH_DESCR_COL = int(
-        (CONSOLE_WIDTH - WIDTH_NAME_COL - WIDTH_TAGS_COL - (TOTAL_NUM + 1)))
+        (CONSOLE_WIDTH - WIDTH_NAME_COL - WIDTH_GROUPS_COL - (TOTAL_NUM + 1)))
 
-    table_column_names = ["Check name", "Tags", "Description"]
+    table_column_names = ["Check name", "Groups", "Description"]
     lengths = []
     lengths.append(WIDTH_NAME_COL)
-    lengths.append(WIDTH_TAGS_COL)
+    lengths.append(WIDTH_GROUPS_COL)
     lengths.append(WIDTH_DESCR_COL)
 
     # Draw title
@@ -52,7 +52,7 @@ def print_metadata(checks, output_file: Optional[Path]) -> None:
     checks_by_importance = sorted(checks, key=lambda check: check.get_metadata().merit, reverse=True)
     for check in checks_by_importance:
         metadata = check.get_metadata()
-        cols = [metadata.name, metadata.tags.replace(",", " "), metadata.descr]
+        cols = [metadata.name, metadata.groups.replace(",", " "), metadata.descr]
         draw_info_row(
             lengths, cols, output_file, column_colors=clr, column_aligment=alig, separator_line=False)
     draw_line(lengths, output_file)

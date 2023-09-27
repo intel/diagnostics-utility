@@ -18,85 +18,85 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../
 import unittest  # noqa: E402
 from unittest.mock import MagicMock  # noqa: E402
 
-from modules.filter import process_filter, get_filtered_checks  # noqa: E402
+from modules.select import process_select, get_selected_checks  # noqa: E402
 
 
-class TestProcessFilter(unittest.TestCase):
+class TestProcessSelect(unittest.TestCase):
 
-    def test_process_filter_one_filter_initialized(self):
-        expected = {"filter"}
+    def test_process_select_one_select_initialized(self):
+        expected = {"select"}
 
-        value = process_filter(["filter"])
+        actual = process_select(["select"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_process_filter_two_filter_initialized(self):
-        expected = {"filter_1", "filter_2"}
+    def test_process_select_two_select_initialized(self):
+        expected = {"select_1", "select_2"}
 
-        value = process_filter(["filter_1", "filter_2"])
+        actual = process_select(["select_1", "select_2"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_process_filter_not_initialized(self):
+    def test_process_select_not_initialized(self):
         expected = {"default"}
 
-        value = process_filter(["not_initialized"])
+        actual = process_select(["not_initialized"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
-class TestGetFilteredChecks(unittest.TestCase):
+class TestGetSelectedChecks(unittest.TestCase):
 
     def setUp(self):
         self.check_1 = MagicMock()
         self.check_1.get_metadata.return_value.name = "check_1"
-        self.check_1.get_metadata.return_value.tags = "filter_1"
+        self.check_1.get_metadata.return_value.groups = "select_1"
 
         self.check_2 = MagicMock()
         self.check_2.get_metadata.return_value.name = "check_2"
-        self.check_2.get_metadata.return_value.tags = "filter_2"
+        self.check_2.get_metadata.return_value.groups = "select_2"
 
-    def test_get_filtered_checks_all_filter_only(self):
+    def test_get_selected_checks_all_select_only(self):
         expected = [self.check_1, self.check_2]
 
-        value = get_filtered_checks([self.check_1, self.check_2], ["all"])
+        actual = get_selected_checks([self.check_1, self.check_2], ["all"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_get_filtered_checks_all_filter_not_only(self):
+    def test_get_selected_checks_all_select_not_only(self):
         expected = [self.check_1, self.check_2]
 
-        value = get_filtered_checks([self.check_1, self.check_2], ["filter_1", "all"])
+        actual = get_selected_checks([self.check_1, self.check_2], ["select_1", "all"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_get_filtered_checks_filter_by_tag(self):
+    def test_get_selected_checks_select_by_group(self):
         expected = [self.check_2]
 
-        value = get_filtered_checks([self.check_1, self.check_2], ["filter_2"])
+        actual = get_selected_checks([self.check_1, self.check_2], ["select_2"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_get_filtered_checks_filter_by_two_tags(self):
+    def test_get_selected_checks_select_by_two_groups(self):
         expected = [self.check_1, self.check_2]
 
-        value = get_filtered_checks([self.check_1, self.check_2], ["filter_1", "filter_2"])
+        actual = get_selected_checks([self.check_1, self.check_2], ["select_1", "select_2"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_get_filtered_checks_filter_by_name(self):
+    def test_get_selected_checks_select_by_name(self):
         expected = [self.check_1]
 
-        value = get_filtered_checks([self.check_1, self.check_2], ["check_1"])
+        actual = get_selected_checks([self.check_1, self.check_2], ["check_1"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
-    def test_get_filtered_checks_filter_by_name_and_tag(self):
+    def test_get_selected_checks_select_by_name_and_group(self):
         expected = [self.check_1, self.check_2]
 
-        value = get_filtered_checks([self.check_1, self.check_2], ["check_1", "filter_2"])
+        actual = get_selected_checks([self.check_1, self.check_2], ["check_1", "select_2"])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

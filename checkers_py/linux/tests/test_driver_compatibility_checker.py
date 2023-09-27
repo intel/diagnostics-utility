@@ -31,28 +31,28 @@ class TestDriverCompatibilityCheckerApiTest(unittest.TestCase):
 
         mocked_check_compatibilities.side_effect = lambda node, data: node.update({
             "Check": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "CheckResult",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = driver_compatibility_checker.run_driver_compatibility_check({})
+        actual = driver_compatibility_checker.run_driver_compatibility_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = driver_compatibility_checker.get_api_version()
+        actual = driver_compatibility_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = driver_compatibility_checker.get_check_list()
+        check_list = driver_compatibility_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -61,29 +61,29 @@ class TestCheckCompatibilities(unittest.TestCase):
     def setUp(self):
         self.data = {
             "oneapi_app_check": {
-                "Value": {
+                "CheckResult": {
                     "APP": {
-                        "RetVal": "INFO",
-                        "Value": {
+                        "CheckStatus": "INFO",
+                        "CheckResult": {
                             "oneAPI products": {
                                 "Command": "Parse installed oneapi caches",
-                                "RetVal": "INFO",
-                                "Value": {
+                                "CheckStatus": "INFO",
+                                "CheckResult": {
                                     "Intel® Advisor": {
-                                        "RetVal": "INFO",
-                                        "Value": {
+                                        "CheckStatus": "INFO",
+                                        "CheckResult": {
                                             "Version": {
-                                                "RetVal": "INFO",
-                                                "Value": "2021.4.0"
+                                                "CheckStatus": "INFO",
+                                                "CheckResult": "2021.4.0"
                                             }
                                         }
                                     },
                                     "Intel® Cluster Checker": {
-                                        "RetVal": "INFO",
-                                        "Value": {
+                                        "CheckStatus": "INFO",
+                                        "CheckResult": {
                                             "Version": {
-                                                "RetVal": "INFO",
-                                                "Value": "2021.3.0"
+                                                "CheckStatus": "INFO",
+                                                "CheckResult": "2021.3.0"
                                             }
                                         }
                                     }
@@ -94,24 +94,24 @@ class TestCheckCompatibilities(unittest.TestCase):
                 }
             },
             "gpu_backend_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU": {
-                        "RetVal": "INFO",
-                        "Value": {
+                        "CheckStatus": "INFO",
+                        "CheckResult": {
                             "Intel® oneAPI Level Zero Driver": {
-                                "Value": {
+                                "CheckResult": {
                                     "Driver information": {
-                                        "RetVal": "INFO",
-                                        "Value": {
+                                        "CheckStatus": "INFO",
+                                        "CheckResult": {
                                             "Driver # 0": {
                                                 "Command": "",
-                                                "RetVal": "INFO",
-                                                "Value": {
+                                                "CheckStatus": "INFO",
+                                                "CheckResult": {
                                                     "Driver version": {
                                                         "Command": "",
                                                         "Verbosity": 1,
-                                                        "RetVal": "INFO",
-                                                        "Value": "1.0.19310"
+                                                        "CheckStatus": "INFO",
+                                                        "CheckResult": "1.0.19310"
                                                     },
                                                 }
                                             }
@@ -120,23 +120,23 @@ class TestCheckCompatibilities(unittest.TestCase):
                                 }
                             },
                             "OpenCL™ Driver": {
-                                "Value": {
+                                "CheckResult": {
                                     "Driver information": {
-                                        "RetVal": "INFO",
-                                        "Value": {
+                                        "CheckStatus": "INFO",
+                                        "CheckResult": {
                                             "Platform # 0": {
-                                                "Value": {
+                                                "CheckResult": {
                                                     "Devices": {
-                                                        "RetVal": "INFO",
-                                                        "Value": {
+                                                        "CheckStatus": "INFO",
+                                                        "CheckResult": {
                                                             "Device # 0": {
                                                                 "Command": "",
-                                                                "RetVal": "INFO",
-                                                                "Value": {
+                                                                "CheckStatus": "INFO",
+                                                                "CheckResult": {
                                                                     "Driver version": {
                                                                         "Verbosity": 2,
-                                                                        "RetVal": "INFO",
-                                                                        "Value": "21.11.19310"
+                                                                        "CheckStatus": "INFO",
+                                                                        "CheckResult": "21.11.19310"
                                                                     }
                                                                 }
                                                             }
@@ -153,20 +153,20 @@ class TestCheckCompatibilities(unittest.TestCase):
                 }
             },
             "oneapi_env_check": {
-                "Value": {
+                "CheckResult": {
                     "oneAPI products installed in the environment": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel® oneAPI Compiler": {
-                                "Value": {
+                                "CheckResult": {
                                     "Version": {
-                                        "Value": "2021.4.0",
-                                        "RetVal": "INFO"
+                                        "CheckResult": "2021.4.0",
+                                        "CheckStatus": "INFO"
                                     }
                                 },
-                                "RetVal": "INFO"
+                                "CheckStatus": "INFO"
                             }
                         },
-                        "RetVal": "INFO"
+                        "CheckStatus": "INFO"
                     }
                 }
             }
@@ -222,30 +222,30 @@ class TestCheckCompatibilities(unittest.TestCase):
         with self.assertRaises(ValueError):
             driver_compatibility_checker._is_regression("name", "version", cursor)
 
-    def test__is_latest_version_yes_positive(self):
+    def test__is_ge_then_latest_version_in_db_yes_positive(self):
         cursor = MagicMock()
         cursor.fetchone.return_value = "version"
         expected_value = True
 
-        real_value = driver_compatibility_checker._is_latest_version("name", "version", cursor)
+        real_value = driver_compatibility_checker._is_ge_then_latest_version_in_db("name", "version", cursor)
 
         self.assertEqual(real_value, expected_value)
 
-    def test__is_latest_version_no_positive(self):
+    def test__is_ge_then_latest_version_in_db_no_positive(self):
         cursor = MagicMock()
-        cursor.fetchone.return_value = "version2"
+        cursor.fetchone.return_value = ("11.22.33",)
         expected_value = False
 
-        real_value = driver_compatibility_checker._is_latest_version("name", "version", cursor)
+        real_value = driver_compatibility_checker._is_ge_then_latest_version_in_db("name", "10.20.30", cursor)
 
         self.assertEqual(real_value, expected_value)
 
-    def test__is_latest_version_negative(self):
+    def test__is_ge_then_latest_version_in_db_negative(self):
         cursor = MagicMock()
         cursor.execute.side_effect = ValueError()
 
         with self.assertRaises(ValueError):
-            driver_compatibility_checker._is_latest_version("name", "version", cursor)
+            driver_compatibility_checker._is_ge_then_latest_version_in_db("name", "version", cursor)
 
     def test_get_gpu_driver_version_positive(self):
         expected_value = {"Intel® oneAPI Level Zero": "1.0.19310", "OpenCL™": "21.11.19310"}
@@ -294,8 +294,8 @@ class TestCheckCompatibilities(unittest.TestCase):
         expected_value = {
             "Regression": {
                 "Message": "Installed version of name is regression.",
-                "RetVal": "FAIL",
-                "Value": "Yes"
+                "CheckStatus": "FAIL",
+                "CheckResult": "Yes"
             }
         }
 
@@ -308,8 +308,8 @@ class TestCheckCompatibilities(unittest.TestCase):
     def test__check_regression_no_positive(self, mocked__is_regression):
         expected_value = {
             "Regression": {
-                "RetVal": "PASS",
-                "Value": "No"
+                "CheckStatus": "PASS",
+                "CheckResult": "No"
             }
         }
 
@@ -323,8 +323,8 @@ class TestCheckCompatibilities(unittest.TestCase):
         expected_value = {
             "Regression": {
                 "Message": "Error",
-                "RetVal": "ERROR",
-                "Value": "Undefined",
+                "CheckStatus": "ERROR",
+                "CheckResult": "Undefined",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
@@ -333,29 +333,29 @@ class TestCheckCompatibilities(unittest.TestCase):
 
         self.assertEqual(real_value, expected_value)
 
-    @patch("checkers_py.linux.driver_compatibility_checker._is_latest_version", return_value=True)
+    @patch("checkers_py.linux.driver_compatibility_checker._is_ge_then_latest_version_in_db", return_value=True)  # noqa E501
     @patch("checkers_py.linux.driver_compatibility_checker._check_regression")
-    def test__check_drivers_positive(self, mocked__check_regression, mocked__is_latest_version):
+    def test__check_drivers_positive(self, mocked__check_regression, mocked__is_ge_then_latest_version_in_db):
         mocked__check_regression.side_effect = lambda node, name, version, cursor: node.update({
             "Regression": {
-                "RetVal": "PASS",
-                "Value": "No"
+                "CheckStatus": "PASS",
+                "CheckResult": "No"
             }
         })
         expected_value = {
             "GPU drivers information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "name": {
-                        "RetVal": "INFO",
-                        "Value": {
+                        "CheckStatus": "INFO",
+                        "CheckResult": {
                             "Regression": {
-                                "RetVal": "PASS",
-                                "Value": "No"
+                                "CheckStatus": "PASS",
+                                "CheckResult": "No"
                             },
                             "Version": {
-                                "RetVal": "INFO",
-                                "Value": "version"
+                                "CheckStatus": "INFO",
+                                "CheckResult": "version"
                             }
                         }
                     }
@@ -372,8 +372,8 @@ class TestCheckCompatibilities(unittest.TestCase):
         expected_value = {
             "GPU drivers information": {
                 "Message": "There is no information about GPU driver(s).",
-                "RetVal": "WARNING",
-                "Value": {}
+                "CheckStatus": "WARNING",
+                "CheckResult": {}
             }
         }
 
@@ -382,13 +382,13 @@ class TestCheckCompatibilities(unittest.TestCase):
 
         self.assertEqual(real_value, expected_value)
 
-    @patch("checkers_py.linux.driver_compatibility_checker._is_latest_version", side_effect=ValueError("Error"))  # noqa: E501
-    def test__check_drivers_error_positive(self, mocked__is_latest_version):
+    @patch("checkers_py.linux.driver_compatibility_checker._is_ge_then_latest_version_in_db", side_effect=ValueError("Error"))  # noqa: E501
+    def test__check_drivers_error_positive(self, mocked__is_ge_then_latest_version_in_db):
         expected_value = {
             "GPU drivers information": {
                 "Message": "Error",
-                "RetVal": "ERROR",
-                "Value": {},
+                "CheckStatus": "ERROR",
+                "CheckResult": {},
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
@@ -402,11 +402,11 @@ class TestCheckCompatibilities(unittest.TestCase):
     def test__check_compatibilities_env_positive(self, mocked__get_compatibilities_for_product):
         expected_value = {
             "Compatibility of the products in the environment": {
-                "RetVal": "PASS",
-                "Value": {
+                "CheckStatus": "PASS",
+                "CheckResult": {
                     "name-version": {
-                        "RetVal": "PASS",
-                        "Value": "Yes"
+                        "CheckStatus": "PASS",
+                        "CheckResult": "Yes"
                     }
                 }
             }
@@ -428,12 +428,12 @@ class TestCheckCompatibilities(unittest.TestCase):
             self, mocked__get_compatibilities_for_product):
         expected_value = {
             "Compatibility of the products in the environment": {
-                "RetVal": "PASS",
-                "Value": {
+                "CheckStatus": "PASS",
+                "CheckResult": {
                     "name-version": {
                         "Message": "Installed version of LevelZero not compatible with the version of the name.",  # noqa: E501
-                        "RetVal": "FAIL",
-                        "Value": "No"
+                        "CheckStatus": "FAIL",
+                        "CheckResult": "No"
                     }
                 }
             }
@@ -454,13 +454,13 @@ class TestCheckCompatibilities(unittest.TestCase):
     def test__check_compatibilities_empty_dep_positive(self, mocked__get_compatibilities_for_product):
         expected_value = {
             "Compatibility of the installed products": {
-                "RetVal": "PASS",
-                "Value": {
+                "CheckStatus": "PASS",
+                "CheckResult": {
                     "name-version": {
                         "Message": "There is no information about name compatibilities. "
                                    "To get the latest version of oneAPI products, visit https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-linux/top/installation.html.",  # noqa: E501,
-                        "RetVal": "WARNING",
-                        "Value": "Undefined"
+                        "CheckStatus": "WARNING",
+                        "CheckResult": "Undefined"
                     }
                 }
             }
@@ -481,8 +481,8 @@ class TestCheckCompatibilities(unittest.TestCase):
         expected_value = {
             "Compatibility of the installed products": {
                 "Message": "There is no information about GPU driver(s).",
-                "RetVal": "WARNING",
-                "Value": {}
+                "CheckStatus": "WARNING",
+                "CheckResult": {}
             }
         }
 
@@ -501,8 +501,8 @@ class TestCheckCompatibilities(unittest.TestCase):
         expected_value = {
             "Compatibility of the installed products": {
                 "Message": "There are no products detected.",
-                "RetVal": "WARNING",
-                "Value": {}
+                "CheckStatus": "WARNING",
+                "CheckResult": {}
             }
         }
 
@@ -523,8 +523,8 @@ class TestCheckCompatibilities(unittest.TestCase):
         expected_value = {
             "Compatibility of the installed products": {
                 "Message": "Error",
-                "RetVal": "ERROR",
-                "Value": {},
+                "CheckStatus": "ERROR",
+                "CheckResult": {},
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
@@ -541,73 +541,73 @@ class TestCheckCompatibilities(unittest.TestCase):
         self.assertEqual(real_value, expected_value)
 
     @patch("sqlite3.connect")
-    @patch("checkers_py.linux.driver_compatibility_checker._is_latest_version", side_effect=[True, True])
+    @patch("checkers_py.linux.driver_compatibility_checker._is_ge_then_latest_version_in_db", side_effect=[True, True])   # noqa E501
     @patch("checkers_py.linux.driver_compatibility_checker._is_regression", side_effect=[False, False])
     @patch("checkers_py.linux.driver_compatibility_checker._get_compatibilities_for_product", side_effect=[{"Intel® oneAPI Level Zero": "1.0.19310", "OpenCL™": "21.11.19310"}]*3)  # noqa: E501
     def test_check_compatibilities_positive(
             self,
             moked__get_compatibilities_for_product,
             moked__is_regression,
-            mocked__is_latest_version,
+            mocked__is_ge_then_latest_version_in_db,
             mocked_connect):
         expected_value = {
             "oneAPI products compatibilities with drivers": {
-                "Value": {
+                "CheckResult": {
                     "GPU drivers information": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel® oneAPI Level Zero": {
-                                "Value": {
+                                "CheckResult": {
                                     "Version": {
-                                        "Value": "1.0.19310",
-                                        "RetVal": "INFO"
+                                        "CheckResult": "1.0.19310",
+                                        "CheckStatus": "INFO"
                                     },
                                     "Regression": {
-                                        "Value": 'No',
-                                        "RetVal": 'PASS'
+                                        "CheckResult": 'No',
+                                        "CheckStatus": 'PASS'
                                     }
                                 },
-                                "RetVal": "INFO"
+                                "CheckStatus": "INFO"
                             },
                             "OpenCL™": {
-                                'Value': {
+                                'CheckResult': {
                                     'Version': {
-                                        'Value': '21.11.19310',
-                                        'RetVal': 'INFO'
+                                        'CheckResult': '21.11.19310',
+                                        'CheckStatus': 'INFO'
                                     },
                                     'Regression': {
-                                        'Value': 'No',
-                                        'RetVal': 'PASS'
+                                        'CheckResult': 'No',
+                                        'CheckStatus': 'PASS'
                                     }
                                 },
-                                'RetVal': 'INFO'
+                                'CheckStatus': 'INFO'
                             }
                         },
-                        'RetVal': 'INFO'
+                        'CheckStatus': 'INFO'
                     },
                     'Compatibility of the installed products': {
-                        'Value': {
+                        'CheckResult': {
                             'Intel® Advisor-2021.4.0': {
-                                'Value': 'Yes',
-                                'RetVal': 'PASS'
+                                'CheckResult': 'Yes',
+                                'CheckStatus': 'PASS'
                             },
                             'Intel® Cluster Checker-2021.3.0': {
-                                'Value': 'Yes',
-                                'RetVal': 'PASS'
+                                'CheckResult': 'Yes',
+                                'CheckStatus': 'PASS'
                             }
                         },
-                        'RetVal': 'PASS'
+                        'CheckStatus': 'PASS'
                     },
                     'Compatibility of the products in the environment': {
-                        'Value': {
+                        'CheckResult': {
                             'Intel® oneAPI Compiler-2021.4.0': {
-                                'Value': 'Yes',
-                                'RetVal': 'PASS'
+                                'CheckResult': 'Yes',
+                                'CheckStatus': 'PASS'
                             }
                         },
-                        'RetVal': 'PASS'
+                        'CheckStatus': 'PASS'
                     }
                 },
-                'RetVal': 'PASS'
+                'CheckStatus': 'PASS'
             }
         }
 
@@ -625,7 +625,7 @@ class TestCheckCompatibilities(unittest.TestCase):
                         "date_of_creation": "02022022",
                         "compatibility": {
                             "driver_compatibility_check": [
-                                1
+                                2
                             ]
                         },
                         "hash": "ffe711b687b6732c637cd2f2306b5fb5a9381bc924518e014aa4741fb16c2a02c9b282bad96385244ba8ee0a3e18c7ea"

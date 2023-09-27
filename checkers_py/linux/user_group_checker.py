@@ -38,8 +38,8 @@ def check_user_in_required_groups(json_node: Dict) -> None:
     if len(card_devices) == 0 and len(render_devices) == 0:
         json_node.update({
             "user_group_check": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Message": "Direct Rendering Infrastructure (DRI) cannot find graphics hardware.",
                 "HowToFix": "For Intel GPU(s) install and load the i915 driver."
             }
@@ -51,48 +51,49 @@ def check_user_in_required_groups(json_node: Dict) -> None:
 
     user_is_in_sudo = "sudo" in user_groups
     for required_group in required_groups:
-        value = {"Value": "", "RetVal": "PASS", "Command": f"groups | grep {required_group}"}
+        check_result = {"CheckResult": "", "CheckStatus": "PASS",
+                        "Command": f"groups | grep {required_group}"}
         user_is_not_in_required_group = required_group not in user_groups
         if user_is_not_in_required_group:
-            value["RetVal"] = "FAIL"
+            check_result["CheckStatus"] = "FAIL"
             if user_is_in_sudo:
-                value["Message"] = f"Current user is not part of the {required_group} group."
-                value["HowToFix"] = f"Add current user to the {required_group} group. " \
-                                    f"Then restart the terminal and try again."
-                value["AutomationFix"] = f"sudo usermod -a -G {required_group} {username}"
+                check_result["Message"] = f"Current user is not part of the {required_group} group."
+                check_result["HowToFix"] = f"Add current user to the {required_group} group. " \
+                    f"Then restart the terminal and try again."
+                check_result["AutomationFix"] = f"sudo usermod -a -G {required_group} {username}"
             else:
-                value["Message"] = f"Current user is not part of the {required_group} group."
-                value["HowToFix"] = f"Contact the system administrator to add current user " \
-                                    f"to the {required_group} group."
-        json_node.update({f"Current user is in the {required_group} group": value})
+                check_result["Message"] = f"Current user is not part of the {required_group} group."
+                check_result["HowToFix"] = f"Contact the system administrator to add current user " \
+                    f"to the {required_group} group."
+        json_node.update({f"Current user is in the {required_group} group": check_result})
 
 
 def run_user_group_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}}
+    result_json = {"CheckResult": {}}
 
     current_user_is_root = os.getuid() == 0
     if current_user_is_root:
-        result_json["Value"].update({
+        result_json["CheckResult"].update({
             "user_group_check": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Message": "Root user does not need to be in groups to have access to devices. "
                            "The root user always has access to devices."
             }
         })
     else:
         if not are_intel_gpus_found(data):
-            result_json["Value"].update({
+            result_json["CheckResult"].update({
                 "user_group_check": {
-                    "Value": "",
-                    "RetVal": "ERROR",
+                    "CheckResult": "",
+                    "CheckStatus": "ERROR",
                     "Message": "Check cannot verify that user is in the same group as the GPU(s) "
                                "because there are no Intel GPU(s) on the system.",
                     "HowToFix": "Ignore this error if you do not have Intel GPU(s) on the system."
                 }
             })
         else:
-            check_user_in_required_groups(result_json["Value"])
+            check_user_in_required_groups(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -101,19 +102,19 @@ def run_user_group_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="user_group_check",
         type="Data",
-        tags="default,profiling,gpu,runtime,target",
+        groups="default,profiling,gpu,runtime,target",
         descr="This check verifies that the current user is in the same group as the GPU(s).",
-        dataReq="{\"intel_gpu_detector_check\": 1}",
+        dataReq="{\"intel_gpu_detector_check\": 2}",
         merit=80,
         timeout=30,
-        version=1,
+        version=2,
         run="run_user_group_check"
     )
     return [someCheck]

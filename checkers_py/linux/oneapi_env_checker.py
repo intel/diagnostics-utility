@@ -20,7 +20,7 @@ from modules.files_helper import get_json_content_from_file
 
 
 def get_oneapi_env_versions(json_node: Dict):
-    value = {"Value": {}, "RetVal": "INFO"}
+    check_result = {"CheckResult": {}, "CheckStatus": "INFO"}
     try:
         oneapi_product_names_map = get_json_content_from_file(Path(__file__).parent.resolve() / "data" / "oneapi_names_map.json")  # noqa: E501
         if not oneapi_product_names_map:
@@ -39,33 +39,37 @@ def get_oneapi_env_versions(json_node: Dict):
                 product_version_match = re.search(product_versions_pattern, path)
                 if product_version_match:
                     product_versions.add(product_version_match.group(1))
-            product_value = {"Value": {"Version": {"Value": "", "RetVal": "INFO"}}, "RetVal": "INFO"}
+            product_value = {"CheckResult":
+                             {"Version": {
+                                 "CheckResult": "",
+                                 "CheckStatus": "INFO"}},
+                             "CheckStatus": "INFO"}
             if len(product_versions) == 0:
                 continue
             elif len(product_versions) == 1:
-                product_value["Value"]["Version"]["Value"] = list(product_versions)[0]
+                product_value["CheckResult"]["Version"]["CheckResult"] = list(product_versions)[0]
             else:
-                product_value["Value"]["Version"]["Value"] = ",".join(sorted(product_versions))
-                product_value["Value"]["Version"]["RetVal"] = "WARNING"
-                product_value["Value"]["Version"]["Message"] = f"Several versions of {long_name} was found in the current environment."  # noqa: E501
-            value["Value"].update({long_name: product_value})
-        if not value["Value"]:
-            value["RetVal"] = "WARNING"
-            value["Message"] = "There are no oneAPI products found in the current environment."
+                product_value["CheckResult"]["Version"]["CheckResult"] = ",".join(sorted(product_versions))
+                product_value["CheckResult"]["Version"]["CheckStatus"] = "WARNING"
+                product_value["CheckResult"]["Version"]["Message"] = f"Several versions of {long_name} was found in the current environment."  # noqa: E501
+            check_result["CheckResult"].update({long_name: product_value})
+        if not check_result["CheckResult"]:
+            check_result["CheckStatus"] = "WARNING"
+            check_result["Message"] = "There are no oneAPI products found in the current environment."
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
 
-    json_node.update({"oneAPI products installed in the environment": value})
+    json_node.update({"oneAPI products installed in the environment": check_result})
 
 
 def run_oneapi_env_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}, "RetVal": "INFO"}
+    result_json = {"CheckResult": {}, "CheckStatus": "INFO"}
 
-    get_oneapi_env_versions(result_json["Value"])
+    get_oneapi_env_versions(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -75,19 +79,19 @@ def run_oneapi_env_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="oneapi_env_check",
         type="Data",
-        tags="default,sysinfo,compile,runtime,host,target",
+        groups="default,sysinfo,compile,runtime,host,target",
         descr="This check shows the version information of the oneAPI products installed in the environment.",
         dataReq="{}",
         merit=20,
         timeout=5,
-        version=1,
+        version=2,
         run="run_oneapi_env_check"
     )
     return [someCheck]

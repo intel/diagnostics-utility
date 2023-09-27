@@ -19,5 +19,17 @@ other than those that are expressly stated in the License.
 
 using namespace std;
 
+class GpuBackendChecker {
+    private:
+        LZ_DriverChecker* lzDriverChecker;
+        CL_DriverChecker* clDriverChecker;
+
+    public:
+        GpuBackendChecker(LZ_DriverChecker* lzDriverChecker, CL_DriverChecker* clDriverChecker);
+        ~GpuBackendChecker() = default;
+
+        int PerformCheck(string &message);
+};
+
 
 #endif /* GPU_BACKEND_CHECK_H_ */

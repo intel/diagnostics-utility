@@ -36,7 +36,7 @@ class TestPrintMetadata(unittest.TestCase):
                 metadata=CheckMetadataPy(
                     name="name_of_check",
                     type="type",
-                    tags="tag1,tag2,tag3",
+                    groups="group1,group2,group3",
                     descr="description",
                     dataReq="{}",
                     merit=0,
@@ -49,7 +49,7 @@ class TestPrintMetadata(unittest.TestCase):
                 metadata=CheckMetadataPy(
                     name="too_long_name_of_check",
                     type="type",
-                    tags="tag1,tag2,tag3",
+                    groups="group1,group2,group3",
                     descr="description",
                     dataReq="{}",
                     merit=0,
@@ -63,13 +63,13 @@ class TestPrintMetadata(unittest.TestCase):
     @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     def test_print_metadata_console_min_width_less_positive(self, mock_get_terminal_size, mocked_print_ex):
-        expected_stdout = "+---------------+------+-----------------------------------+\n" + \
-                          f"|{Colors.Yellow}  Check name   {Colors.Default}|{Colors.Yellow} Tags {Colors.Default}|{Colors.Yellow}            Description            {Colors.Default}|\n" + \
-                          "+---------------+------+-----------------------------------+\n" + \
-                          "| name_of_check | tag1 | description                       |\n" + \
-                          "|               | tag2 |                                   |\n" + \
-                          "|               | tag3 |                                   |\n" + \
-                          "+---------------+------+-----------------------------------+\n"  # noqa: E501
+        expected_stdout = "+---------------+--------+---------------------------------+\n" + \
+                          f"|{Colors.Yellow}  Check name   {Colors.Default}|{Colors.Yellow} Groups {Colors.Default}|{Colors.Yellow}           Description           {Colors.Default}|\n" + \
+                          "+---------------+--------+---------------------------------+\n" + \
+                          "| name_of_check | group1 | description                     |\n" + \
+                          "|               | group2 |                                 |\n" + \
+                          "|               | group3 |                                 |\n" + \
+                          "+---------------+--------+---------------------------------+\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_metadata(self.check_list[0:1], None)
@@ -78,13 +78,13 @@ class TestPrintMetadata(unittest.TestCase):
     @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((60, 0)))
     def test_print_metadata_console_min_width_more_positive(self, mock_get_terminal_size, mocked_print_ex):
-        expected_stdout = "+--------------------+------+------------------------------+\n" + \
-                          f"|{Colors.Yellow}     Check name     {Colors.Default}|{Colors.Yellow} Tags {Colors.Default}|{Colors.Yellow}         Description          {Colors.Default}|\n" + \
-                          "+--------------------+------+------------------------------+\n" + \
-                          "| too_long_name_of_c | tag1 | description                  |\n" + \
-                          "| heck               | tag2 |                              |\n" + \
-                          "|                    | tag3 |                              |\n" + \
-                          "+--------------------+------+------------------------------+\n"  # noqa: E501
+        expected_stdout = "+--------------------+--------+----------------------------+\n" + \
+                          f"|{Colors.Yellow}     Check name     {Colors.Default}|{Colors.Yellow} Groups {Colors.Default}|{Colors.Yellow}        Description         {Colors.Default}|\n" + \
+                          "+--------------------+--------+----------------------------+\n" + \
+                          "| too_long_name_of_c | group1 | description                |\n" + \
+                          "| heck               | group2 |                            |\n" + \
+                          "|                    | group3 |                            |\n" + \
+                          "+--------------------+--------+----------------------------+\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_metadata(self.check_list[1:2], None)
@@ -93,13 +93,13 @@ class TestPrintMetadata(unittest.TestCase):
     @patch("modules.printing.table_printer.print_ex", side_effect=print_ex_mock)
     @patch("shutil.get_terminal_size", return_value=terminal_size((70, 0)))
     def test_print_metadata_console_width_more_positive(self, mock_get_terminal_size, mocked_print_ex):
-        expected_stdout = "+------------------------+------+------------------------------------+\n" + \
-                          f"|{Colors.Yellow}       Check name       {Colors.Default}|{Colors.Yellow} Tags {Colors.Default}|{Colors.Yellow}            Description             {Colors.Default}|\n" + \
-                          "+------------------------+------+------------------------------------+\n" + \
-                          "| too_long_name_of_check | tag1 | description                        |\n" + \
-                          "|                        | tag2 |                                    |\n" + \
-                          "|                        | tag3 |                                    |\n" + \
-                          "+------------------------+------+------------------------------------+\n"  # noqa: E501
+        expected_stdout = "+------------------------+--------+----------------------------------+\n" + \
+                          f"|{Colors.Yellow}       Check name       {Colors.Default}|{Colors.Yellow} Groups {Colors.Default}|{Colors.Yellow}           Description            {Colors.Default}|\n" + \
+                          "+------------------------+--------+----------------------------------+\n" + \
+                          "| too_long_name_of_check | group1 | description                      |\n" + \
+                          "|                        | group2 |                                  |\n" + \
+                          "|                        | group3 |                                  |\n" + \
+                          "+------------------------+--------+----------------------------------+\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_metadata(self.check_list[1:2], None)

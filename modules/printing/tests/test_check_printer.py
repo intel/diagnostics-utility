@@ -33,22 +33,22 @@ from modules.printing.check_printer import CheckSummaryPrinter, \
 from modules.printing.tests.printing_test_helper import print_ex_mock  # noqa: E402
 
 correct_result_dict_default = {
-    "Value": {
+    "CheckResult": {
         "Check": {
-            "Value": "Data"
+            "CheckResult": "Data"
         }
     }
 }
 
 correct_result_dict_long_key = {
-    "Value": {
+    "CheckResult": {
         "CheckLongNameCheckLongName": {
-            "Value": {
+            "CheckResult": {
                 "Subcheck1LongNameSubcheck1LongName": {
-                    "Value": "SubcheckValue1",
+                    "CheckResult": "SubcheckValue1",
                 },
                 "Subcheck2": {
-                    "Value": "SubcheckValue1",
+                    "CheckResult": "SubcheckValue1",
                 }
             }
         }
@@ -56,39 +56,39 @@ correct_result_dict_long_key = {
 }
 
 correct_result_dict_too_long_key = {
-    "Value": {
+    "CheckResult": {
         f"{'CheckLongName' * 10}": {
-            "Value": "Data"
+            "CheckResult": "Data"
         }
     }
 }
 
 correct_result_dict = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Message": "Message is not required filed",
-            "RetVal": "PASS",
-            "Value": {
+            "CheckStatus": "PASS",
+            "CheckResult": {
                 "Subcheck1": {
                     "Verbosity": 4,
                     "Command": "Command is not required filed",
-                    "Value": "SubcheckValue1",
-                    "RetVal": "ERROR",
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "ERROR",
                     "HowToFix": "test decsription",
                     "AutomationFix": "command"
                 },
                 "Subcheck2": {
                     "Verbosity": 4,
-                    "Value": {
+                    "CheckResult": {
                         "Subcheck1": {
                             "Verbosity": 4,
-                            "Value": "SubCheckValue1",
-                            "RetVal": "ERROR",
+                            "CheckResult": "SubCheckValue1",
+                            "CheckStatus": "ERROR",
                             "HowToFix": "test decsription",
                             "AutomationFix": "command"
                         }
                     },
-                    "RetVal": "ERROR",
+                    "CheckStatus": "ERROR",
                     "HowToFix": "test decsription",
                     "AutomationFix": "command"
                 }
@@ -97,19 +97,19 @@ correct_result_dict = {
         "Check2": {
             "Verbosity": 0,
             "Command": "Command is not required filed",
-            "RetVal": "WARNING",
-            "Value": {
+            "CheckStatus": "WARNING",
+            "CheckResult": {
                 "Subcheck1": {
                     "Verbosity": 1,
                     "Message": "Message is not required filed",
-                    "Value": "SubcheckValue1",
-                    "RetVal": "FAIL"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "FAIL"
                 },
                 "Subcheck2": {
                     "Verbosity": 2,
                     "Message": "Message is not required filed",
-                    "Value": "SubcheckValue2",
-                    "RetVal": "INFO"
+                    "CheckResult": "SubcheckValue2",
+                    "CheckStatus": "INFO"
                 }
             }
         }
@@ -117,29 +117,29 @@ correct_result_dict = {
 }
 
 examine_correct_result_dict = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Verbosity": 0,
             "Message": "Message is not required filed",
-            "RetVal": "PASS",
-            "Value": "CheckValue"
+            "CheckStatus": "PASS",
+            "CheckResult": "CheckValue"
         },
         "Check2": {
             "Verbosity": 0,
             "Command": "Command is not required filed",
-            "RetVal": "WARNING",
-            "Value": {
+            "CheckStatus": "WARNING",
+            "CheckResult": {
                 "Subcheck1": {
                     "Verbosity": 1,
                     "Message": "Message is not required filed",
-                    "Value": "SubcheckValue1NotEgual",
-                    "RetVal": "FAIL"
+                    "CheckResult": "SubcheckValue1NotEgual",
+                    "CheckStatus": "FAIL"
                 },
                 "Subcheck2": {
                     "Verbosity": 1,
                     "Message": "Message is not required filed",
-                    "Value": "SubcheckValue2",
-                    "RetVal": "INFO"
+                    "CheckResult": "SubcheckValue2",
+                    "CheckStatus": "INFO"
                 }
             }
         }
@@ -161,7 +161,7 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
         self.assertTrue(hasattr(self.check_printer, "output_file"))
 
     def test_init_negtive(self):
-        incorrect_test_result_dict = {"Check": {"Value": "Data"}}
+        incorrect_test_result_dict = {"Check": {"CheckResult": "Data"}}
         with self.assertRaises(ValueError):
             CheckSummaryPrinter(incorrect_test_result_dict, None)
 
@@ -565,7 +565,7 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
                           f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
 
         with patch('sys.stdout', new=StringIO()) as stdout:
-            check_printer.print_summary_tree(correct_result_dict["Value"])
+            check_printer.print_summary_tree(correct_result_dict["CheckResult"])
             self.assertEqual(expected_stdout, stdout.getvalue())
 
     @patch("modules.printing.check_printer.print_ex", side_effect=print_ex_mock)
@@ -606,8 +606,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
                           f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             check_printer.print_summary_tree(
-                correct_result_dict["Value"],
-                examine_summary=examine_correct_result_dict["Value"]
+                correct_result_dict["CheckResult"],
+                examine_summary=examine_correct_result_dict["CheckResult"]
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
@@ -643,8 +643,8 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
                           f"|{Colors.Blue}  └ Message: Message is not required filed         {Colors.Default}       |\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             check_printer.print_summary_tree(
-                correct_result_dict["Value"],
-                examine_summary=correct_result_dict["Value"]
+                correct_result_dict["CheckResult"],
+                examine_summary=correct_result_dict["CheckResult"]
             )
             self.assertEqual(expected_stdout, stdout.getvalue())
 
@@ -652,7 +652,7 @@ class TestClassCheckSummaryPrinter(unittest.TestCase):
 class TestVerbosityProcessing(unittest.TestCase):
 
     def setUp(self):
-        self.summary = correct_result_dict["Value"]
+        self.summary = correct_result_dict["CheckResult"]
 
     def test__verbosity_processing_no_delete_positive(self):
         expected_processed_summary = self.summary
@@ -664,24 +664,24 @@ class TestVerbosityProcessing(unittest.TestCase):
         expected_processed_summary = {
             "Check1": {
                 "Message": "Message is not required filed",
-                "RetVal": "PASS",
-                "Value": {}
+                "CheckStatus": "PASS",
+                "CheckResult": {}
             },
             "Check2": {
                 "Verbosity": 0,
-                "RetVal": "WARNING",
-                "Value": {
+                "CheckStatus": "WARNING",
+                "CheckResult": {
                     "Subcheck1": {
                         "Verbosity": 1,
                         "Message": "Message is not required filed",
-                        "Value": "SubcheckValue1",
-                        "RetVal": "FAIL"
+                        "CheckResult": "SubcheckValue1",
+                        "CheckStatus": "FAIL"
                     },
                     "Subcheck2": {
                         "Verbosity": 2,
                         "Message": "Message is not required filed",
-                        "Value": "SubcheckValue2",
-                        "RetVal": "INFO"
+                        "CheckResult": "SubcheckValue2",
+                        "CheckStatus": "INFO"
                     }
                 }
             }
@@ -694,7 +694,7 @@ class TestVerbosityProcessing(unittest.TestCase):
 class TestStatusMessage(unittest.TestCase):
 
     def setUp(self):
-        self.summary = correct_result_dict["Value"]
+        self.summary = correct_result_dict["CheckResult"]
 
     def test__get_status_message_positive(self):
         expected_status_messages = ["Message is not required filed"]
@@ -715,7 +715,7 @@ class BasePrintSummary(unittest.TestCase):
                 metadata=CheckMetadataPy(
                     name="name_of_check",
                     type="type",
-                    tags="tag1,tag2,tag3",
+                    groups="group1,group2,group3",
                     descr="description",
                     dataReq="{}",
                     merit=0,
@@ -862,7 +862,7 @@ class TestPrintShortSummary(BasePrintSummary):
             self,
             mock_get_terminal_size,
             mocked_print_ex):
-        expected_stdout = f"1 CHECK: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 0 {Colors.Red}ERRORS{Colors.Default}\n"  # noqa: E501
+        expected_stdout = f"0 CHECKS: 0 {Colors.Green}PASS{Colors.Default}, 0 {Colors.Red}FAIL{Colors.Default}, 0 {Colors.Yellow}WARNINGS{Colors.Default}, 0 {Colors.Red}ERRORS{Colors.Default}\n"  # noqa: E501
         with patch('sys.stdout', new=StringIO()) as stdout:
             print_short_summary([BaseCheck()], None)
             self.assertEqual(stdout.getvalue(), expected_stdout)

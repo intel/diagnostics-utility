@@ -38,46 +38,46 @@ class TestBaseSystemCheckerApiTest(unittest.TestCase):
 
         mocked_get_hostname.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_cpu_info.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_bios_information.side_effect = lambda node: node.update({
             "Check 3": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_uname.side_effect = lambda node: node.update({
             "Check 4": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = base_system_checker.run_base_check({})
+        actual = base_system_checker.run_base_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = base_system_checker.get_api_version()
+        actual = base_system_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = base_system_checker.get_check_list()
+        actual = base_system_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in actual:
             self.assertIsInstance(metadata, expected)
 
 

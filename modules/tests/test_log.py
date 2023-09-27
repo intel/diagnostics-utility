@@ -27,17 +27,17 @@ class TestVerbosity2LogLevel(unittest.TestCase):
         verbosity_level = -1
         expected = 30
 
-        value = log._verbosity2loglevel(verbosity_level)
+        actual = log._verbosity2loglevel(verbosity_level)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_set_large_verbosity_level_is_correct(self):
         verbosity_level = 10
         expected = 10
 
-        value = log._verbosity2loglevel(verbosity_level)
+        actual = log._verbosity2loglevel(verbosity_level)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_set_incorrect_verbosity_level(self):
         self.assertRaises(ValueError, log._verbosity2loglevel, -2)

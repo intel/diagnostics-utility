@@ -37,16 +37,16 @@ public:
 	CL_DriverChecker();
 	virtual ~CL_DriverChecker();
 
-	static bool Load(string &message);
-	static void GetDriverInfo(string& message);
-	static void GetDeviceInfo(cl_device_id deviceId, string& message);
+	virtual bool Load(string &message);
+	virtual void GetDriverInfo(string& message);
+	virtual void GetDeviceInfo(cl_device_id deviceId, string& message);
 
-	static string GetErrorMessage(cl_int error);
-	static string GetDeviceTypeString(cl_device_type type);
+	virtual string GetErrorMessage(cl_int error);
+	virtual string GetDeviceTypeString(cl_device_type type);
 	// Represent array as a comma separated string
-	static string GetArrayString(size_t* array, size_t array_size);
-	static string GetCacheTypeString(cl_device_mem_cache_type type);
-	static string GetLocalMemTypeString(cl_device_local_mem_type type);
+	virtual string GetArrayString(size_t* array, size_t array_size);
+	virtual string GetCacheTypeString(cl_device_mem_cache_type type);
+	virtual string GetLocalMemTypeString(cl_device_local_mem_type type);
 };
 
 #endif /* CLDRIVERCHECKER_H_ */

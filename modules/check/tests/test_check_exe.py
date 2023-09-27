@@ -30,21 +30,18 @@ test_filename = "test.sh"
 exe_metadata_output = json.dumps({
     "name": "exe_example",
     "type": "Data",
-    "tags": "cpu",
+    "groups": "cpu",
     "descr": "This is example of exe module",
     "dataReq": "{}",
     "merit": 0,
     "timeout": 1,
-    "version": 1,
+    "version": 2,
     "run": ""
 })
 
-exe_api_version_output = "0.1"
+exe_api_version_output = "0.2"
 
-exe_check_result_output = json.dumps({
-    "error_code": 0,
-    "result": """{"Value": {"Exe example check": {"Value": "Exe example value", "RetVal": "PASS"}}}"""
-})
+exe_check_result_output = '{"result": {"CheckResult": {"Exe example check": {"CheckResult": "Exe example value", "CheckStatus": "PASS"}}}}'  # noqa: E501
 
 
 class TestClassCheckExe(unittest.TestCase):
@@ -63,40 +60,40 @@ class TestClassCheckExe(unittest.TestCase):
         expected = CheckMetadataPy(
             name='exe_example',
             type='Data',
-            tags='cpu',
+            groups='cpu',
             descr='This is example of exe module',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run=''
         )
 
-        value = self.check_exe.get_metadata()
+        actual = self.check_exe.get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
     @patch("subprocess.Popen")
     def test_get_api_version_correct(self, mock_popen):
-        expected = "0.1"
+        expected = "0.2"
         mock_popen.return_value.communicate.return_value = (exe_api_version_output, "")
         mock_popen.return_value.returncode = 0
 
-        value = self.check_exe.get_api_version()
+        actual = self.check_exe.get_api_version()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_summury_correct(self, mock_popen):
         expected = CheckSummary(
-            result="""{"Value": {"Exe example check": {"Value": "Exe example value", "RetVal": "PASS"}}}"""
+            result="""{"CheckResult": {"Exe example check": {"CheckResult": "Exe example value", "CheckStatus": "PASS"}}}"""  # noqa: E501
         )
         mock_popen.return_value.communicate.return_value = (exe_check_result_output, "")
         mock_popen.return_value.returncode = 0
 
-        value = self.check_exe.run({})
+        actual = self.check_exe.run({})
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
 
 class TestGetCheckExe(unittest.TestCase):
@@ -106,12 +103,12 @@ class TestGetCheckExe(unittest.TestCase):
         expected = CheckMetadataPy(
             name='exe_example',
             type='Data',
-            tags='cpu',
+            groups='cpu',
             descr='This is example of exe module',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run=''
         )
         mock_metadata = MagicMock()
@@ -131,9 +128,9 @@ class TestGetCheckExe(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = True
 
-        value = check_exe.getChecksExe(mock_file, "0.1")[0].get_metadata()
+        actual = check_exe.getChecksExe(mock_file, "0.2")[0].get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
     @patch("logging.error")
     @patch("subprocess.Popen")
@@ -145,7 +142,7 @@ class TestGetCheckExe(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = True
 
-        self.assertRaises(Exception, check_exe.getChecksExe, mock_file, "0.1")
+        self.assertRaises(Exception, check_exe.getChecksExe, mock_file, "0.2")
         mock_log.assert_called()
 
     @patch("logging.error")
@@ -154,7 +151,7 @@ class TestGetCheckExe(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = False
 
-        self.assertRaises(OSError, check_exe.getChecksExe, mock_file, "0.1")
+        self.assertRaises(OSError, check_exe.getChecksExe, mock_file, "0.2")
         mock_log.assert_called()
 
     @patch("subprocess.Popen")

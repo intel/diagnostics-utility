@@ -15,10 +15,10 @@ other than those that are expressly stated in the License.
 #include <stdio.h>
 #include <string.h>
 
-#define API_VERSION "0.1"
+#define API_VERSION "0.2"
 
 #define SOME_JSON \
-    "{\"Value\": {\"GPU (OpenCL™ Vendors)\": {\"Value\": {\"Intel\": {\"Value\": {\"OpenCL2.0\": {\"Value\": \"test\", \"Verbosity\": 2, \"Message\": \"\", \"RetVal\": \"PASS\" }, \"OpenCL1.2\": {\"Value\": \"test\", \"Verbosity\": 2, \"Message\": \"Please do something\", \"RetVal\": \"ERROR\" }}, \"Verbosity\": 1, \"Message\": \"\", \"RetVal\": \"PASS\" }, \"AMD\": {\"Value\": {\"OpenCL1.0\": {\"Value\": \"test\", \"Verbosity\": 1, \"Message\": \"\", \"RetVal\": \"PASS\" }}, \"Verbosity\": 1, \"Message\": \"\", \"RetVal\": \"PASS\" }}, \"RetVal\": \"PASS\", \"Verbosity\": 0, \"Message\": \"\" }, \"Test1\": {\"Value\": \"test\", \"Message\": \"\", \"RetVal\": \"PASS\" }}}"
+    "{\"CheckResult\": {\"GPU (OpenCL™ Vendors)\": {\"CheckResult\": {\"Intel\": {\"CheckResult\": {\"OpenCL2.0\": {\"CheckResult\": \"test\", \"Verbosity\": 2, \"Message\": \"\", \"CheckStatus\": \"PASS\" }, \"OpenCL1.2\": {\"CheckResult\": \"test\", \"Verbosity\": 2, \"Message\": \"Please do something\", \"CheckStatus\": \"ERROR\" }}, \"Verbosity\": 1, \"Message\": \"\", \"CheckStatus\": \"PASS\" }, \"AMD\": {\"CheckResult\": {\"OpenCL1.0\": {\"CheckResult\": \"test\", \"Verbosity\": 1, \"Message\": \"\", \"CheckStatus\": \"PASS\" }}, \"Verbosity\": 1, \"Message\": \"\", \"CheckStatus\": \"PASS\" }}, \"CheckStatus\": \"PASS\", \"Verbosity\": 0, \"Message\": \"\" }, \"Test1\": {\"CheckResult\": \"test\", \"Message\": \"\", \"CheckStatus\": \"PASS\" }}}"
 
 char some_result[1024 * 100];
 char api_version[MAX_STRING_LEN];
@@ -46,7 +46,7 @@ REGISTER_CHECKER(c_sample,
                  "{}",
                  0,
                  10,
-                 1,
+                 2,
                  sample_func)
 
 static struct Check *checkers[] =

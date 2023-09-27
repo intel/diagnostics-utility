@@ -26,16 +26,16 @@ from modules.check.check import CheckMetadataPy  # noqa: E402
 py_metadata = CheckMetadataPy(
     name='python_example',
     type='Data',
-    tags='cpu',
+    groups='cpu',
     descr='This is example of python module',
     dataReq='{}',
     merit=0,
     timeout=1,
-    version=1,
+    version=2,
     run='run'
 )
 
-py_api_version = "0.1"
+py_api_version = "0.2"
 
 
 class TestClassCheckListPy(unittest.TestCase):
@@ -53,23 +53,23 @@ class TestClassCheckListPy(unittest.TestCase):
     def test_len_correct(self):
         expected = 1
 
-        value = len(self.check_list)
+        actual = len(self.check_list)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_str_correct(self):
         expected = "CheckListPy(test.py)"
 
-        value = str(self.check_list)
+        actual = str(self.check_list)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_getitem_correct_get_one_value(self):
         expected = py_metadata
 
-        value = self.check_list[0]
+        actual = self.check_list[0]
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_getitem_not_supports_slices(self):
         with self.assertRaises(Exception):

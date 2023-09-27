@@ -269,8 +269,8 @@ bool LZ_DriverChecker::GetLoaderVersion(string &message)
 {
 	string out;
 	// Extract information about installed packages
-	int retval = CheckerHelper::RunCommand("dpkg --no-pager -l 'level-zero' 2>/dev/null | grep ii", out);
-	if (retval != 0) {
+	int exit_status = CheckerHelper::RunCommand("dpkg --no-pager -l 'level-zero' 2>/dev/null | grep ii", out);
+	if (exit_status != 0) {
 		message = "Level-zero package is not installed or not accessible.";
 		return false;
 	}

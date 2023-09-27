@@ -26,50 +26,50 @@ from modules.check.check import BaseCheck, CheckMetadataPy, CheckSummary, _resul
 
 
 correct_result_dict_1 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "Value": "CheckValue1",
+            "CheckResult": "CheckValue1",
             "Verbosity": 0,
-            "RetVal": "PASS"
+            "CheckStatus": "PASS"
         },
         "Check2": {
-            "Value": "CheckValue2",
+            "CheckResult": "CheckValue12",
             "Verbosity": 0,
-            "RetVal": "PASS"
+            "CheckStatus": "PASS"
         }
     }
 }
 
 correct_result_dict_2 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Verbosity": 0,
             "Message": "Message is not required filed",
-            "RetVal": "PASS",
-            "Value": {
+            "CheckStatus": "PASS",
+            "CheckResult": {
                 "Subcheck1": {
                     "Verbosity": 1,
                     "Command": "Command is not required filed",
-                    "Value": "SubcheckValue1",
-                    "RetVal": "PASS"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "PASS"
                 },
                 "Subcheck2": {
                     "Verbosity": 2,
-                    "Value": "SubcheckValue1",
-                    "RetVal": "PASS"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "PASS"
                 }
             }
         },
         "Check2": {
-            "RetVal": "PASS",
-            "Value": {
+            "CheckStatus": "PASS",
+            "CheckResult": {
                 "Subcheck1": {
-                    "Value": "SubcheckValue1",
-                    "RetVal": "PASS"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "PASS"
                 },
                 "Subcheck2": {
-                    "Value": "SubcheckValue1",
-                    "RetVal": "PASS"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "PASS"
                 }
             }
         }
@@ -77,65 +77,65 @@ correct_result_dict_2 = {
 }
 
 correct_result_dict_3 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "Value": 1,
-            "RetVal": "PASS"
+            "CheckResult": 1,
+            "CheckStatus": "PASS"
         },
         "Check2": {
-            "Value": None,
-            "RetVal": "PASS"
+            "CheckResult": None,
+            "CheckStatus": "PASS"
         }
     }
 }
 
 correct_result_dict_4 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "Value": 1,
-            "RetVal": "WARNING"
+            "CheckResult": 1,
+            "CheckStatus": "WARNING"
         },
         "Check2": {
-            "Value": None,
-            "RetVal": "PASS"
+            "CheckResult": None,
+            "CheckStatus": "PASS"
         }
     }
 }
 
 correct_result_dict_5 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "Value": 1,
-            "RetVal": "FAIL"
+            "CheckResult": 1,
+            "CheckStatus": "FAIL"
         },
         "Check2": {
-            "Value": None,
-            "RetVal": "PASS"
+            "CheckResult": None,
+            "CheckStatus": "PASS"
         }
     }
 }
 
 correct_result_dict_6 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "Value": 1,
-            "RetVal": "ERROR"
+            "CheckResult": 1,
+            "CheckStatus": "ERROR"
         },
         "Check2": {
-            "Value": None,
-            "RetVal": "PASS"
+            "CheckResult": None,
+            "CheckStatus": "PASS"
         }
     }
 }
 
 correct_result_dict_7 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "RetVal": "PASS",
-            "Value": {
+            "CheckStatus": "PASS",
+            "CheckResult": {
                 "Subcheck1": {
-                    "Value": "SubcheckValue1",
-                    "RetVal": "WARNING"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "WARNING"
                 }
             }
         }
@@ -143,13 +143,13 @@ correct_result_dict_7 = {
 }
 
 correct_result_dict_8 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "RetVal": "PASS",
-            "Value": {
+            "CheckStatus": "PASS",
+            "CheckResult": {
                 "Subcheck1": {
-                    "Value": "SubcheckValue1",
-                    "RetVal": "FAIL"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "FAIL"
                 }
             }
         }
@@ -157,13 +157,13 @@ correct_result_dict_8 = {
 }
 
 correct_result_dict_9 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "RetVal": "PASS",
-            "Value": {
+            "CheckStatus": "PASS",
+            "CheckResult": {
                 "Subcheck1": {
-                    "Value": "SubcheckValue1",
-                    "RetVal": "ERROR"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "ERROR"
                 }
             }
         }
@@ -171,13 +171,13 @@ correct_result_dict_9 = {
 }
 
 correct_result_dict_10 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "RetVal": "FAIL",
-            "Value": {
+            "CheckStatus": "FAIL",
+            "CheckResult": {
                 "Subcheck1": {
-                    "Value": "SubcheckValue1",
-                    "RetVal": "ERROR"
+                    "CheckResult": "SubcheckValue1",
+                    "CheckStatus": "ERROR"
                 }
             }
         }
@@ -185,112 +185,112 @@ correct_result_dict_10 = {
 }
 
 incorrect_dict_with_wrong_root_verbosity = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Verbosity": 1,
-            "Value": "CheckValue1",
-            "RetVal": "PASS"
+            "CheckResult": "CheckValue1",
+            "CheckStatus": "PASS"
         },
     }
 }
 
 incorrect_dict_with_wrong_message = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Message": {},
-            "Value": "CheckValue1",
-            "RetVal": "PASS"
+            "CheckResult": "CheckValue1",
+            "CheckStatus": "PASS"
         },
     }
 }
 
 incorrect_dict_with_wrong_command = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Command": {},
-            "Value": "CheckValue1",
-            "RetVal": "PASS"
+            "CheckResult": "CheckValue1",
+            "CheckStatus": "PASS"
         },
     }
 }
 
 incorrect_dict_without_check_value = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "RetVal": "PASS"
+            "CheckStatus": "PASS"
         },
     }
 }
 
 incorrect_dict_with_wrong_return_value = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
-            "Value": "CheckValue1",
-            "RetVal": "DONE"
+            "CheckResult": "CheckValue1",
+            "CheckStatus": "DONE"
         },
     }
 }
 
 
 incorrect_dict_with_wrong_verbosity = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Verbosity": "1",
-            "Value": "CheckValue1",
-            "RetVal": "PASS"
+            "CheckResult": "CheckValue1",
+            "CheckStatus": "PASS"
         },
     }
 }
 
 
 incorrect_dict_with_wrong_message = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "Message": 0,
-            "Value": "CheckValue1",
-            "RetVal": "PASS"
+            "CheckResult": "CheckValue1",
+            "CheckStatus": "PASS"
         },
     }
 }
 
 wrong_check_1 = {
-    "NotValue": {
-        "Value": {
+    "NotCheck_Result": {
+        "CheckResult": {
             "Check1": {
-                "Value": "CheckValue1"
+                "CheckResult": "CheckValue1"
             }
         }
     }
 }
 
 wrong_check_2 = {
-    "Value": {
-        "Value": {
+    "CheckResult": {
+        "CheckResult": {
             "Check1": {
-                "Value": "CheckValue1"
+                "CheckResult": "CheckValue1"
             }
         }
     }
 }
 
 wrong_check_3 = {
-    "Value": {
+    "CheckResult": {
         "Check1": {
             "SubCheck1": {
-                "Value": "SubCheckValue1"
+                "CheckResult": "SubCheckValue1"
             }
         }
     }
 }
 
 wrong_check_4 = {
-    "Value": {
+    "CheckResult": {
         "Check1": "CheckValue1"
     }
 }
 
 wrong_check_5 = {
-    "Value": {
+    "CheckResult": {
         "Check1": "CheckValue1"
     }
 }
@@ -349,74 +349,74 @@ class TestResultSummury(unittest.TestCase):
     def test_no_error_init_check_summary_with_correct_data_check_pass(self):
         expected_error_code = 0
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_1)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_check_warning(self):
         expected_error_code = 1
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_4)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_check_fail(self):
         expected_error_code = 2
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_5)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_check_error(self):
         expected_error_code = 3
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_6)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_warning_rewrite_pass(self):
         expected_error_code = 1
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_7)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_fail_rewrite_pass(self):
         expected_error_code = 2
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_8)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_error_rewrite_pass(self):
         expected_error_code = 3
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_9)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_no_error_init_check_summary_with_correct_data_error_rewrite_fail(self):
         expected_error_code = 3
 
-        value = CheckSummary(
+        actual = CheckSummary(
             result=json.dumps(correct_result_dict_10)
         )
 
-        self.assertEqual(expected_error_code, value.error_code)
+        self.assertEqual(expected_error_code, actual.error_code)
 
     def test_raise_error_init_check_summary_with_incorrect_data(self):
         with self.assertRaises(ValueError):
@@ -454,12 +454,12 @@ class TestCheckMetadataPy(unittest.TestCase):
         CheckMetadataPy(
             name='example',
             type='data',
-            tags='tag',
+            groups='group',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
@@ -467,38 +467,38 @@ class TestCheckMetadataPy(unittest.TestCase):
         CheckMetadataPy(
             name='example',
             type='data',
-            tags='tag',
+            groups='group',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
-    def test_no_error_init_check_metadata_with_correct_two_tags(self):
+    def test_no_error_init_check_metadata_with_correct_two_groups(self):
         CheckMetadataPy(
             name='example',
             type='data',
-            tags='tag1,tag2',
+            groups='group1,group2',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
-    def test_no_error_init_check_metadata_with_correct_two_tags_with_space_after_comma(self):
+    def test_no_error_init_check_metadata_with_correct_two_groups_with_space_after_comma(self):
         CheckMetadataPy(
             name='example',
             type='data',
-            tags='tag1, tag2',
+            groups='group1,group2',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
@@ -507,12 +507,12 @@ class TestCheckMetadataPy(unittest.TestCase):
             CheckMetadataPy(
                 name='example',
                 type='data',
-                tags='tag',
+                groups='group',
                 descr='decription',
                 dataReq='not_json_data',
                 merit=0,
                 timeout=1,
-                version=1,
+                version=2,
                 run='run'
             )
 
@@ -521,26 +521,26 @@ class TestCheckMetadataPy(unittest.TestCase):
             CheckMetadataPy(
                 name='name with spaces',
                 type='data',
-                tags='tag',
+                groups='group',
                 descr='decription',
                 dataReq='{}',
                 merit=0,
                 timeout=1,
-                version=1,
+                version=2,
                 run='run'
             )
 
-    def test_raise_error_init_check_metadata_with_incorrect_tag(self):
+    def test_raise_error_init_check_metadata_with_incorrect_group(self):
         with self.assertRaises(ValueError):
             CheckMetadataPy(
                 name='example',
                 type='data',
-                tags='tag with spaces',
+                groups='group with spaces',
                 descr='decription',
                 dataReq='{}',
                 merit=0,
                 timeout=1,
-                version=1,
+                version=2,
                 run='run'
             )
 
@@ -552,12 +552,12 @@ class TestCheckMetadataPy(unittest.TestCase):
                 self.metadata = CheckMetadataPy(
                     name='example',
                     type='data',
-                    tags='tag',
+                    groups='group',
                     descr='decription',
                     dataReq='{}',
                     merit=0,
                     timeout=1,
-                    version=1,
+                    version=2,
                     run='run'
                 )
 
@@ -572,12 +572,12 @@ class TestCheckMetadataPy(unittest.TestCase):
                 self.metadata = CheckMetadataPy(
                     name='example',
                     type='data',
-                    tags='tag',
+                    groups='group',
                     descr='decription',
                     dataReq='not_json_data',
                     merit=0,
                     timeout=1,
-                    version=1,
+                    version=2,
                     run='run'
                 )
 
@@ -589,12 +589,12 @@ class TestCheckMetadataPy(unittest.TestCase):
                 self.metadata = CheckMetadataPy(
                     name='name with spaces',
                     type='data',
-                    tags='tag',
+                    groups='group',
                     descr='decription',
                     dataReq='{}',
                     merit=0,
                     timeout=1,
-                    version=1,
+                    version=2,
                     run='run'
                 )
 
@@ -602,7 +602,7 @@ class TestCheckMetadataPy(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_correct_metadata(temp.func)(obj)
 
-    def test_check_metadata_decorator_with_incorrect_tag(self):
+    def test_check_metadata_decorator_with_incorrect_group(self):
         class temp:
             self.metadata = None
 
@@ -610,12 +610,12 @@ class TestCheckMetadataPy(unittest.TestCase):
                 self.metadata = CheckMetadataPy(
                     name='example',
                     type='data',
-                    tags='tag with spaces',
+                    groups='group with spaces',
                     descr='decription',
                     dataReq='{}',
                     merit=0,
                     timeout=1,
-                    version=1,
+                    version=2,
                     run='run'
                 )
 
@@ -642,12 +642,12 @@ class TestBaseCheck(unittest.TestCase):
         self.correct_metadata = CheckMetadataPy(
             name='example',
             type='data',
-            tags='tag',
+            groups='group',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
@@ -663,35 +663,35 @@ class TestBaseCheck(unittest.TestCase):
     def test_base_check_get_metadata_is_correct(self):
         expected = self.correct_metadata
 
-        value = self.check.get_metadata()
+        actual = self.check.get_metadata()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_base_check_get_summary_is_correct(self):
         expected = self.correct_summary
 
-        value = self.check.get_summary()
+        actual = self.check.get_summary()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_base_check_update_metadata_is_correct(self):
         expected = CheckMetadataPy(
             name='updated_example',
             type='data',
-            tags='tag',
+            groups='group',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
         temp_check = deepcopy(self.check)
         temp_check.update_metadata({"name": "updated_example", "not_valid_key": ""})
-        value = temp_check.get_metadata()
+        actual = temp_check.get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
 
 class TestTimeoutDecorator(unittest.TestCase):
@@ -700,12 +700,12 @@ class TestTimeoutDecorator(unittest.TestCase):
         self.correct_metadata = CheckMetadataPy(
             name='example',
             type='data',
-            tags='tag',
+            groups='group',
             descr='decription',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 

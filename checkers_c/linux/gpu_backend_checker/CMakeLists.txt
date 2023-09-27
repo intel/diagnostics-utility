@@ -30,3 +30,20 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
   install(TARGETS ${CHECKERS_EXE_NAME} DESTINATION ${SOURCES_INSTALL_PREFIX}/checkers_c)
 endif()
+
+if(BUILD_TESTS)
+  add_executable(test_gpu_backend_checker
+      tests/test_gpu_backend_checker.cpp
+    )
+  target_include_directories(test_gpu_backend_checker PRIVATE ../../../include)
+  target_include_directories(test_gpu_backend_checker PRIVATE include)
+  target_link_libraries(test_gpu_backend_checker PRIVATE
+      gtest
+      gtest_main
+      gmock
+      gmock_main
+      ${CHECKERS_LIB_NAME}
+    )
+  gtest_discover_tests(test_gpu_backend_checker)
+  install(TARGETS test_gpu_backend_checker DESTINATION ${SOURCES_INSTALL_PREFIX}/tests/unittests)
+endif()

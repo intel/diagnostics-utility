@@ -46,15 +46,15 @@ class TestGpuMetricsCheckerApiTest(unittest.TestCase):
 
         mocked_process_device.side_effect = lambda node, device: node.update({
             device: {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "device",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = gpu_metrics_checker.run_gpu_metrics_check({})
+        actual = gpu_metrics_checker.run_gpu_metrics_check({})
 
-        self.assertIsInstance(value, expected)
-        self.assertEqual(value.error_code, 0)
+        self.assertIsInstance(actual, expected)
+        self.assertEqual(actual.error_code, 0)
 
     @patch("checkers_py.linux.gpu_metrics_checker.have_administrative_priviliges")
     @patch("checkers_py.linux.gpu_metrics_checker.parse_devices", return_value=[])
@@ -65,12 +65,12 @@ class TestGpuMetricsCheckerApiTest(unittest.TestCase):
         expected_error_code = 3
         expected_message = "Level Zero driver did not provide information about GPUs."
 
-        value = gpu_metrics_checker.run_gpu_metrics_check({})
+        check_summary = gpu_metrics_checker.run_gpu_metrics_check({})
 
-        self.assertIsInstance(value, expected_type)
-        self.assertEqual(value.error_code, expected_error_code)
-        result = json.loads(value.result)
-        self.assertEqual(result['Value']["GPU metrics check"]["Message"], expected_message)
+        self.assertIsInstance(check_summary, expected_type)
+        self.assertEqual(check_summary.error_code, expected_error_code)
+        result = json.loads(check_summary.result)
+        self.assertEqual(result['CheckResult']["GPU metrics check"]["Message"], expected_message)
 
     @patch("checkers_py.linux.gpu_metrics_checker.have_administrative_priviliges")
     @patch("checkers_py.linux.gpu_metrics_checker.timeout_in_gpu_backend_check_occurred", return_value=True)
@@ -81,26 +81,26 @@ class TestGpuMetricsCheckerApiTest(unittest.TestCase):
         expected_message = "The GPU backend check failed or timed out. You may see irrelevant GPU "\
                            "information as a result."
 
-        value = gpu_metrics_checker.run_gpu_metrics_check({})
+        check_summary = gpu_metrics_checker.run_gpu_metrics_check({})
 
-        self.assertIsInstance(value, expected_type)
-        self.assertEqual(value.error_code, expected_error_code)
-        result = json.loads(value.result)
-        self.assertEqual(result['Value']["GPU metrics check"]["Message"], expected_message)
+        self.assertIsInstance(check_summary, expected_type)
+        self.assertEqual(check_summary.error_code, expected_error_code)
+        result = json.loads(check_summary.result)
+        self.assertEqual(result['CheckResult']["GPU metrics check"]["Message"], expected_message)
 
     def test_get_api_version_returns_str(self):
-        expected = str
+        expected_version = str
 
-        value = gpu_metrics_checker.get_api_version()
+        actual_version = gpu_metrics_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual_version, expected_version)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = gpu_metrics_checker.get_check_list()
+        check_list = gpu_metrics_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -148,7 +148,7 @@ class TestDevice(unittest.TestCase):
 class TestParseDevices(unittest.TestCase):
 
     def test_parse_devices_positive(self):
-        expected = [
+        expected_devices = [
             gpu_metrics_checker.Device(
                 name="test_device_1",
                 id="1",
@@ -175,87 +175,87 @@ class TestParseDevices(unittest.TestCase):
 
         input = {
             "gpu_backend_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel® oneAPI Level Zero Driver": {
-                                "Value": {
+                                "CheckResult": {
                                     "Driver is loaded.": {
-                                        "RetVal": "PASS"
+                                        "CheckStatus": "PASS"
                                     },
                                     "Driver information": {
-                                        "RetVal": "INFO",
-                                        "Value": {
+                                        "CheckStatus": "INFO",
+                                        "CheckResult": {
                                             "Installed driver number": {
-                                                "Value": "1"
+                                                "CheckResult": "1"
                                             },
                                             "Driver # 0": {
-                                                "Value": {
+                                                "CheckResult": {
                                                     "Devices": {
-                                                        "Value": {
+                                                        "CheckResult": {
                                                             "Device number": {
-                                                                "Value": "3"
+                                                                "CheckResult": "3"
                                                             },
                                                             "Device # 0": {
-                                                                "Value": {
+                                                                "CheckResult": {
                                                                     "Device type": {
-                                                                        "Value": "Graphics Processing Unit"
+                                                                        "CheckResult": "Graphics Processing Unit"  # noqa: E501
                                                                     },
                                                                     "Device name": {
-                                                                        "Value": "test_device_1"
+                                                                        "CheckResult": "test_device_1"
                                                                     },
                                                                     "Device ID": {
-                                                                        "Value": "1"
+                                                                        "CheckResult": "1"
                                                                     },
                                                                     "Device maximum frequency, MHz": {
-                                                                        "Value": "1000"
+                                                                        "CheckResult": "1000"
                                                                     },
                                                                     "Device minimum frequency, MHz": {
-                                                                        "Value": "1000"
+                                                                        "CheckResult": "1000"
                                                                     },
                                                                     "Device current frequency, MHz": {
-                                                                        "Value": "1000"
+                                                                        "CheckResult": "1000"
                                                                     },
                                                                     "Memory bandwidth, GB/s": {
-                                                                        "Value": "2"
+                                                                        "CheckResult": "2"
                                                                     },
                                                                     "PCIe bandwidth, GB/s": {
-                                                                        "Value": "2"
+                                                                        "CheckResult": "2"
                                                                     }
                                                                 }
                                                             },
                                                             "Device # 1": {
-                                                                "Value": {
+                                                                "CheckResult": {
                                                                     "Device type": {
-                                                                        "Value": "Graphics Processing Unit"
+                                                                        "CheckResult": "Graphics Processing Unit"  # noqa: E501
                                                                     },
                                                                     "Device name": {
-                                                                        "Value": "test_device_2"
+                                                                        "CheckResult": "test_device_2"
                                                                     },
                                                                     "Device ID": {
-                                                                        "Value": "2"
+                                                                        "CheckResult": "2"
                                                                     },
                                                                     "Device maximum frequency, MHz": {
-                                                                        "Value": "500"
+                                                                        "CheckResult": "500"
                                                                     },
                                                                     "Device minimum frequency, MHz": {
-                                                                        "Value": "500"
+                                                                        "CheckResult": "500"
                                                                     },
                                                                     "Device current frequency, MHz": {
-                                                                        "Value": "500"
+                                                                        "CheckResult": "500"
                                                                     },
                                                                     "Memory bandwidth, GB/s": {
-                                                                        "Value": "1"
+                                                                        "CheckResult": "1"
                                                                     },
                                                                     "PCIe bandwidth, GB/s": {
-                                                                        "Value": "1"
+                                                                        "CheckResult": "1"
                                                                     }
                                                                 }
                                                             },
                                                             "Device # 2": {
-                                                                "Value": {
+                                                                "CheckResult": {
                                                                     "Device type": {
-                                                                        "Value": "CPU"
+                                                                        "CheckResult": "CPU"
                                                                     }
                                                                 }
                                                             }
@@ -272,23 +272,23 @@ class TestParseDevices(unittest.TestCase):
                 }
             },
             "intel_gpu_detector_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU information": {
-                        "Value": {
+                        "CheckResult": {
                             "Initialized devices": {
-                                "RetVal": "INFO",
-                                "Value": {
+                                "CheckStatus": "INFO",
+                                "CheckResult": {
                                     "Intel GPU #1": {
-                                        "Value": {
+                                        "CheckResult": {
                                             "GPU type": {
-                                                "Value": "Discrete"
+                                                "CheckResult": "Discrete"
                                             }
                                         }
                                     },
                                     "Intel GPU #2": {
-                                        "Value": {
+                                        "CheckResult": {
                                             "GPU type": {
-                                                "Value": "Discrete"
+                                                "CheckResult": "Discrete"
                                             }
                                         }
                                     }
@@ -300,27 +300,27 @@ class TestParseDevices(unittest.TestCase):
             }
         }
 
-        value = gpu_metrics_checker.parse_devices(input)
+        actual_devices = gpu_metrics_checker.parse_devices(input)
 
-        for expected_device, value_device in zip(expected, value):
-            self.assertEqual(expected_device.__dict__, value_device.__dict__)
+        for expected_device, actual_device in zip(expected_devices, actual_devices):
+            self.assertEqual(expected_device.__dict__, actual_device.__dict__)
 
     def test_parse_devices_lz_return_not_dict(self):
-        expected = []
+        expected_devices = []
 
         input = {
             "gpu_backend_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel® oneAPI Level Zero Driver": {
-                                "Value": {
+                                "CheckResult": {
                                     "Driver is loaded.": {
-                                        "RetVal": "PASS"
+                                        "CheckStatus": "PASS"
                                     },
                                     "Driver information": {
-                                        "RetVal": "INFO",
-                                        "Value": []
+                                        "CheckStatus": "INFO",
+                                        "CheckResult": []
                                     }
                                 }
                             }
@@ -329,23 +329,23 @@ class TestParseDevices(unittest.TestCase):
                 }
             },
             "intel_gpu_detector_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU information": {
-                        "Value": {
+                        "CheckResult": {
                             "Initialized devices": {
-                                "RetVal": "INFO",
-                                "Value": {
+                                "CheckStatus": "INFO",
+                                "CheckResult": {
                                     "Intel GPU #1": {
-                                        "Value": {
+                                        "CheckResult": {
                                             "GPU type": {
-                                                "Value": "Discrete"
+                                                "CheckResult": "Discrete"
                                             }
                                         }
                                     },
                                     "Intel GPU #2": {
-                                        "Value": {
+                                        "CheckResult": {
                                             "GPU type": {
-                                                "Value": "Discrete"
+                                                "CheckResult": "Discrete"
                                             }
                                         }
                                     }
@@ -357,9 +357,9 @@ class TestParseDevices(unittest.TestCase):
             }
         }
 
-        value = gpu_metrics_checker.parse_devices(input)
+        actual_devices = gpu_metrics_checker.parse_devices(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected_devices, actual_devices)
 
     @patch("checkers_py.linux.gpu_metrics_checker.is_level_zero_initialized")
     def test_parse_devices_lz_not_initialized(self, mocked_is_level_zero_initialized):
@@ -376,34 +376,34 @@ class TestParseDevices(unittest.TestCase):
 class TestShowMetricsForUnknownDevice(unittest.TestCase):
 
     def test_show_metrics_for_unknown_device_unknown_metrics(self):
-        expected = {
+        expected_metrics = {
             "#0 unknown_device": {
-                "Value": {
+                "CheckResult": {
                     "GPU Frequency, MHz (Max/Target)": {
-                        "Value": "unknown/unknown",
-                        "RetVal": "ERROR",
+                        "CheckResult": "unknown/unknown",
+                        "CheckStatus": "ERROR",
                         "Message": "The Level Zero driver cannot find out information about frequency.",
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility." # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
-                        "Value": "unknown/unknown",
-                        "RetVal": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about memory bandwidth.", # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility." # noqa E501
+                        "CheckResult": "unknown/unknown",
+                        "CheckStatus": "ERROR",
+                        "Message": "The Level Zero driver cannot find out information about memory bandwidth.",  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
-                        "Value": "unknown/unknown",
-                        "RetVal": "ERROR",
+                        "CheckResult": "unknown/unknown",
+                        "CheckStatus": "ERROR",
                         "Message": "The Level Zero driver cannot find out information about PCIe bandwidth.",
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility." # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                 },
-                "RetVal": "WARNING",
+                "CheckStatus": "WARNING",
                 "Message": "For this GPU, good numbers are not known."
             }
         }
 
-        input = gpu_metrics_checker.Device(
+        device = gpu_metrics_checker.Device(
             name="unknown_device",
             id="unknown",
             max_freq="unknown",
@@ -415,34 +415,34 @@ class TestShowMetricsForUnknownDevice(unittest.TestCase):
             enumeration="0"
         )
 
-        value = {}
-        gpu_metrics_checker.show_metrics_for_unknown_device(value, input)
+        actual_metrics = {}
+        gpu_metrics_checker.show_metrics_for_unknown_device(actual_metrics, device)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected_metrics, actual_metrics)
 
     def test_show_metrics_for_unknown_device_known_metrics(self):
-        expected = {
+        expected_metrics = {
             "#0 unknown_device": {
-                "Value": {
+                "CheckResult": {
                     "GPU Frequency, MHz (Max/Target)": {
-                        "Value": "1000/unknown",
-                        "RetVal": "INFO"
+                        "CheckResult": "1000/unknown",
+                        "CheckStatus": "INFO"
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
-                        "Value": "1/unknown",
-                        "RetVal": "INFO"
+                        "CheckResult": "1/unknown",
+                        "CheckStatus": "INFO"
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
-                        "Value": "1/unknown",
-                        "RetVal": "INFO"
+                        "CheckResult": "1/unknown",
+                        "CheckStatus": "INFO"
                     },
                 },
-                "RetVal": "WARNING",
+                "CheckStatus": "WARNING",
                 "Message": "For this GPU, good numbers are not known."
             }
         }
 
-        input = gpu_metrics_checker.Device(
+        device = gpu_metrics_checker.Device(
             name="unknown_device",
             id="unknown",
             max_freq="1000",
@@ -454,42 +454,42 @@ class TestShowMetricsForUnknownDevice(unittest.TestCase):
             enumeration="0"
         )
 
-        value = {}
-        gpu_metrics_checker.show_metrics_for_unknown_device(value, input)
+        actual_metrics = {}
+        gpu_metrics_checker.show_metrics_for_unknown_device(actual_metrics, device)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(actual_metrics, expected_metrics)
 
 
 class TestCompareMetricsForKnownDevice(unittest.TestCase):
 
     def test_compare_metrics_for_known_device_unknown_metrics(self):
-        expected = {
+        expected_metrics = {
             "#0 known_device": {
-                "Value": {
+                "CheckResult": {
                     "GPU Frequency, MHz (Max/Target)": {
-                        "Value": "unknown/1200",
-                        "RetVal": "ERROR",
+                        "CheckResult": "unknown/1200",
+                        "CheckStatus": "ERROR",
                         "Message": "The Level Zero driver cannot find out information about frequency.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility." # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
-                        "Value": "unknown/30",
-                        "RetVal": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about memory bandwidth.", # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility." # noqa E501
+                        "CheckResult": "unknown/30",
+                        "CheckStatus": "ERROR",
+                        "Message": "The Level Zero driver cannot find out information about memory bandwidth.",  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
-                        "Value": "unknown/10",
-                        "RetVal": "ERROR",
+                        "CheckResult": "unknown/10",
+                        "CheckStatus": "ERROR",
                         "Message": "The Level Zero driver cannot find out information about PCIe bandwidth.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility." # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                 },
-                "RetVal": "PASS"
+                "CheckStatus": "PASS"
             }
         }
 
-        input = gpu_metrics_checker.Device(
+        device = gpu_metrics_checker.Device(
             name="known_device",
             id="0x3e98",
             max_freq="unknown",
@@ -501,33 +501,33 @@ class TestCompareMetricsForKnownDevice(unittest.TestCase):
             enumeration="0"
         )
 
-        value = {}
-        gpu_metrics_checker.compare_metrics_for_known_device(value, input)
+        actual_metrics = {}
+        gpu_metrics_checker.compare_metrics_for_known_device(actual_metrics, device)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected_metrics, actual_metrics)
 
     def test_compare_metrics_for_known_device_known_good_metrics(self):
-        expected = {
+        expected_metrics = {
             "#0 known_device": {
-                "Value": {
+                "CheckResult": {
                     "GPU Frequency, MHz (Max/Target)": {
-                        "Value": "1200/1200",
-                        "RetVal": "PASS"
+                        "CheckResult": "1200/1200",
+                        "CheckStatus": "PASS"
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
-                        "Value": "30/30",
-                        "RetVal": "PASS"
+                        "CheckResult": "30/30",
+                        "CheckStatus": "PASS"
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
-                        "Value": "10/10",
-                        "RetVal": "PASS"
+                        "CheckResult": "10/10",
+                        "CheckStatus": "PASS"
                     },
                 },
-                "RetVal": "PASS"
+                "CheckStatus": "PASS"
             }
         }
 
-        input = gpu_metrics_checker.Device(
+        device = gpu_metrics_checker.Device(
             name="known_device",
             id="0x3e98",
             max_freq="1200",
@@ -539,42 +539,42 @@ class TestCompareMetricsForKnownDevice(unittest.TestCase):
             enumeration="0"
         )
 
-        value = {}
-        gpu_metrics_checker.compare_metrics_for_known_device(value, input)
+        actual_metrics = {}
+        gpu_metrics_checker.compare_metrics_for_known_device(actual_metrics, device)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected_metrics, actual_metrics)
 
     def test_compare_metrics_for_known_device_known_bad_metrics(self):
-        expected = {
+        expected_metrics = {
             "#0 known_device": {
-                "Value": {
+                "CheckResult": {
                     "GPU Frequency, MHz (Max/Target)": {
-                        "Value": "1000/1200",
-                        "RetVal": "FAIL",
+                        "CheckResult": "1000/1200",
+                        "CheckStatus": "FAIL",
                         "Message": "The maximum GPU frequency is less than the target bandwidth.",
                         "HowToFix": "The maximum GPU frequency: 1000, should be equal or greater than "
                                     "the target value: 1200."
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
-                        "Value": "3/30",
-                        "RetVal": "FAIL",
+                        "CheckResult": "3/30",
+                        "CheckStatus": "FAIL",
                         "Message": "The maximum memory bandwidth is less than the target bandwidth.",
                         "HowToFix": "The maximum memory bandwidth: 3, should be equal or greater "
                                     "than the target value: 30."
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
-                        "Value": "1/10",
-                        "RetVal": "FAIL",
+                        "CheckResult": "1/10",
+                        "CheckStatus": "FAIL",
                         "Message": "The maximum PCIe bandwidth is less than the target bandwidth.",
                         "HowToFix": "The maximum PCIe bandwidth: 1, should be equal or greater "
                                     "than the target value: 10."
                     },
                 },
-                "RetVal": "PASS"
+                "CheckStatus": "PASS"
             }
         }
 
-        input = gpu_metrics_checker.Device(
+        device = gpu_metrics_checker.Device(
             name="known_device",
             id="0x3e98",
             max_freq="1000",
@@ -586,39 +586,39 @@ class TestCompareMetricsForKnownDevice(unittest.TestCase):
             enumeration="0"
         )
 
-        value = {}
-        gpu_metrics_checker.compare_metrics_for_known_device(value, input)
+        actual_metrics = {}
+        gpu_metrics_checker.compare_metrics_for_known_device(actual_metrics, device)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected_metrics, actual_metrics)
 
 
 class TestCheckIfTimeoutInGpuBackendCheck(unittest.TestCase):
 
     def test_timeout_in_gpu_backend_check_occured_positive(self):
-        expected = True
+        is_gpu_timeout_expected = True
 
         input = {
             "gpu_backend_check": {
-                "Value": "GPU"
-                }
+                "CheckResult": "GPU"
             }
+        }
 
-        value = gpu_metrics_checker.timeout_in_gpu_backend_check_occurred(input)
+        is_gpu_timeout_actual = gpu_metrics_checker.timeout_in_gpu_backend_check_occurred(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(is_gpu_timeout_expected, is_gpu_timeout_actual)
 
     def test_timeout_in_gpu_backend_check_occured_negative(self):
-        expected = False
+        is_gpu_timeout_expected = False
 
         input = {
             "gpu_backend_check": {
-                "Value": " "
-                }
+                "CheckResult": " "
             }
+        }
 
-        value = gpu_metrics_checker.timeout_in_gpu_backend_check_occurred(input)
+        is_gpu_timeout_actual = gpu_metrics_checker.timeout_in_gpu_backend_check_occurred(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(is_gpu_timeout_expected, is_gpu_timeout_actual)
 
 
 if __name__ == '__main__':

@@ -36,17 +36,17 @@ function run() {
 }
 
 function get_metadata() {
-    echo '{"name": "exe_check_sample","type": "Data","tags": "sample,exe","descr": "This is a sample of the exe module","dataReq": "{}","merit": 0,"timeout": 1,"version": 1,"run": ""}'
+    echo '{"name": "exe_check_sample","type": "Data","groups": "sample,exe","descr": "This is a sample of the exe module","dataReq": "{}","merit": 0,"timeout": 1,"version": 2,"run": ""}'
 }
 
 function get_summary() {
     #run
-    echo '{"result": "{\"Value\": {\"Exe sample check\": {\"RetVal\": \"PASS\",\"Value\": \"Exe sample value\"}}}"}'
+    echo '{"result": "{\"CheckResult\": {\"Exe sample check\": {\"CheckStatus\": \"PASS\",\"CheckResult\": \"Exe sample value\"}}}"}'
 }
 
 function get_api_version() {
     #run
-    echo "0.1"
+    echo "0.2"
 }
 
 parse_args $@

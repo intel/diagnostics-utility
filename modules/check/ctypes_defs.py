@@ -19,7 +19,7 @@ class CheckMetadata(ctypes.Structure):
     _fields_ = [
         ("name", ctypes.c_char * MAX_STRING_LEN),
         ("type", ctypes.c_char * MAX_STRING_LEN),
-        ("tags", ctypes.c_char * MAX_STRING_LEN),
+        ("groups", ctypes.c_char * MAX_STRING_LEN),
         ("descr", ctypes.c_char * MAX_STRING_LEN),
         ("dataReq", ctypes.c_char * MAX_STRING_LEN),
         ("merit", ctypes.c_int),
