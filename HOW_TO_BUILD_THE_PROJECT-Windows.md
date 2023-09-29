@@ -31,7 +31,7 @@ Cmake build options:
 
 ```powershell
 # Go to root directory of git repository
-PS> cd .../diagnostics-utility
+PS> cd ...\diagnostics-utility
 
 # Create a build directory
 PS> md build
@@ -48,7 +48,7 @@ PS> cmake --build . --target INSTALL --config Release
 👉 The application should be available to test in the root directory:
 
 ```powershell
-PS> cd .../diagnostics-utility
+PS> cd ...\diagnostics-utility
 PS> python diagnostics.py --help
 usage: diagnostics.py [--select SELECTION [SELECTION ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 
