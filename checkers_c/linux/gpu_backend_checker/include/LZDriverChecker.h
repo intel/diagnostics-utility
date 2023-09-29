@@ -31,18 +31,18 @@ public:
 	LZ_DriverChecker();
 	virtual ~LZ_DriverChecker();
 
-	static bool Load(string& message);
-	static bool Initialize(string& message);
-	static bool GetLoaderVersion(string& message);
-	static void GetDriverInfo(string& message);
-	static void GetDeviceInfo(ze_driver_handle_t driver, string& message);
+	virtual bool Load(string& message);
+	virtual bool Initialize(string& message);
+	virtual bool GetLoaderVersion(string& message);
+	virtual void GetDriverInfo(string& message);
+	virtual void GetDeviceInfo(ze_driver_handle_t driver, string& message);
 
-	static string GetErrorMessage(ze_result_t error);
-	static string GetAPIVersionString(_ze_api_version_t version);
-	static string GetDriverVersionString(uint32_t version);
-	static string GetUUIDString(ze_driver_uuid_t uuid);
-	static string GetUUIDString(ze_device_uuid_t uuid);
-	static string GetDeviceTypeString(ze_device_type_t type);
+	virtual string GetErrorMessage(ze_result_t error);
+	virtual string GetAPIVersionString(_ze_api_version_t version);
+	virtual string GetDriverVersionString(uint32_t version);
+	virtual string GetUUIDString(ze_driver_uuid_t uuid);
+	virtual string GetUUIDString(ze_device_uuid_t uuid);
+	virtual string GetDeviceTypeString(ze_device_type_t type);
 };
 
 #endif /* SRC_LZDRIVERCHECKER_H_ */

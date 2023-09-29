@@ -26,28 +26,28 @@ class TestGpuHelper(unittest.TestCase):
     def test_intel_gpus_not_found_handler_positive(self):
         expected = {
             "Warning message": {
-                "Value": "",
-                "RetVal": "WARNING",
+                "CheckResult": "",
+                "CheckStatus": "WARNING",
                 "Message": "The checker might show irrelevant information for your system because "
                            "the intel_gpu_detector_check failed."
             }
         }
 
-        value = {}
-        gpu_helper.intel_gpus_not_found_handler(value)
+        actual = {}
+        gpu_helper.intel_gpus_not_found_handler(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_are_intel_gpus_found_positive(self):
         expected = True
 
         input = {
             "intel_gpu_detector_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU information": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel GPU(s) is present on the bus": {
-                                "RetVal": "PASS"
+                                "CheckStatus": "PASS"
                             }
                         }
                     }
@@ -55,20 +55,20 @@ class TestGpuHelper(unittest.TestCase):
             }
         }
 
-        value = gpu_helper.are_intel_gpus_found(input)
+        actual = gpu_helper.are_intel_gpus_found(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_are_intel_gpus_found_negative(self):
         expected = False
 
         input = {
             "intel_gpu_detector_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU information": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel GPU(s) is present on the bus": {
-                                "RetVal": "FAIL"
+                                "CheckStatus": "FAIL"
                             }
                         }
                     }
@@ -76,9 +76,9 @@ class TestGpuHelper(unittest.TestCase):
             }
         }
 
-        value = gpu_helper.are_intel_gpus_found(input)
+        actual = gpu_helper.are_intel_gpus_found(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.listdir", return_value=["by-path", "card0", "card1", "renderD128", "renderD129"])
     @patch("gpu_helper.Path")
@@ -97,9 +97,9 @@ class TestGpuHelper(unittest.TestCase):
         mocked_path.return_value = MagicMock()
         mocked_path.return_value.exists.return_value = False
 
-        value = gpu_helper.get_render_devices()
+        actual = gpu_helper.get_render_devices()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.listdir", return_value=["by-path", "card0", "card1", "renderD128", "renderD129"])
     @patch("gpu_helper.Path")
@@ -118,25 +118,25 @@ class TestGpuHelper(unittest.TestCase):
         mocked_path.return_value = MagicMock()
         mocked_path.return_value.exists.return_value = False
 
-        value = gpu_helper.get_card_devices()
+        actual = gpu_helper.get_card_devices()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def is_lz_initialized_positive(self):
         expected = True
 
         input = {
             "gpu_backend_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel® oneAPI Level Zero Driver": {
-                                "Value": {
+                                "CheckResult": {
                                     "Driver is loaded.": {
-                                        "RetVal": "PASS"
+                                        "CheckStatus": "PASS"
                                     },
                                     "Driver information": {
-                                       "RetVal": "INFO"
+                                       "CheckStatus": "INFO"
                                     }
                                 }
                             }
@@ -146,25 +146,25 @@ class TestGpuHelper(unittest.TestCase):
             }
         }
 
-        value = gpu_helper.is_level_zero_initialized(input)
+        actual = gpu_helper.is_level_zero_initialized(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def is_lz_initialized_negative(self):
         expected = False
 
         input = {
             "gpu_backend_check": {
-                "Value": {
+                "CheckResult": {
                     "GPU": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel® oneAPI Level Zero Driver": {
-                                "Value": {
+                                "CheckResult": {
                                     "Driver is loaded.": {
-                                        "RetVal": "ERROR"
+                                        "CheckStatus": "ERROR"
                                     },
                                     "Driver information": {
-                                       "RetVal": "ERROR"
+                                       "CheckStatus": "ERROR"
                                     }
                                 }
                             }
@@ -174,9 +174,9 @@ class TestGpuHelper(unittest.TestCase):
             }
         }
 
-        value = gpu_helper.is_level_zero_initialized(input)
+        actual = gpu_helper.is_level_zero_initialized(input)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

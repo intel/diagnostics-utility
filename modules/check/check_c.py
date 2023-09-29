@@ -29,7 +29,7 @@ class CheckC(BaseCheck):
         self.metadata = CheckMetadataPy(
             name=check_list[index].check_metadata.name.decode("utf-8"),
             type=check_list[index].check_metadata.type.decode("utf-8"),
-            tags=check_list[index].check_metadata.tags.decode("utf-8"),
+            groups=check_list[index].check_metadata.groups.decode("utf-8"),
             descr=check_list[index].check_metadata.descr.decode("utf-8"),
             dataReq=check_list[index].check_metadata.dataReq.decode("utf-8"),
             merit=check_list[index].check_metadata.merit,

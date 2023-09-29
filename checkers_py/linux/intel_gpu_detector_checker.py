@@ -28,7 +28,7 @@ def _function_cmd(command):
 
 
 def _get_i915_driver_loaded_info(json_node: Dict) -> None:
-    value = {"Value": "", "RetVal": "PASS", "Command": "lsmod | grep i915"}
+    check_result = {"CheckResult": "", "CheckStatus": "PASS", "Command": "lsmod | grep i915"}
 
     try:
         lsmod_process = subprocess.Popen(
@@ -45,18 +45,18 @@ def _get_i915_driver_loaded_info(json_node: Dict) -> None:
             raise Exception("Cannot get information about whether the Intel® Graphics Driver is loaded.")
 
         if not stdout.splitlines():
-            value["RetVal"] = "FAIL"
-            value["Message"] = "Module i915 is not loaded."
-            value["HowToFix"] = "Try to load i915 module with the following command: modprobe i915."
-            value["AutomationFix"] = "modprobe i915"
+            check_result["CheckStatus"] = "FAIL"
+            check_result["Message"] = "Module i915 is not loaded."
+            check_result["HowToFix"] = "Try to load i915 module with the following command: modprobe i915."
+            check_result["AutomationFix"] = "modprobe i915"
 
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
-    json_node.update({"Intel® Graphics Driver is loaded": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
+    json_node.update({"Intel® Graphics Driver is loaded": check_result})
 
 
 def _get_topology_path(json_node: Dict, bus) -> None:
@@ -64,19 +64,19 @@ def _get_topology_path(json_node: Dict, bus) -> None:
     relative_path = "/sys/devices"
     path = os.path.realpath(link)
     rel_path = os.path.relpath(path, relative_path)
-    value = {
-        "Value": rel_path,
-        "RetVal": "INFO",
+    check_result = {
+        "CheckResult": rel_path,
+        "CheckStatus": "INFO",
         "Verbosity": 1,
         "Command": f"readlink {link}"
     }
-    json_node.update({"PCI bus-tree": value})
+    json_node.update({"PCI bus-tree": check_result})
 
 
 def _get_tile_count(json_node: Dict, path) -> None:
-    value = {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Verbosity": 1,
         "Command": f"ls {path} | grep -i 'gt[0-9]$' | wc -l"
     }
@@ -95,16 +95,16 @@ def _get_tile_count(json_node: Dict, path) -> None:
         stdout, _ = grep_process.communicate()
         if grep_process.returncode in [0, 1]:
             count = len(stdout.splitlines())
-            value["Value"] = count
+            check_result["CheckResult"] = count
         else:
             raise Exception("Cannot get information to determine tiles count."
                             f"'grep' command returned error code {grep_process.returncode}.")
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["Verbosity"] = 0
-        value["HowToFix"] = "There is not a known solution for this error."
-    json_node.update({"Tile count": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["Verbosity"] = 0
+        check_result["HowToFix"] = "There is not a known solution for this error."
+    json_node.update({"Tile count": check_result})
 
 
 def _count_initializedGPU():
@@ -143,54 +143,54 @@ def _get_initializedGPU(json_node: Dict) -> None:
             bus = name_file.readline().strip().split()[1][4:]
 
         gpu = {"GPU id": {
-                "Value": output["PCI ID"],
-                "RetVal": "INFO",
-                "Command": f"cat {path}/i915_gpu_info | grep -i 'pci id' | awk '{{print $3}}'"
-            },
+            "CheckResult": output["PCI ID"],
+            "CheckStatus": "INFO",
+            "Command": f"cat {path}/i915_gpu_info | grep -i 'pci id' | awk '{{print $3}}'"
+        },
             "Bus info": {
-                "Value": bus,
-                "RetVal": "INFO",
+                "CheckResult": bus,
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": f"cat {path}/name | awk '{{print $2}}'"
-            },
+        },
             "EU Counts": {
-                "Value": output["EU total"],
-                "RetVal": "INFO",
+                "CheckResult": output["EU total"],
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": f"cat {path}/i915_gpu_info | grep -i 'EU total' | awk '{{print $3}}'"
-            },
+        },
             "Platform": {
-                "Value": output["Platform"],
-                "RetVal": "INFO",
+                "CheckResult": output["Platform"],
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": f"cat {path}/i915_gpu_info | grep -i '^platform' | awk '{{print $2}}' | uniq"
-            },
+        },
             "GuC firmware": {
-                "Value": output["GuC firmware"].split("/")[-1],
-                "RetVal": "INFO",
+                "CheckResult": output["GuC firmware"].split("/")[-1],
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": f"cat {path}/i915_gpu_info | grep -i 'GuC firmware' | awk '{{print $3}}' | "
                            "xargs basename"
-            },
+        },
             "HuC firmware": {
-                "Value": output["HuC firmware"].split("/")[-1],
-                "RetVal": "INFO",
+                "CheckResult": output["HuC firmware"].split("/")[-1],
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": f"cat {path}/i915_gpu_info | grep -i 'HuC firmware' | awk '{{print $3}}' | "
                            "xargs basename"
-            },
+        },
             "GPU type": {
-                "Value": "Discrete" if output["is_dgfx"] == "yes" else "Integrated",
-                "RetVal": "INFO",
+                "CheckResult": "Discrete" if output["is_dgfx"] == "yes" else "Integrated",
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": f"cat {path}/i915_gpu_info | grep -i 'is_dgfx' | awk '{{print $0}}'"
-            }
+        }
         }
         _get_topology_path(gpu, bus)
         _get_tile_count(gpu, path)
         gpu_info = {f"Intel GPU #{counter_loop}": {
-                "Value": gpu,
-                "RetVal": "INFO"}}
+            "CheckResult": gpu,
+            "CheckStatus": "INFO"}}
         json_node.update(gpu_info)
         counter_loop += 1
 
@@ -232,17 +232,17 @@ def _get_uninitializedGPU(slots, json_node: Dict) -> int:
                 hw_count += 1
                 gpu = {
                     f"Intel GPU #{hw_count}": {
-                        "Value": {
+                        "CheckResult": {
                             "Bus info": {
-                                "Value": line.split()[0],
-                                "RetVal": "INFO"
+                                "CheckResult": line.split()[0],
+                                "CheckStatus": "INFO"
                             },
                             "Name": {
-                                "Value": " ".join(line.split()[1:]),
-                                "RetVal": "INFO"
+                                "CheckResult": " ".join(line.split()[1:]),
+                                "CheckStatus": "INFO"
                             },
                         },
-                        "RetVal": "INFO",
+                        "CheckStatus": "INFO",
                         "Command": 'lspci | grep -e "VGA compatible controller" -e "Display controller"'
                                    ' | grep -i "Intel Corporation"'
                     }
@@ -252,7 +252,7 @@ def _get_uninitializedGPU(slots, json_node: Dict) -> int:
 
 
 def get_gpu_info(json_node: Dict) -> None:
-    value = {"Value": "Undefined", "RetVal": "INFO"}
+    check_result = {"CheckResult": "Undefined", "CheckStatus": "INFO"}
     try:
 
         gpu_full_info = {}
@@ -269,17 +269,18 @@ def get_gpu_info(json_node: Dict) -> None:
                 _get_initializedGPU(gpu_info)
                 gpu_detailed_info.update({
                     "Initialized devices": {
-                        "Value": gpu_info,
-                        "RetVal": "INFO"
+                        "CheckResult": gpu_info,
+                        "CheckStatus": "INFO"
                     }
                 })
                 for key in gpu_info:
-                    slots.append(re.sub(r'^.*?:', '', gpu_info[key]["Value"]["Bus info"]["Value"]))
+                    slots.append(re.sub(r'^.*?:', '', gpu_info[key]
+                                 ["CheckResult"]["Bus info"]["CheckResult"]))
             except PermissionError as error:
                 gpu_detailed_info.update({
                     "Initialized devices": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Message": str(error),
                         "HowToFix": "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
                                     "with administrative privilege or join the video and render groups."
@@ -288,8 +289,8 @@ def get_gpu_info(json_node: Dict) -> None:
             except Exception as error:
                 gpu_detailed_info.update({
                     "Initialized devices": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Message": str(error),
                         "HowToFix": "This error is unexpected. Please report the issue to "
                                     "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
@@ -304,8 +305,8 @@ def get_gpu_info(json_node: Dict) -> None:
                 if count_hw != 0:
                     gpu_detailed_info.update({
                         "Uninitialized devices": {
-                            "Value": gpu_info,
-                            "RetVal": "ERROR",
+                            "CheckResult": gpu_info,
+                            "CheckStatus": "ERROR",
                             "Message": "Some GPU(s) are not initialized.",
                             "HowToFix": "To initialize GPU(s), please run the following command: "
                                         "modprobe i915.",
@@ -316,8 +317,8 @@ def get_gpu_info(json_node: Dict) -> None:
             except PermissionError as error:
                 gpu_detailed_info.update({
                     "Uninitialized devices": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Message": str(error),
                         "HowToFix": "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
                                     "with administrative privilege or join the video and render groups."
@@ -326,8 +327,8 @@ def get_gpu_info(json_node: Dict) -> None:
             except Exception as error:
                 gpu_detailed_info.update({
                     "Uninitialized devices": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Message": str(error),
                         "HowToFix": "This error is unexpected. Please report the issue to "
                                     "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
@@ -339,45 +340,45 @@ def get_gpu_info(json_node: Dict) -> None:
         if gpus_found:
             gpu_full_info.update({
                 "Intel GPU(s) is present on the bus": {
-                    "RetVal": "PASS",
-                    "Value": ""
+                    "CheckStatus": "PASS",
+                    "CheckResult": ""
                 },
                 "Number of Intel GPU(s) on the system": {
-                    "RetVal": "INFO",
-                    "Value": all_gpu_counter
+                    "CheckStatus": "INFO",
+                    "CheckResult": all_gpu_counter
                 }
             })
             gpu_full_info.update(gpu_detailed_info)
         else:
             gpu_full_info.update({
                 "Intel GPU(s) is present on the bus": {
-                    "RetVal": "FAIL",
+                    "CheckStatus": "FAIL",
                     "Message": "There are no Intel GPU(s) on the system.",
                     "HowToFix": "Plug Intel GPU(s) into an empty PCI slot.",
-                    "Value": ""
+                    "CheckResult": ""
                 }
             })
 
-        value["Value"] = gpu_full_info
+        check_result["CheckResult"] = gpu_full_info
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Value"] = {
+        check_result["CheckStatus"] = "ERROR"
+        check_result["CheckResult"] = {
             "Intel GPU(s) is present on the bus": {
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Message": str(error),
-                "Value": "",
+                "CheckResult": "",
                 "HowToFix": "This error is unexpected. Please report the issue to "
                             "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
                             "https://github.com/intel/diagnostics-utility."
             }
         }
-    json_node.update({"GPU information": value})
+    json_node.update({"GPU information": check_result})
 
 
 def run_intel_gpu_detector_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}}
+    result_json = {"CheckResult": {}}
 
-    get_gpu_info(result_json["Value"])
+    get_gpu_info(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -387,20 +388,20 @@ def run_intel_gpu_detector_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="intel_gpu_detector_check",
         type="Data",
-        tags="default,gpu,sysinfo,profiling,runtime,target",
+        groups="default,gpu,sysinfo,profiling,runtime,target",
         descr="This check shows which Intel GPU(s) is on the system, based on "
               "lspci information and internal table.",
         dataReq="{}",
         merit=20,
         timeout=5,
-        version=1,
+        version=2,
         run="run_intel_gpu_detector_check"
     )
     return [someCheck]

@@ -23,17 +23,17 @@ from modules.check.check_list_c import CheckListC  # noqa: E402
 c_metadata = Mock()
 c_metadata.name = "c_example".encode()
 c_metadata.type = "Data".encode()
-c_metadata.tags = "cpu".encode()
+c_metadata.groups = "cpu".encode()
 c_metadata.descr = "This is example of c module".encode()
 c_metadata.dataReq = "{}".encode()
 c_metadata.timeout = 1
 c_metadata.version = 1
 
-c_api_version = "0.1".encode()
+c_api_version = "0.2".encode()
 
 c_run_output = Mock()
 c_run_output.error_code = 0
-c_run_output.result = """{"Value": {"C example check": {"Value": "C example value"}}}""".encode()
+c_run_output.result = """{"CheckResult": {"C example check": {"CheckResult": "C example value"}}}""".encode()  # noqa: E501
 
 
 c_run = Mock()

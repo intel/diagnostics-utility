@@ -55,8 +55,8 @@ system for its intended purpose (host, target):
 
 | Field           | Description |
 |:----------------|:------------|
-| `RetVal`\*      | Status of performed check (`PASS`, `FAIL`, `INFO`, `WARNING`, or `ERROR`).|
-| `Value`\*       | Information obtained as a result of the check. Nested checks are listed in this field.|
+| `CheckStatus`\* | Status of performed check (`PASS`, `FAIL`, `INFO`, `WARNING`, or `ERROR`).|
+| `CheckResult`\* | Information obtained as a result of the check. Nested checks are listed in this field.|
 | `Message`       | Important information for a user. In general, this is information about an error or failure.|
 | `Command`       | Command line or a description of how the information was obtained for verification or display.|
 | `HowToFix`      | Suggestion on how to fix the problem. Use when the check has completed with a problem that has a distinct prescription to fix.|
@@ -70,22 +70,22 @@ Consult the [`README`](README.md) documentation for more information on:
 
 Example:
   
-A check tree with one level of hierarchy (created by the `Value` field) could
+A check tree with one level of hierarchy (created by the `CheckResult` field) could
 look like this:
 
 ```json
 {
-  "Value": {
+  "CheckResult": {
     "name_of_check": {
-      "RetVal": "PASS",
+      "CheckStatus": "PASS",
       "Verbosity": 0,
       "Message": "Some message",
-      "Value": {
+      "CheckResult": {
         "name_of_sub_check": {
-          "RetVal": "PASS",
+          "CheckStatus": "PASS",
           "Verbosity": 0,
           "Message": "Some message",
-          "Value": "Received value"
+          "CheckResult": "Received value"
         }
       }
     }
@@ -103,7 +103,7 @@ A shell script-based checker should implement three command line options:
     {
       "name": "name_of_check_without_spaces",
       "type": "",
-      "tags": "tag1,tag2,tag3",
+      "groups": "group1,group2,group3",
       "descr": "Description of check",
       "dataReq": "{}",
       "merit": 0,
@@ -117,7 +117,7 @@ A shell script-based checker should implement three command line options:
 
     ```json
     {
-      "result": "{}"
+      "result": {}
     }
     ```
 
@@ -125,7 +125,7 @@ A shell script-based checker should implement three command line options:
 implemented API:
 
     ```txt
-    0.1
+    0.2
     ```
 
 | /!\ Warning |
@@ -155,7 +155,7 @@ struct CheckMetadata
 {
   char name[MAX_STRING_LEN];
   char type[MAX_STRING_LEN];
-  char tags[MAX_STRING_LEN];
+  char groups[MAX_STRING_LEN];
   char descr[MAX_STRING_LEN];
   char dataReq[MAX_STRING_LEN];
   int merit;
@@ -185,7 +185,7 @@ The `CheckMetadataPy` and `CheckSummary` classes, defined as:
 class CheckMetadataPy:
     name: str
     type: str
-    tags: str
+    groups: str
     descr: str
     dataReq: str
     merit: int
@@ -217,7 +217,7 @@ You can to run checks from the custom checker in two different ways:
 
 | [i] Note |
 |:---------|
-|In this case, the utility will load all the checks from the given paths in addition to the checks loaded by default. The set of checks to run will be determined by the value passed to the `--filter` option. For more information about filtering checks, see [`README`](README.md). |
+|In this case, the utility will load all the checks from the given paths in addition to the checks loaded by default. The set of checks to run will be determined by the value passed to the `--select` option. For more information about selecting checks, see [`README`](README.md). |
 
 ## Run Example Checks
 
@@ -240,11 +240,11 @@ Run example checks:
 * Run checks for all examples:
 
     ```bash
-    ./diagnostics.py --filter example
+    ./diagnostics.py --select example
     ```
 
 * Run check by check name:
 
     ```bash
-    ./diagnostics.py --filter example_c_check
+    ./diagnostics.py --select example_c_check
     ```

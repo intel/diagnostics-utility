@@ -38,27 +38,27 @@ class TestHangcheckCheckerApiTest(unittest.TestCase):
 
         mocked_intel_gpus_not_found_handler.side_effect = lambda node: node.update({
             "Warning": {
-                "Value": "Value",
-                "RetVal": "WARNING"
+                "CheckResult": "some data",
+                "CheckStatus": "WARNING"
             }
         })
         mocked_check_hangcheck_is_disabled.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_check_non_zero_pre_emption_timeouts.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = hangcheck_checker.run_hangcheck_check({})
+        actual = hangcheck_checker.run_hangcheck_check({})
 
         mocked_are_intel_gpus_found.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     @patch("checkers_py.linux.hangcheck_checker.check_hangcheck_is_disabled")
     @patch("checkers_py.linux.hangcheck_checker.check_non_zero_pre_emption_timeouts")
@@ -72,35 +72,35 @@ class TestHangcheckCheckerApiTest(unittest.TestCase):
 
         mocked_check_hangcheck_is_disabled.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_check_non_zero_pre_emption_timeouts.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = hangcheck_checker.run_hangcheck_check({})
+        actual = hangcheck_checker.run_hangcheck_check({})
 
         mocked_are_intel_gpus_found.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = hangcheck_checker.get_api_version()
+        actual = hangcheck_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = hangcheck_checker.get_check_list()
+        check_list = hangcheck_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -113,17 +113,17 @@ class TestCheckHangcheckInGrub(unittest.TestCase):
             "Command": "grep i915.enable_hangcheck=0 /etc/default/grub",
             "Message": "Kernel hangcheck is disabled. "
                        "If it is not working, reboot or run 'sudo update-grub' for it to take effect.",
-            "RetVal": "PASS"
+            "CheckStatus": "PASS"
         }
 
         mocked_parser.return_value = MagicMock()
         mocked_parser.return_value.has_option.return_value = True
         mocked_parser.return_value.get.return_value = ["i915.enable_hangcheck=0"]
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_grub(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_grub(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", mock_open(read_data=""))
     @patch("configparser.ConfigParser")
@@ -135,10 +135,10 @@ class TestCheckHangcheckInGrub(unittest.TestCase):
         mocked_parser.return_value = MagicMock()
         mocked_parser.return_value.has_option.return_value = False
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_grub(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_grub(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", mock_open(read_data=""))
     @patch("configparser.ConfigParser")
@@ -151,10 +151,10 @@ class TestCheckHangcheckInGrub(unittest.TestCase):
         mocked_parser.return_value.has_option.return_value = True
         mocked_parser.return_value.get.return_value = [""]
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_grub(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_grub(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     @patch("configparser.ConfigParser")
@@ -162,14 +162,14 @@ class TestCheckHangcheckInGrub(unittest.TestCase):
         expected = {
             "Command": "grep i915.enable_hangcheck=0 /etc/default/grub",
             "Message": "test message",
-            "RetVal": "ERROR",
+            "CheckStatus": "ERROR",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
         }
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_grub(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_grub(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestCheckHangcheckInConfig(unittest.TestCase):
@@ -178,15 +178,15 @@ class TestCheckHangcheckInConfig(unittest.TestCase):
     def test__check_hangcheck_in_config_positive(self):
         expected = {
             "Command": "cat /sys/module/i915/parameters/enable_hangcheck",
-            "RetVal": "PASS",
+            "CheckStatus": "PASS",
             "Message": "To disable GPU hangcheck across reboots, visit "
                        "https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-intel-oneapi-hpc-linux/top/before-you-begin.html."  # noqa: E501
         }
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_config(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_config(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", mock_open(read_data="y"))
     def test__check_hangcheck_in_config_option_is_enabled(self):
@@ -194,24 +194,24 @@ class TestCheckHangcheckInConfig(unittest.TestCase):
             "Command": "cat /sys/module/i915/parameters/enable_hangcheck"
         }
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_config(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_config(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     def test__check_hangcheck_in_config_open_raise_exception(self, mocked_open):
         expected = {
             "Command": "cat /sys/module/i915/parameters/enable_hangcheck",
-            "RetVal": "ERROR",
+            "CheckStatus": "ERROR",
             "Message": "test message",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
         }
 
-        value = {}
-        hangcheck_checker._check_hangcheck_in_config(value)
+        actual = {}
+        hangcheck_checker._check_hangcheck_in_config(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestCheckHangcheckIsDisabled(unittest.TestCase):
@@ -226,23 +226,23 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
             mocked_isfile):
         expected = {
             "GPU hangcheck is disabled": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Message": ""
             }
         }
 
         mocked__check_hangcheck_in_grub.side_effect = lambda node: node.update({
-            "RetVal": "PASS",
+            "CheckStatus": "PASS",
             "Message": ""
         })
 
-        value = {}
-        hangcheck_checker.check_hangcheck_is_disabled(value)
+        actual = {}
+        hangcheck_checker.check_hangcheck_is_disabled(actual)
 
         mocked__check_hangcheck_in_grub.assert_called_once()
         mocked__check_hangcheck_in_config.assert_not_called()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.path.isfile", side_effect=[True, True])
     @patch("checkers_py.linux.hangcheck_checker._check_hangcheck_in_grub")
@@ -254,23 +254,23 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
             mocked_isfile):
         expected = {
             "GPU hangcheck is disabled": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Message": ""
             }
         }
 
         mocked__check_hangcheck_in_config.side_effect = lambda node: node.update({
-            "RetVal": "PASS",
+            "CheckStatus": "PASS",
             "Message": ""
         })
 
-        value = {}
-        hangcheck_checker.check_hangcheck_is_disabled(value)
+        actual = {}
+        hangcheck_checker.check_hangcheck_is_disabled(actual)
 
         mocked__check_hangcheck_in_grub.assert_called_once()
         mocked__check_hangcheck_in_config.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.path.isfile", side_effect=[False, True])
     @patch("checkers_py.linux.hangcheck_checker._check_hangcheck_in_grub")
@@ -282,23 +282,23 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
             mocked_isfile):
         expected = {
             "GPU hangcheck is disabled": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Message": ""
             }
         }
 
         mocked__check_hangcheck_in_config.side_effect = lambda node: node.update({
-            "RetVal": "PASS",
+            "CheckStatus": "PASS",
             "Message": ""
         })
 
-        value = {}
-        hangcheck_checker.check_hangcheck_is_disabled(value)
+        actual = {}
+        hangcheck_checker.check_hangcheck_is_disabled(actual)
 
         mocked__check_hangcheck_in_grub.assert_not_called()
         mocked__check_hangcheck_in_config.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.path.isfile", side_effect=[False, False])
     @patch("checkers_py.linux.hangcheck_checker._check_hangcheck_in_grub")
@@ -310,8 +310,8 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
             mocked_isfile):
         expected = {
             "GPU hangcheck is disabled": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Message": "To disable GPU hangcheck, visit "
                            "https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-intel-oneapi-hpc-linux/top/before-you-begin.html.",  # noqa: E501
                 "HowToFix": "Try disable GPU hangcheck, based on instructions from "
@@ -319,12 +319,12 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
             }
         }
 
-        value = {}
-        hangcheck_checker.check_hangcheck_is_disabled(value)
+        actual = {}
+        hangcheck_checker.check_hangcheck_is_disabled(actual)
 
         mocked__check_hangcheck_in_grub.assert_not_called()
         mocked__check_hangcheck_in_config.assert_not_called()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
@@ -333,13 +333,13 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
     def test_check_non_zero_pre_emption_timeouts_positive(self, mocked_open):
         expected = {
             "Queried preempt_timeout_ms": {
-                "Value": {
+                "CheckResult": {
                     "preempt_timeout_ms=0 to prevent long-running jobs from hanging": {
-                        "Value": "",
-                        "RetVal": "PASS"
+                        "CheckResult": "",
+                        "CheckStatus": "PASS"
                     }
                 },
-                "RetVal": "PASS",
+                "CheckStatus": "PASS",
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +"
             }
@@ -351,25 +351,25 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
 
         mocked_open.return_value = proc_mock
 
-        value = {}
-        hangcheck_checker.check_non_zero_pre_emption_timeouts(value)
+        actual = {}
+        hangcheck_checker.check_non_zero_pre_emption_timeouts(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_check_non_zero_pre_emption_timeouts_timeout_is_not_zero(self, mocked_open):
         expected = {
             "Queried preempt_timeout_ms": {
-                "Value": {
+                "CheckResult": {
                     "preempt_timeout_ms=0 to prevent long-running jobs from hanging": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Message": "preempt_timeout_ms=1 - long-running jobs may not run to completion.",
                         "HowToFix": "To disable preemption timeout, visit "
                             "https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-hpc-cluster/top/step-4-set-up-user-permissions.html#step-4-set-up-user-permissions-for-using-the-device-files-for-intel-gpus_disable-timeout" # noqa E501
                     }
                 },
-                "RetVal": "PASS",
+                "CheckStatus": "PASS",
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +"
             }
@@ -381,25 +381,25 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
 
         mocked_open.return_value = proc_mock
 
-        value = {}
-        hangcheck_checker.check_non_zero_pre_emption_timeouts(value)
+        actual = {}
+        hangcheck_checker.check_non_zero_pre_emption_timeouts(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_check_non_zero_pre_emption_timeouts_max_timeout_is_not_zero(self, mocked_open):
         expected = {
             "Queried preempt_timeout_ms": {
-                "Value": {
+                "CheckResult": {
                     "preempt_timeout_ms=0 to prevent long-running jobs from hanging": {
-                        "Value": "",
-                        "RetVal": "FAIL",
+                        "CheckResult": "",
+                        "CheckStatus": "FAIL",
                         "Message": "preempt_timeout_ms=1 - long-running jobs may not run to completion.",
                         "HowToFix": "To disable preemption timeout, visit "
                             "https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-hpc-cluster/top/step-4-set-up-user-permissions.html#step-4-set-up-user-permissions-for-using-the-device-files-for-intel-gpus_disable-timeout" # noqa E501
                     }
                 },
-                "RetVal": "PASS",
+                "CheckStatus": "PASS",
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +"
             }
@@ -411,17 +411,17 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
 
         mocked_open.return_value = proc_mock
 
-        value = {}
-        hangcheck_checker.check_non_zero_pre_emption_timeouts(value)
+        actual = {}
+        hangcheck_checker.check_non_zero_pre_emption_timeouts(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_check_non_zero_pre_emption_timeouts_proc_return_code_is_not_none(self, mocked_open):
         expected = {
             "Queried preempt_timeout_ms": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +",
                 "Message": "Cannot get information about preempt_timeout_ms",
@@ -435,17 +435,17 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
 
         mocked_open.return_value = proc_mock
 
-        value = {}
-        hangcheck_checker.check_non_zero_pre_emption_timeouts(value)
+        actual = {}
+        hangcheck_checker.check_non_zero_pre_emption_timeouts(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_check_non_zero_pre_emption_timeouts_popen_raise_exception(self, mocked_open):
         expected = {
             "Queried preempt_timeout_ms": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +",
                 "Message": "test message",
@@ -453,10 +453,10 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
             }
         }
 
-        value = {}
-        hangcheck_checker.check_non_zero_pre_emption_timeouts(value)
+        actual = {}
+        hangcheck_checker.check_non_zero_pre_emption_timeouts(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

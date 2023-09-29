@@ -74,9 +74,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
         checker_path.__str__.return_value = "wrong path"
         checker_path.exists.return_value = False
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
         mocked_log.assert_called_once()
 
@@ -88,9 +88,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
         checker_path.__str__.return_value = "checker.txt"
         checker_path.exists.return_value = True
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
 
     @patch("os.access", return_value=False)
@@ -102,9 +102,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
         checker_path.__str__.return_value = "checker.sh"
         checker_path.exists.return_value = True
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
 
     @patch("modules.check.check_loader.getChecksC")
@@ -119,9 +119,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
 
         mocked_get_checks.return_value = [self.mock_check_c_1, self.mock_check_c_2]
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
         mocked_get_checks.assert_called()
 
@@ -137,9 +137,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
 
         mocked_get_checks.return_value = [self.mock_check_py_1, self.mock_check_py_2]
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
         mocked_get_checks.assert_called()
 
@@ -154,9 +154,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
         checker_path.name = "__init__.py"
         checker_path.suffix = ".py"
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
         mocked_get_checks.assert_not_called()
 
@@ -173,9 +173,9 @@ class TestLoadChecksFromChecker(unittest.TestCase):
 
         mocked_get_checks.return_value = [self.mock_check_exe_1, self.mock_check_exe_2]
 
-        value = check_loader.load_checks_from_checker(checker_path, "0.1", {})
+        actual = check_loader.load_checks_from_checker(checker_path, "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         checker_path.exists.assert_called_once()
         mocked_get_checks.assert_called()
 
@@ -199,9 +199,9 @@ class TestLoadChecks(unittest.TestCase):
 
         mocked_load_checks_from_checker.return_value = [self.mock_check_c_1]
 
-        value = check_loader.load_checks([checker_path], "0.1", {})
+        actual = check_loader.load_checks([checker_path], "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
         mocked_load_checks_from_checker.assert_called()
 
 
@@ -285,9 +285,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             []
         ]
 
-        value = check_loader.load_default_checks("0.1", {})
+        actual = check_loader.load_default_checks("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.check.check_loader.load_checks")
     def test_load_sys_checks_only(self, mocked_load_checks):
@@ -307,9 +307,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             []
         ]
 
-        value = check_loader.load_default_checks("0.1", {})
+        actual = check_loader.load_default_checks("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.check.check_loader.load_checks")
     def test_load_checks_c_only(self, mocked_load_checks):
@@ -329,9 +329,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             []
         ]
 
-        value = check_loader.load_default_checks("0.1", {})
+        actual = check_loader.load_default_checks("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.check.check_loader.load_checks")
     def test_load_checks_py_only(self, mocked_load_checks):
@@ -351,9 +351,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             []
         ]
 
-        value = check_loader.load_default_checks("0.1", {})
+        actual = check_loader.load_default_checks("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.check.check_loader.load_checks")
     def test_load_checks_exe_only(self, mocked_load_checks):
@@ -372,9 +372,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             []
         ]
 
-        value = check_loader.load_default_checks("0.1", {})
+        actual = check_loader.load_default_checks("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.exit")
     @patch("builtins.print")
@@ -382,7 +382,7 @@ class TestLoadDefaultChecks(unittest.TestCase):
     def test_load_checks_raise_error(self, mocked_load_checks, mocked_print, mocked_exit):
         expected_exit_code = 1
 
-        check_loader.load_default_checks("0.1", {})
+        check_loader.load_default_checks("0.2", {})
 
         mocked_load_checks.assert_called()
         mocked_print.assert_called_once()
@@ -407,9 +407,9 @@ class TestLoadChecksFromConfig(unittest.TestCase):
         mocked_read_config_data.return_value = [{"name": self.mock_check_c_1_name, "path": "path"}]
         mocked_load_checks_from_checker.return_value = [self.mock_check_c_1]
 
-        value = check_loader.load_checks_from_config(MagicMock(), "0.1", {})
+        actual = check_loader.load_checks_from_config(MagicMock(), "0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.exit")
     @patch("builtins.print")
@@ -422,7 +422,7 @@ class TestLoadChecksFromConfig(unittest.TestCase):
         mocked_read_config_data.return_value = [{"name": self.mock_check_c_1_name, "path": "path"}]
         mocked_load_checks_from_checker.return_value = []
 
-        check_loader.load_checks_from_config(MagicMock(), "0.1", {})
+        check_loader.load_checks_from_config(MagicMock(), "0.2", {})
 
         mocked_print.assert_called_once()
         mocked_exit.assert_called_once_with(expected_exit_code)
@@ -464,9 +464,9 @@ class TestLoadChecksFromEnv(unittest.TestCase):
     def test_load_checks_from_env_env_not_found(self, mocked_getenv):
         expected = []
 
-        value = check_loader.load_checks_from_env("0.1", {})
+        actual = check_loader.load_checks_from_env("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.exit")
     @patch("builtins.print")
@@ -475,7 +475,7 @@ class TestLoadChecksFromEnv(unittest.TestCase):
         expected_exit_code = 1
         with patch.object(Path, 'exists') as mock_exists:
             mock_exists.return_value = False
-            check_loader.load_checks_from_env("0.1", {})
+            check_loader.load_checks_from_env("0.2", {})
 
         mocked_print.assert_called_once()
         mocked_exit.assert_called_once_with(expected_exit_code)
@@ -486,7 +486,7 @@ class TestLoadChecksFromEnv(unittest.TestCase):
     def test_load_checks_from_env_path_is_not_file_or_dir(self, mocked_getenv, mocked_print, mocked_exit):
         expected_exit_code = 1
         with patch.object(Path, 'exists'):
-            check_loader.load_checks_from_env("0.1", {})
+            check_loader.load_checks_from_env("0.2", {})
 
         mocked_print.assert_called_once()
         mocked_exit.assert_called_once_with(expected_exit_code)
@@ -517,9 +517,9 @@ class TestLoadChecksFromEnv(unittest.TestCase):
             self.mock_check_py_1
         ]
 
-        value = check_loader.load_checks_from_env("0.1", {})
+        actual = check_loader.load_checks_from_env("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.getenv", return_value="file")
     @patch.object(Path, "exists", return_value=True)
@@ -537,9 +537,9 @@ class TestLoadChecksFromEnv(unittest.TestCase):
         mocked_load_checks_from_checker.return_value = [self.mock_check_py_1]
         expected = [self.mock_check_py_1]
 
-        value = check_loader.load_checks_from_env("0.1", {})
+        actual = check_loader.load_checks_from_env("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.getenv", return_value="file1;file2")
     @patch("platform.system", return_value="Windows")
@@ -562,9 +562,9 @@ class TestLoadChecksFromEnv(unittest.TestCase):
         ]
         expected = [self.mock_check_py_1, self.mock_check_py_2]
 
-        value = check_loader.load_checks_from_env("0.1", {})
+        actual = check_loader.load_checks_from_env("0.2", {})
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

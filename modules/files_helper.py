@@ -94,8 +94,8 @@ def save_json_output_file(checks: List[BaseCheck], file: Path, print_json: bool)
 
 def _args_string(args) -> str:
     result = []
-    if args.filter != ["not_initialized"]:
-        result.append(f"filter_{'_'.join(args.filter)}")
+    if args.select != ["not_initialized"]:
+        result.append(f"select_{'_'.join(args.select)}")
     if args.list:
         result.append("list")
     if args.config:

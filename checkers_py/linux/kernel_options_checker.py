@@ -17,7 +17,8 @@ from typing import List, Dict
 
 
 def _check_perf_stream_paranoid(json_node: Dict) -> None:
-    value = {"Value": "Undefined", "RetVal": "INFO", "Command": "sysctl -n dev.i915.perf_stream_paranoid"}
+    check_result = {"CheckResult": "Undefined", "CheckStatus": "INFO",
+                    "Command": "sysctl -n dev.i915.perf_stream_paranoid"}
     try:
         proc = subprocess.Popen(
             ['sysctl', '-n', 'dev.i915.perf_stream_paranoid'],
@@ -25,14 +26,14 @@ def _check_perf_stream_paranoid(json_node: Dict) -> None:
         stdout, _ = proc.communicate()
         if proc.returncode != 0:
             raise Exception("Cannot get information about operating sysctl option")
-        value["Value"] = stdout.splitlines()[0]
+        check_result["CheckResult"] = stdout.splitlines()[0]
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
-    json_node.update({"Perf stream paranoid": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
+    json_node.update({"Perf stream paranoid": check_result})
 
 
 def get_kernel_settings(json_node: Dict) -> None:
@@ -40,12 +41,12 @@ def get_kernel_settings(json_node: Dict) -> None:
 
     _check_perf_stream_paranoid(kernel_settings)
 
-    value = {"Value": kernel_settings, "RetVal": "INFO"}
-    json_node.update({"Kernel settings": value})
+    check_result = {"CheckResult": kernel_settings, "CheckStatus": "INFO"}
+    json_node.update({"Kernel settings": check_result})
 
 
 def get_kernel_boot_options(json_node: Dict) -> None:
-    value = {"Value": "Undefined", "RetVal": "INFO", "Command": "cat /proc/cmdline"}
+    check_result = {"CheckResult": "Undefined", "CheckStatus": "INFO", "Command": "cat /proc/cmdline"}
     try:
         command = ["cat", "/proc/cmdline"]
         process = subprocess.Popen(
@@ -57,22 +58,22 @@ def get_kernel_boot_options(json_node: Dict) -> None:
         for option in stdout.strip().split(" "):
             option_list = option.split("=", 1)
             key, val = option_list if len(option_list) == 2 else (option, "")
-            options.update({key: {"Value": val, "RetVal": "INFO"}})
-        value["Value"] = options
+            options.update({key: {"CheckResult": val, "CheckStatus": "INFO"}})
+        check_result["CheckResult"] = options
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
-                            "https://github.com/intel/diagnostics-utility."
-    json_node.update({"Kernel boot options": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
+            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "https://github.com/intel/diagnostics-utility."
+    json_node.update({"Kernel boot options": check_result})
 
 
 def run_kernel_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}}
+    result_json = {"CheckResult": {}}
 
-    get_kernel_settings(result_json["Value"])
-    get_kernel_boot_options(result_json["Value"])
+    get_kernel_settings(result_json["CheckResult"])
+    get_kernel_boot_options(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -82,19 +83,19 @@ def run_kernel_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="kernel_options_check",
         type="Data",
-        tags="sysinfo,runtime,target",
+        groups="sysinfo,runtime,target",
         descr="This check shows kernel options.",
         dataReq="{}",
         merit=0,
         timeout=5,
-        version=1,
+        version=2,
         run="run_kernel_check"
     )
     return [someCheck]

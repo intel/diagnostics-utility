@@ -23,8 +23,8 @@ def create_parser(version: str):
         epilog=f"Important notes:\n"
                f"\n"
                f"1. The most popular use cases for Utility:\n"
-               f" - For GPU diagnostics run 'python3 diagnostics.py --filter gpu'\n"
-               f" - To get all information run 'python3 diagnostics.py --filter all'\n"
+               f" - For GPU diagnostics run 'python3 diagnostics.py --select gpu'\n"
+               f" - To get all information run 'python3 diagnostics.py --select all'\n"
                f"\n"
                f"2. Explanation of result status:\n"
                f"PASS - the check passed, no further information will be given.\n"
@@ -63,13 +63,12 @@ def create_parser(version: str):
     group_output_format = parser.add_mutually_exclusive_group()
     group_update_format = parser.add_mutually_exclusive_group()
     group_check_run.add_argument(
-        "--filter",
+        "--select",
         nargs="+",
         type=str,
         default=["not_initialized"],
-        help="Filter checker results by group name or check name\n"
-             "tags, combine one or more checkers into groups.\n"
-             "Each checker can belong to one or more groups.\n"
+        help="Select checks to run by group name or check name.\n"
+             "Each check can belong to one or more groups.\n"
              "To view all available checks with their names and marked groups,\n"
              "run the Diagnostics Utility for Intel® oneAPI Toolkits\n"
              "with the \"--list\" option."
@@ -97,11 +96,6 @@ def create_parser(version: str):
         "-t", "--terminal_output",
         action="store_true",
         help="Output to the terminal window without saving additional output files."
-    )
-    group_update_format.add_argument(
-        "-s", "--skip_update",
-        action="store_true",
-        help="Skip the check that looks for database updates."
     )
     group_update_format.add_argument(
         "-u", "--update",

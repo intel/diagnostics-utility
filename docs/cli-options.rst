@@ -14,16 +14,16 @@ To run the Diagnostics Utility for Intel® oneAPI Toolkits:
 
 2. Run the Diagnostics Utility for Intel® oneAPI Toolkits using this syntax:
 
-``python3 diagnostics.py --filter <ARGUMENT_NAME>``
+``python3 diagnostics.py --select <ARGUMENT_NAME>``
 
-The  **filter** modifier specifies how many checks to run at one time.
-With a filter, you can run a :ref:`group of checks<check-table-by-group>`
+The  **select** modifier specifies how many checks to run at one time.
+With a select option, you can run a :ref:`group of checks<check-table-by-group>`
 or a :ref:`single check<check-table>`. In this
 example, you will run all available checks, using the ``all`` argument:
 
 ::
 
-  python3 diagnostics.py --filter all
+  python3 diagnostics.py --select all
 
 
 The output will display in the active console and in:
@@ -47,7 +47,7 @@ To increase the amount of detail, add the -v argument:
 
 ::
 
-  python3 diagnostics.py --filter all -v
+  python3 diagnostics.py --select all -v
 
 
 The Diagnostics Utility for Intel® oneAPI Toolkits can be customized to output
@@ -119,13 +119,13 @@ also be used to run that check.
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - This check makes sure the i915 Linux graphics driver is loaded and
-       also looks for i915 Linux graphics driver error messages.
+     - This check verifies compatibility of oneAPI products versions and
+       GPU drivers versions.
    * -  ``oneapi_gpu_check``
      - |  ``gpu``
        |  ``sysinfo``
-     - This check runs GPU workloads and verifies readiness to run
-       applications on GPU(s).
+     - This check makes sure the i915 Linux graphics driver is loaded and
+       also looks for i915 Linux graphics driver error messages.
    * -  ``gpu_metrics_check``
      - |  ``gpu``
        |  ``runtime``
@@ -168,12 +168,12 @@ also be used to run that check.
        |  ``target``
      - This check shows the version information of the oneAPI products
        installed in the environment.
-   * -  ``gcc_version_check``
+   * -  ``gcc_compiler_check`
      - |  ``compile``
        |  ``default``
        |  ``host``
        |  ``sysinfo``
-     - This check shows information about GCC compiler version.
+     - This check shows information about the GCC compiler..
    * -  ``base_system_check``
      - |  ``compile``
        |  ``host``
@@ -273,7 +273,7 @@ to run the **check**, see :ref:`check-table`.
        |  ``gpu_backend_check``
        |  ``oneapi_app_check``
        |  ``oneapi_env_check``
-       |  ``gcc_version_check``
+       |  ``gcc_compiler_check``
        |  ``base_system_check``
        |  ``user_resources_limits_check``
    * -  ``default``
@@ -283,13 +283,13 @@ to run the **check**, see :ref:`check-table`.
        |  ``oneapi_app_check``
        |  ``intel_gpu_detector_check``
        |  ``oneapi_env_check``
-       |  ``gcc_version_check``
+       |  ``gcc_compiler_check``
    * -  ``host``
      - |  ``driver_compatibility_check``
        |  ``gpu_backend_check``
        |  ``oneapi_app_check``
        |  ``oneapi_env_check``
-       |  ``gcc_version_check``
+       |  ``gcc_compiler_check``
        |  ``base_system_check``
        |  ``user_resources_limits_check``
    * -  ``runtime``
@@ -312,7 +312,7 @@ to run the **check**, see :ref:`check-table`.
        |  ``oneapi_app_check``
        |  ``intel_gpu_detector_check``
        |  ``oneapi_env_check``
-       |  ``gcc_version_check``
+       |  ``gcc_compiler_check``
        |  ``base_system_check``
        |  ``kernel_options_check``
        |  ``user_resources_limits_check``

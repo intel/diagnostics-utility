@@ -30,28 +30,28 @@ class TestIntelGpuDetectorCheckerApiTest(unittest.TestCase):
 
         mocked_get_gpu_info.side_effect = lambda node: node.update({
             "Check": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = intel_gpu_detector_checker.run_intel_gpu_detector_check({})
+        actual = intel_gpu_detector_checker.run_intel_gpu_detector_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = intel_gpu_detector_checker.get_api_version()
+        actual = intel_gpu_detector_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = intel_gpu_detector_checker.get_check_list()
+        check_list = intel_gpu_detector_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -69,8 +69,8 @@ class TestFunctionCmd(unittest.TestCase):
 
         mocked_open.return_value = process_mock
 
-        value = intel_gpu_detector_checker._function_cmd("ls")
-        self.assertEqual(expected, value)
+        actual = intel_gpu_detector_checker._function_cmd("ls")
+        self.assertEqual(expected, actual)
 
 
 class TestGetI915DriverInfo(unittest.TestCase):
@@ -80,8 +80,8 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         expected = {
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
         }
@@ -104,18 +104,18 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.side_effect = [lsmod_mock, grep_mock]
 
-        value = {}
-        intel_gpu_detector_checker._get_i915_driver_loaded_info(value)
+        actual = {}
+        intel_gpu_detector_checker._get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_i915_driver_loaded_info_lsmod_return_code_is_not_zero(self, mocked_open):
 
         expected = {
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "Cannot get information about kernel modules that are currently loaded.",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
@@ -127,18 +127,18 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.return_value = lsmod_mock
 
-        value = {}
+        actual = {}
 
-        intel_gpu_detector_checker._get_i915_driver_loaded_info(value)
+        intel_gpu_detector_checker._get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_i915_driver_loaded_info_grep_return_code_is_not_zero_or_one(self, mocked_open):
         expected = {
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "Cannot get information about whether the Intel® Graphics Driver is loaded.",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
@@ -154,18 +154,18 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.side_effect = [lsmod_mock, grep_mock]
 
-        value = {}
-        intel_gpu_detector_checker._get_i915_driver_loaded_info(value)
+        actual = {}
+        intel_gpu_detector_checker._get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_i915_driver_loaded_info_grep_return_empty_line(self, mocked_open):
 
         expected = {
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "FAIL",
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
                 "Command": "lsmod | grep i915",
                 "Message": "Module i915 is not loaded.",
                 "HowToFix": "Try to load i915 module with the following command: modprobe i915.",
@@ -184,27 +184,27 @@ class TestGetI915DriverInfo(unittest.TestCase):
 
         mocked_open.side_effect = [lsmod_mock, grep_mock]
 
-        value = {}
-        intel_gpu_detector_checker._get_i915_driver_loaded_info(value)
+        actual = {}
+        intel_gpu_detector_checker._get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_get_i915_driver_loaded_info_subprocess_raise_exception(self, mocked_open):
 
         expected = {
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "ERROR",
+                "CheckResult": "",
+                "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "test message",
                 "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
-        value = {}
-        intel_gpu_detector_checker._get_i915_driver_loaded_info(value)
+        actual = {}
+        intel_gpu_detector_checker._get_i915_driver_loaded_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetTopologyPath(unittest.TestCase):
@@ -213,16 +213,16 @@ class TestGetTopologyPath(unittest.TestCase):
     def test__get_topology_path_positive(self, mocked_open):
         expected = {
             "PCI bus-tree": {
-                "Value": "0000:03:00.0",
-                "RetVal": "INFO",
+                "CheckResult": "0000:03:00.0",
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": "readlink /sys/bus/pci/devices/03:00.0"
             },
         }
 
-        value = {}
-        intel_gpu_detector_checker._get_topology_path(value, "03:00.0")
-        self.assertEqual(expected, value)
+        actual = {}
+        intel_gpu_detector_checker._get_topology_path(actual, "03:00.0")
+        self.assertEqual(expected, actual)
 
 
 class TestGetTileCount(unittest.TestCase):
@@ -231,9 +231,9 @@ class TestGetTileCount(unittest.TestCase):
     def test__get_tile_count_positive_one(self, mocked_open):
         expected = {
             "Tile count": {
-                "Value": 1,
+                "CheckResult": 1,
                 "Verbosity": 1,
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": "ls path | grep -i 'gt[0-9]$' | wc -l",
             }
         }
@@ -247,19 +247,19 @@ class TestGetTileCount(unittest.TestCase):
 
         mocked_open.side_effect = [ls_mock, grep_mock]
 
-        value = {}
+        actual = {}
         path = "path"
-        intel_gpu_detector_checker._get_tile_count(value, path)
+        intel_gpu_detector_checker._get_tile_count(actual, path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test__get_tile_count_positive_two(self, mocked_open):
         expected = {
             "Tile count": {
-                "Value": 2,
+                "CheckResult": 2,
                 "Verbosity": 1,
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": "ls path | grep -i 'gt[0-9]$' | wc -l",
             }
         }
@@ -273,19 +273,19 @@ class TestGetTileCount(unittest.TestCase):
 
         mocked_open.side_effect = [ls_mock, grep_mock]
 
-        value = {}
+        actual = {}
         path = "path"
-        intel_gpu_detector_checker._get_tile_count(value, path)
+        intel_gpu_detector_checker._get_tile_count(actual, path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test__get_tile_count_grep_return_code_is_not_zero_or_one(self, mocked_open):
         expected = {
             "Tile count": {
-                "Value": "Undefined",
+                "CheckResult": "Undefined",
                 "Verbosity": 0,
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Command": "ls path | grep -i 'gt[0-9]$' | wc -l",
                 "Message": "Cannot get information to determine tiles count."
                            "'grep' command returned error code 2.",
@@ -301,19 +301,19 @@ class TestGetTileCount(unittest.TestCase):
 
         mocked_open.side_effect = [ls_mock, grep_mock]
 
-        value = {}
+        actual = {}
         path = "path"
-        intel_gpu_detector_checker._get_tile_count(value, path)
+        intel_gpu_detector_checker._get_tile_count(actual, path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test__get_tile_count_ls_return_code_is_not_zero(self, mocked_open):
         expected = {
             "Tile count": {
-                "Value": "Undefined",
+                "CheckResult": "Undefined",
                 "Verbosity": 0,
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Command": "ls path | grep -i 'gt[0-9]$' | wc -l",
                 "Message": "Cannot list information about the FILEs in directory: path. "
                            "'ls' command returned error code 1.",
@@ -325,19 +325,19 @@ class TestGetTileCount(unittest.TestCase):
         process.wait.return_value = (None, None)
         process.returncode = 1
         mocked_open.return_value = process
-        value = {}
+        actual = {}
         path = "path"
-        intel_gpu_detector_checker._get_tile_count(value, path)
+        intel_gpu_detector_checker._get_tile_count(actual, path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test__get_tile_count_subprocess_raise_exception(self, mocked_open):
         expected = {
             "Tile count": {
-                "Value": "Undefined",
+                "CheckResult": "Undefined",
                 "Verbosity": 0,
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Command": "ls path | grep -i 'gt[0-9]$' | wc -l",
                 "Message": "test message",
                 "HowToFix": "There is not a known solution for this error."
@@ -346,11 +346,11 @@ class TestGetTileCount(unittest.TestCase):
 
         }
 
-        value = {}
+        actual = {}
         path = "path"
-        intel_gpu_detector_checker._get_tile_count(value, path)
+        intel_gpu_detector_checker._get_tile_count(actual, path)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestCountInitializedGPU(unittest.TestCase):
@@ -358,22 +358,22 @@ class TestCountInitializedGPU(unittest.TestCase):
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd", return_value=(0, "file1\nfile2\n"))
     def test__count_initializedGPU_positive_zero(self, mocked_function_cmd):
         expected = 0
-        value = intel_gpu_detector_checker._count_initializedGPU()
-        self.assertEqual(expected, value)
+        actual = intel_gpu_detector_checker._count_initializedGPU()
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd",
            return_value=(0, "file\nrender128\n"))
     def test__count_initializedGPU_positive_one(self, mocked_function_cmd):
         expected = 1
-        value = intel_gpu_detector_checker._count_initializedGPU()
-        self.assertEqual(expected, value)
+        actual = intel_gpu_detector_checker._count_initializedGPU()
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd",
            return_value=(0, "render128\nrender129\n"))
     def test__count_initializedGPU_positive_two(self, mocked_function_cmd):
         expected = 2
-        value = intel_gpu_detector_checker._count_initializedGPU()
-        self.assertEqual(expected, value)
+        actual = intel_gpu_detector_checker._count_initializedGPU()
+        self.assertEqual(expected, actual)
 
 
 class TestCheckGPUInfoPath(unittest.TestCase):
@@ -383,8 +383,8 @@ class TestCheckGPUInfoPath(unittest.TestCase):
     def test__check_gpu_info_path_permissions_positive(self, mocked_access, mocked_walk):
         expected = ["/1"]
 
-        value = intel_gpu_detector_checker._check_gpu_info_path()
-        value_list = list(value)
+        actual = intel_gpu_detector_checker._check_gpu_info_path()
+        value_list = list(actual)
         self.assertEqual(expected, value_list)
 
     @patch("os.access", return_value=False)
@@ -411,70 +411,70 @@ class TestGetInitializedGPU(unittest.TestCase):
     def test__get_initializedGPU_positive(self, mocked_gpu_info_path, mocked_open, mocked_topology_path,
                                           mocked_tile_count):
         expected = {"Intel GPU #1": {
-                        "Value": {
-                            "GPU id": {
-                                "Value": "0x4905",
-                                "RetVal": "INFO",
-                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'pci id' | "
-                                           "awk '{print $3}'"
-                            },
-                            "Bus info": {
-                                "Value": "0000:03:00.0",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "cat /sys/kernel/debug/dri/0/name | awk '{print $2}'"
-                            },
-                            "EU Counts": {
-                                "Value": "96",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'EU total' | "
-                                           "awk '{print $3}'"
-                            },
-                            "Platform": {
-                                "Value": "DG1",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i '^platform' |"
-                                           " awk '{print $2}' | uniq"
-                            },
-                            "GuC firmware": {
-                                "Value": "dg1_guc_62.0.3.bin",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | "
-                                           "grep -i 'GuC firmware' | awk '{print $3}' | xargs basename"
-                            },
-                            "HuC firmware": {
-                                "Value": "dg1_huc_7.9.3.bin",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | "
-                                "grep -i 'HuC firmware' | awk '{print $3}' | xargs basename"
+            "CheckResult": {
+                "GPU id": {
+                    "CheckResult": "0x4905",
+                    "CheckStatus": "INFO",
+                    "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'pci id' | "
+                    "awk '{print $3}'"
+                },
+                "Bus info": {
+                    "CheckResult": "0000:03:00.0",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "cat /sys/kernel/debug/dri/0/name | awk '{print $2}'"
+                },
+                "EU Counts": {
+                    "CheckResult": "96",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'EU total' | "
+                    "awk '{print $3}'"
+                },
+                "Platform": {
+                    "CheckResult": "DG1",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i '^platform' |"
+                    " awk '{print $2}' | uniq"
+                },
+                "GuC firmware": {
+                    "CheckResult": "dg1_guc_62.0.3.bin",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | "
+                    "grep -i 'GuC firmware' | awk '{print $3}' | xargs basename"
+                },
+                "HuC firmware": {
+                    "CheckResult": "dg1_huc_7.9.3.bin",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | "
+                    "grep -i 'HuC firmware' | awk '{print $3}' | xargs basename"
 
-                            },
-                            "GPU type": {
-                                "Value": "Discrete",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'is_dgfx' | "
-                                           "awk '{print $0}'"
-                            },
-                            "PCI bus-tree": {
-                                "Value": "0000:03:00.0",
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "readlink link"
-                            },
-                            "Tile count": {
-                                "Value": 1,
-                                "RetVal": "INFO",
-                                "Verbosity": 1,
-                                "Command": "ls path | grep -i 'gt[0-9]$' | wc -l"
-                            }
-                        },
-                        "RetVal": "INFO"
-                    }}
+                },
+                "GPU type": {
+                    "CheckResult": "Discrete",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "cat /sys/kernel/debug/dri/0/i915_gpu_info | grep -i 'is_dgfx' | "
+                    "awk '{print $0}'"
+                },
+                "PCI bus-tree": {
+                    "CheckResult": "0000:03:00.0",
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "readlink link"
+                },
+                "Tile count": {
+                    "CheckResult": 1,
+                    "CheckStatus": "INFO",
+                    "Verbosity": 1,
+                    "Command": "ls path | grep -i 'gt[0-9]$' | wc -l"
+                }
+            },
+            "CheckStatus": "INFO"
+        }}
 
         paths = ["/sys/kernel/debug/dri/0"]
         mocked_gpu_info_path.return_value = filter(None, paths)
@@ -484,23 +484,23 @@ class TestGetInitializedGPU(unittest.TestCase):
 
         mocked_topology_path.side_effect = lambda node, _: node.update({
             "PCI bus-tree": {
-                "Value": "0000:03:00.0",
-                "RetVal": "INFO",
+                "CheckResult": "0000:03:00.0",
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": "readlink link"
             }
         })
         mocked_tile_count.side_effect = lambda node, _: node.update({
             "Tile count": {
-                "Value": 1,
-                "RetVal": "INFO",
+                "CheckResult": 1,
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": "ls path | grep -i 'gt[0-9]$' | wc -l"
             }
         })
-        value = {}
-        intel_gpu_detector_checker._get_initializedGPU(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        intel_gpu_detector_checker._get_initializedGPU(actual)
+        self.assertEqual(expected, actual)
 
 
 class TestCountUninitializedGPU(unittest.TestCase):
@@ -519,9 +519,9 @@ class TestCountUninitializedGPU(unittest.TestCase):
                 return 1, "test2"
 
         mocked__fuction_cmd.side_effect = side_effect
-        value = intel_gpu_detector_checker._count_uninitializedGPU()
+        actual = intel_gpu_detector_checker._count_uninitializedGPU()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd")
     @patch("checkers_py.linux.intel_gpu_detector_checker.exists", return_value=False)
@@ -538,9 +538,9 @@ class TestCountUninitializedGPU(unittest.TestCase):
 
         mocked__fuction_cmd.side_effect = side_effect
 
-        value = intel_gpu_detector_checker._count_uninitializedGPU()
+        actual = intel_gpu_detector_checker._count_uninitializedGPU()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd", return_value=(1, "test"))
     @patch("checkers_py.linux.intel_gpu_detector_checker.exists", return_value=True)
@@ -564,18 +564,18 @@ class TestGetUninitializedGPU(unittest.TestCase):
         expected_count = 1
         expected_value = {
             "Intel GPU #1": {
-                "Value": {
+                "CheckResult": {
                     "Bus info": {
-                        "Value":  "03:00.0",
-                        "RetVal": "INFO"
+                        "CheckResult":  "03:00.0",
+                        "CheckStatus": "INFO"
                     },
                     "Name": {
-                        "Value": "VGA compatible controller: "
-                                 "Intel Corporation Device 4905 (rev 01)",
-                        "RetVal": "INFO"
+                        "CheckResult": "VGA compatible controller: "
+                        "Intel Corporation Device 4905 (rev 01)",
+                        "CheckStatus": "INFO"
                     },
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": 'lspci | grep -e "VGA compatible controller" -e "Display controller"'
                            ' | grep -i "Intel Corporation"'
             }
@@ -584,10 +584,10 @@ class TestGetUninitializedGPU(unittest.TestCase):
             0,
             "03:00.0 VGA compatible controller: Intel Corporation Device 4905 (rev 01)\n"
         )
-        value = {}
-        count = intel_gpu_detector_checker._get_uninitializedGPU([], value)
+        actual = {}
+        count = intel_gpu_detector_checker._get_uninitializedGPU([], actual)
         self.assertEqual(expected_count, count)
-        self.assertEqual(expected_value, value)
+        self.assertEqual(expected_value, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd", return_value=(1, "test"))
     @patch("checkers_py.linux.intel_gpu_detector_checker.exists", return_value=True)
@@ -623,83 +623,83 @@ class TestGetGpuInfo(unittest.TestCase):
                                                              mocked__get_i915_driver_loaded_info):
         expected = {
             "GPU information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "Intel® Graphics Driver is loaded": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "lsmod | grep i915"
                     },
                     "Intel GPU(s) is present on the bus": {
-                        "RetVal": "PASS",
-                        "Value": ""
+                        "CheckStatus": "PASS",
+                        "CheckResult": ""
                     },
                     "Number of Intel GPU(s) on the system": {
-                        "RetVal": "INFO",
-                        "Value": 1
+                        "CheckStatus": "INFO",
+                        "CheckResult": 1
                     },
                     "Initialized devices": {
-                        "Value": {
+                        "CheckResult": {
                             "Intel GPU #1": {
-                                "Value": {
+                                "CheckResult": {
                                     "GPU id": {
-                                        "Value": "0x4905",
-                                        "RetVal": "INFO",
+                                        "CheckResult": "0x4905",
+                                        "CheckStatus": "INFO",
                                         "Command": "cat path/i915_gpu_info | grep -i 'pci id' | "
                                                    "awk '{print $3}'"
                                     },
                                     "Bus info": {
-                                        "Value": "0000:03:00.0",
-                                        "RetVal": "INFO",
+                                        "CheckResult": "0000:03:00.0",
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "cat path/name | awk '{print $2}'"
                                     },
                                     "EU Counts": {
-                                        "Value": 96,
-                                        "RetVal": "INFO",
+                                        "CheckResult": 96,
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "cat path/i915_gpu_info | grep -i 'EU total' | "
                                                    "awk '{print $3}'"
                                     },
                                     "Platform": {
-                                        "Value": "DG1",
-                                        "RetVal": "INFO",
+                                        "CheckResult": "DG1",
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "cat path/i915_gpu_info | grep -i '^platform' | "
                                                    "awk '{print $2}' | uniq"
                                     },
                                     "GuC firmware": {
-                                        "Value": "dg1_guc_62.0.3.bin",
-                                        "RetVal": "INFO",
+                                        "CheckResult": "dg1_guc_62.0.3.bin",
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "cat path/i915_gpu_info | grep -i 'GuC firmware' |"
                                                    " awk '{print $3}' | xargs basename"
                                     },
                                     "HuC firmware": {
-                                        "Value": "dg1_huc_7.9.3.bin",
-                                        "RetVal": "INFO",
+                                        "CheckResult": "dg1_huc_7.9.3.bin",
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "cat path/i915_gpu_info | grep -i 'HuC firmware' |"
                                         " awk '{print $3}' | xargs basename"
 
                                     },
                                     "PCI bus-tree": {
-                                        "Value": "0000:03:00.0",
-                                        "RetVal": "INFO",
+                                        "CheckResult": "0000:03:00.0",
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "readlink link"
                                     },
                                     "Tile count": {
-                                        "Value": 1,
-                                        "RetVal": "INFO",
+                                        "CheckResult": 1,
+                                        "CheckStatus": "INFO",
                                         "Verbosity": 1,
                                         "Command": "ls path | grep -i 'gt[0-9]$' | wc -l"
                                     }
                                 },
-                                "RetVal": "INFO"
+                                "CheckStatus": "INFO"
                             },
                         },
-                        "RetVal": "INFO"
+                        "CheckStatus": "INFO"
                     }
                 },
 
@@ -708,8 +708,8 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
 
@@ -717,69 +717,69 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_initializedGPU.side_effect = lambda node: node.update({
             "Intel GPU #1": {
-                "Value": {
+                "CheckResult": {
                     "GPU id": {
-                        "Value": "0x4905",
-                        "RetVal": "INFO",
+                        "CheckResult": "0x4905",
+                        "CheckStatus": "INFO",
                         "Command": "cat path/i915_gpu_info | grep -i 'pci id' | "
                                    "awk '{print $3}'"
                     },
                     "Bus info": {
-                        "Value": "0000:03:00.0",
-                        "RetVal": "INFO",
+                        "CheckResult": "0000:03:00.0",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "cat path/name | awk '{print $2}'"
                     },
                     "EU Counts": {
-                        "Value": 96,
-                        "RetVal": "INFO",
+                        "CheckResult": 96,
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "cat path/i915_gpu_info | grep -i 'EU total' | "
                                    "awk '{print $3}'"
                     },
                     "Platform": {
-                        "Value": "DG1",
-                        "RetVal": "INFO",
+                        "CheckResult": "DG1",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "cat path/i915_gpu_info | grep -i '^platform' | "
                                    "awk '{print $2}' | uniq"
                     },
                     "GuC firmware": {
-                        "Value": "dg1_guc_62.0.3.bin",
-                        "RetVal": "INFO",
+                        "CheckResult": "dg1_guc_62.0.3.bin",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "cat path/i915_gpu_info | grep -i 'GuC firmware' |"
                                    " awk '{print $3}' | xargs basename"
                     },
                     "HuC firmware": {
-                        "Value": "dg1_huc_7.9.3.bin",
-                        "RetVal": "INFO",
+                        "CheckResult": "dg1_huc_7.9.3.bin",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "cat path/i915_gpu_info | grep -i 'HuC firmware' |"
                         " awk '{print $3}' | xargs basename"
 
                     },
                     "PCI bus-tree": {
-                        "Value": "0000:03:00.0",
-                        "RetVal": "INFO",
+                        "CheckResult": "0000:03:00.0",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "readlink link"
                     },
                     "Tile count": {
-                        "Value": 1,
-                        "RetVal": "INFO",
+                        "CheckResult": 1,
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "ls path | grep -i 'gt[0-9]$' | wc -l"
                     }
                 },
-                "RetVal": "INFO"
+                "CheckStatus": "INFO"
             }
 
         })
 
-        value = {}
-        intel_gpu_detector_checker.get_gpu_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        intel_gpu_detector_checker.get_gpu_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._get_i915_driver_loaded_info")
     @patch("checkers_py.linux.intel_gpu_detector_checker._count_initializedGPU", return_value=0)
@@ -792,41 +792,41 @@ class TestGetGpuInfo(unittest.TestCase):
                                                            mocked__get_i915_driver_loaded_info):
         expected = {
             "GPU information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "Intel® Graphics Driver is loaded": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "lsmod | grep i915"
                     },
                     "Intel GPU(s) is present on the bus": {
-                        "RetVal": "PASS",
-                        "Value": ""
+                        "CheckStatus": "PASS",
+                        "CheckResult": ""
                     },
                     "Number of Intel GPU(s) on the system": {
-                        "RetVal": "INFO",
-                        "Value": 1
+                        "CheckStatus": "INFO",
+                        "CheckResult": 1
                     },
                     "Uninitialized devices": {
-                        "Value": {
-                             "Intel GPU #1": {
-                                "Value": {
+                        "CheckResult": {
+                            "Intel GPU #1": {
+                                "CheckResult": {
                                     "Bus info": {
-                                        "Value":  "03:00.0",
-                                        "RetVal": "INFO"
+                                        "CheckResult":  "03:00.0",
+                                        "CheckStatus": "INFO"
                                     },
                                     "Name": {
-                                        "Value": "VGA compatible controller: "
-                                                 "Intel Corporation Device 4905 (rev 01)",
-                                        "RetVal": "INFO"
+                                        "CheckResult": "VGA compatible controller: "
+                                        "Intel Corporation Device 4905 (rev 01)",
+                                        "CheckStatus": "INFO"
                                     },
                                 },
-                                "RetVal": "INFO",
+                                "CheckStatus": "INFO",
                                 "Command": 'lspci | grep -e "VGA compatible controller" '
                                            '-e "Display controller" | grep -i "Intel Corporation"'
-                             }
+                            }
                         },
-                        "RetVal": "ERROR",
+                        "CheckStatus": "ERROR",
                         "Message": "Some GPU(s) are not initialized.",
                         "HowToFix": "To initialize GPU(s), please run the following command: "
                                     "modprobe i915.",
@@ -838,8 +838,8 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
 
@@ -847,26 +847,26 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_uninitializedGPU.side_effect = lambda _, node: node.update({
             "Intel GPU #1": {
-                "Value": {
+                "CheckResult": {
                     "Bus info": {
-                        "Value":  "03:00.0",
-                        "RetVal": "INFO"
+                        "CheckResult":  "03:00.0",
+                        "CheckStatus": "INFO"
                     },
                     "Name": {
-                        "Value": "VGA compatible controller: "
-                                 "Intel Corporation Device 4905 (rev 01)",
-                        "RetVal": "INFO"
+                        "CheckResult": "VGA compatible controller: "
+                        "Intel Corporation Device 4905 (rev 01)",
+                        "CheckStatus": "INFO"
                     },
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": 'lspci | grep -e "VGA compatible controller" '
                            '-e "Display controller" | grep -i "Intel Corporation"'
-                }
+            }
         })
 
-        value = {}
-        intel_gpu_detector_checker.get_gpu_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        intel_gpu_detector_checker.get_gpu_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._get_i915_driver_loaded_info")
     @patch("checkers_py.linux.intel_gpu_detector_checker._count_initializedGPU", return_value=0)
@@ -880,18 +880,18 @@ class TestGetGpuInfo(unittest.TestCase):
 
         expected = {
             "GPU information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "Intel® Graphics Driver is loaded": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "lsmod | grep i915"
                     },
                     "Intel GPU(s) is present on the bus": {
-                        "RetVal": "FAIL",
+                        "CheckStatus": "FAIL",
                         "Message": "There are no Intel GPU(s) on the system.",
                         "HowToFix": "Plug Intel GPU(s) into an empty PCI slot.",
-                        "Value": ""
+                        "CheckResult": ""
                     }
                 }
             }
@@ -899,17 +899,17 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
 
         })
 
-        value = {}
-        intel_gpu_detector_checker.get_gpu_info(value)
+        actual = {}
+        intel_gpu_detector_checker.get_gpu_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._get_i915_driver_loaded_info")
     @patch("checkers_py.linux.intel_gpu_detector_checker._count_initializedGPU", return_value=0)
@@ -920,28 +920,28 @@ class TestGetGpuInfo(unittest.TestCase):
                                                                                mocked__get_uninitializedGPU,
                                                                                mocked__count_uninitializedGPU,
                                                                                mocked__count_initializedGPU,
-                                                                               mocked__get_i915_driver_loaded_info):  # noqa E501 
+                                                                               mocked__get_i915_driver_loaded_info):  # noqa E501
 
         expected = {
             "GPU information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "Intel® Graphics Driver is loaded": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "lsmod | grep i915"
                     },
                     "Intel GPU(s) is present on the bus": {
-                        "RetVal": "PASS",
-                        "Value": ""
+                        "CheckStatus": "PASS",
+                        "CheckResult": ""
                     },
                     "Number of Intel GPU(s) on the system": {
-                        "RetVal": "INFO",
-                        "Value": 1
+                        "CheckStatus": "INFO",
+                        "CheckResult": 1
                     },
                     "Uninitialized devices": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Message": "test message",
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     }
@@ -951,16 +951,16 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
 
         })
 
-        value = {}
-        intel_gpu_detector_checker.get_gpu_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        intel_gpu_detector_checker.get_gpu_info(actual)
+        self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._get_i915_driver_loaded_info")
     @patch("checkers_py.linux.intel_gpu_detector_checker._count_initializedGPU", return_value=1)
@@ -971,27 +971,27 @@ class TestGetGpuInfo(unittest.TestCase):
                                                                            mocked__get_initializedGPU,
                                                                            mocked__count_uninitializedGPU,
                                                                            mocked__count_initializedGPU,
-                                                                           mocked__get_i915_driver_loaded_info):  # noqa E501 
+                                                                           mocked__get_i915_driver_loaded_info):  # noqa E501
         expected = {
             "GPU information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "Intel® Graphics Driver is loaded": {
-                        "Value": "",
-                        "RetVal": "PASS",
+                        "CheckResult": "",
+                        "CheckStatus": "PASS",
                         "Command": "lsmod | grep i915"
                     },
                     "Intel GPU(s) is present on the bus": {
-                        "RetVal": "PASS",
-                        "Value": ""
+                        "CheckStatus": "PASS",
+                        "CheckResult": ""
                     },
                     "Number of Intel GPU(s) on the system": {
-                        "RetVal": "INFO",
-                        "Value": 1
+                        "CheckStatus": "INFO",
+                        "CheckResult": 1
                     },
                     "Initialized devices": {
-                        "Value": "",
-                        "RetVal": "ERROR",
+                        "CheckResult": "",
+                        "CheckStatus": "ERROR",
                         "Message": "test message",
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     }
@@ -1001,16 +1001,16 @@ class TestGetGpuInfo(unittest.TestCase):
 
         mocked__get_i915_driver_loaded_info.side_effect = lambda node: node.update({
             "Intel® Graphics Driver is loaded": {
-                "Value": "",
-                "RetVal": "PASS",
+                "CheckResult": "",
+                "CheckStatus": "PASS",
                 "Command": "lsmod | grep i915"
             }
 
         })
 
-        value = {}
-        intel_gpu_detector_checker.get_gpu_info(value)
-        self.assertEqual(expected, value)
+        actual = {}
+        intel_gpu_detector_checker.get_gpu_info(actual)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

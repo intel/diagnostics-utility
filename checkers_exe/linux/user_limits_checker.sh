@@ -16,7 +16,7 @@ OUTPUT=''   # Output of running the check commands
 STATUS=''   # Result of the check (ERROR/WARING/INFO)
 HOWTOFIX='' # Information on how to fix problems
 MESSAGE=''  # Information to display in verbose mode
-VALUE=''    # Information extracted from check output
+CHECK_RESULT=''    # Information extracted from check output
 RESULT=''   # Final summary
 
 parse_args() {
@@ -46,7 +46,7 @@ run_check() {
 		STATUS=ERROR
 		MESSAGE="${OUTPUT//$'\n'/\\\\n}"
 		HOWTOFIX="Make sure that 'ulimit' is found with the 'PATH' environment variable"
-		VALUE='{}'
+		CHECK_RESULT='{}'
 		return 1
 	fi
 }
@@ -70,7 +70,7 @@ parse_output() {
 			STATUS=WARNING
 			MESSAGE="Can not parse check output line:[$line]"
 			HOWTOFIX="Make sure that the 'ulimit' application supports the '-a' option'"
-			VALUE='{}'
+			CHECK_RESULT='{}'
 			return 1
 		fi
 
@@ -84,8 +84,8 @@ parse_output() {
 		INFORMATION+=$(
 			cat <<-LINE
 				"$r": {
-				  "Value": "$l",
-				  "RetVal": "INFO"
+				  "CheckResult": "$l",
+				  "CheckStatus": "INFO"
 				},
 			LINE
 		)
@@ -97,7 +97,7 @@ parse_output() {
 	STATUS=INFO
 	MESSAGE="Output presented with expected semantics"
 	HOWTOFIX='-'
-	VALUE="{ ${INFORMATION%,} }"
+	CHECK_RESULT="{ ${INFORMATION%,} }"
 
 	return 0
 }
@@ -106,23 +106,17 @@ create_report() {
 
 	read -r -d '' RESULT <<-JSON
 		{ 
-			"Value": {
+			"CheckResult": {
 		  "User resources limits": {
 		    "Command": "ulimit -a",
-		    "RetVal": "${STATUS}",
+		    "CheckStatus": "${STATUS}",
 				"Message": "${MESSAGE}",
 				"HowToFix": "${HOWTOFIX}",
-		    "Value": ${VALUE}
+		    "CheckResult": ${CHECK_RESULT}
 		    }
 		  }
 		}
 	JSON
-
-	# Flatten the JSON result into the expected string
-	# * Remove new-line
-	# * Escape double-quotes
-	RESULT="${RESULT//$'\n'/}"
-	RESULT="${RESULT//\"/\\\"}"
 }
 
 get_metadata() {
@@ -132,12 +126,12 @@ get_metadata() {
 		{
 		  "name": "user_resources_limits_check",
 		  "type": "Data",
-		  "tags": "sysinfo,compile,runtime,host,target",
+		  "groups": "sysinfo,compile,runtime,host,target",
 		  "descr": "List the user limits of each resource.",
 		  "dataReq": "{}",
 		  "merit": 0,
 		  "timeout": 5,
-		  "version": 1,
+		  "version": 2,
 		  "run": ""
 		}
 	META
@@ -149,7 +143,7 @@ get_summary() {
 	create_report
 	cat <<-SUMMARY
 		{
-			"result": "$RESULT" 
+			"result": $RESULT
 		}
 	SUMMARY
 	return 0
@@ -157,7 +151,7 @@ get_summary() {
 
 get_api_version() {
 	# Print the version of this checker API
-	printf "0.1\n"
+	printf "0.2\n"
 	return 0
 }
 

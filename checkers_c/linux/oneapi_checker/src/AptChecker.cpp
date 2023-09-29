@@ -30,7 +30,7 @@ bool AptChecker::Initialize(string& message) {
 
 bool AptChecker::GetAppInfo(string& message) {
 	string out;
-	int retval;
+	int check_status;
 
 	if (CheckerHelper::GetOsType() != DebianBased) {
 		message = "Application information is not available for products installed by dpkg.";
@@ -38,8 +38,8 @@ bool AptChecker::GetAppInfo(string& message) {
 	}
 
 	// Extract information about installed packages
-	retval = CheckerHelper::RunCommand("dpkg --no-pager -l '*intel-oneapi*' 2>/dev/null | grep ii", out);
-	if (retval != 0)	{
+	check_status = CheckerHelper::RunCommand("dpkg --no-pager -l '*intel-oneapi*' 2>/dev/null | grep ii", out);
+	if (check_status != 0)	{
 		message = "Unable to find installed package. Verify package is installed and that current user has permissions to access the package.";
 		return false;
 	}

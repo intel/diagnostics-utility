@@ -26,19 +26,22 @@ from modules.check import check_py  # noqa: E402
 py_metadata = CheckMetadataPy(
     name='python_example',
     type='Data',
-    tags='cpu',
+    groups='cpu',
     descr='This is example of python module',
     dataReq='{}',
     merit=0,
     timeout=1,
-    version=1,
+    version=2,
     run='run'
 )
 
-py_api_version = "0.1"
+py_api_version = "0.2"
 
 py_check_result = CheckSummary(
-    result="""{"Value": {"Python example check": {"Value": "Python example value", "RetVal": "PASS"}}}"""
+    result="""{"CheckResult":
+      {"Python example check":
+        {"CheckResult": "Python example value",
+          "CheckStatus": "PASS"}}}"""
 )
 
 test_filename = "test.py"
@@ -67,23 +70,23 @@ class TestClassCheckPy(unittest.TestCase):
     def test_class_init_correct(self):
         expected = py_metadata
 
-        value = self.check.get_metadata()
+        actual = self.check.get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
     def test_get_api_version_positive_correct(self):
         expected = py_api_version
 
-        value = self.check.get_api_version()
+        actual = self.check.get_api_version()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_get_summury_positive_correct(self):
         expected = py_check_result
 
-        value = self.check.run({})
+        actual = self.check.run({})
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
 
 class TestGetCheckerPy(unittest.TestCase):
@@ -95,9 +98,9 @@ class TestGetCheckerPy(unittest.TestCase):
         mocked_file.__str__.return_value = test_filename
         mocked_file.exists.return_value = True
 
-        value = check_py.getChecksPy(mocked_file, "0.1")[0].get_metadata()
+        actual = check_py.getChecksPy(mocked_file, "0.2")[0].get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
     @patch("logging.error")
     def test_get_checks_py_raise_error_if_file_not_exist(self, mock_log):
@@ -105,7 +108,7 @@ class TestGetCheckerPy(unittest.TestCase):
         mocked_file.__str__.return_value = test_filename
         mocked_file.exists.return_value = False
 
-        self.assertRaises(OSError, check_py.getChecksPy, mocked_file, "0.1")
+        self.assertRaises(OSError, check_py.getChecksPy, mocked_file, "0.2")
         mock_log.assert_called()
 
     @patch("builtins.__import__", return_value=mocked_module)

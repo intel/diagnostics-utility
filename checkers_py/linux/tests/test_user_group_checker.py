@@ -28,21 +28,21 @@ class TestUserGroupCheckerApiTest(unittest.TestCase):
     def test_run_positive_root_user(self, mocked_os_getuid):
         expected = CheckSummary
 
-        value = user_group_checker.run_user_group_check({})
+        actual = user_group_checker.run_user_group_check({})
 
         mocked_os_getuid.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     @patch("os.getuid", return_value=1000)
     @patch("checkers_py.linux.user_group_checker.are_intel_gpus_found", return_value=False)
     def test_run_positive_without_gpu(self, mocked_are_intel_gpus_found, mocked_os_getuid):
         expected = CheckSummary
 
-        value = user_group_checker.run_user_group_check({})
+        actual = user_group_checker.run_user_group_check({})
 
         mocked_os_getuid.assert_called_once()
         mocked_are_intel_gpus_found.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     @patch("os.getuid", return_value=1000)
     @patch("checkers_py.linux.user_group_checker.check_user_in_required_groups")
@@ -56,30 +56,30 @@ class TestUserGroupCheckerApiTest(unittest.TestCase):
 
         mocked_check_user_in_required_groups.side_effect = lambda node: node.update({
             "Check": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = user_group_checker.run_user_group_check({})
+        actual = user_group_checker.run_user_group_check({})
 
         mocked_os_getuid.assert_called_once()
         mocked_are_intel_gpus_found.assert_called_once()
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = user_group_checker.get_api_version()
+        actual = user_group_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = user_group_checker.get_check_list()
+        actual = user_group_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in actual:
             self.assertIsInstance(metadata, expected)
 
 
@@ -93,9 +93,9 @@ class TestCheckUserInRequiredGroups(unittest.TestCase):
         mock_path_2 = MagicMock()
         mock_path_2.group.return_value = "test2"
 
-        value = user_group_checker._get_required_groups([mock_path_1, mock_path_2])
+        actual = user_group_checker._get_required_groups([mock_path_1, mock_path_2])
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("grp.getgrall")
     def test__get_user_groups_positive(self, mocked_getgrall):
@@ -108,9 +108,9 @@ class TestCheckUserInRequiredGroups(unittest.TestCase):
         mock_group_2.gr_mem = ["another_user"]
         mocked_getgrall.return_value = [mock_group_1, mock_group_2]
 
-        value = user_group_checker._get_user_groups("test_user")
+        actual = user_group_checker._get_user_groups("test_user")
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("getpass.getuser", return_value="test_user")
     @patch("checkers_py.linux.user_group_checker.get_card_devices", return_value=["card"])
@@ -127,20 +127,20 @@ class TestCheckUserInRequiredGroups(unittest.TestCase):
         expected = {
             "Current user is in the test1 group": {
                 "Command": "groups | grep test1",
-                "RetVal": "PASS",
-                "Value": ""
+                "CheckStatus": "PASS",
+                "CheckResult": ""
             },
             "Current user is in the test2 group": {
                 "Command": "groups | grep test2",
-                "RetVal": "PASS",
-                "Value": ""
+                "CheckStatus": "PASS",
+                "CheckResult": ""
             },
         }
 
-        value = {}
-        user_group_checker.check_user_in_required_groups(value)
+        actual = {}
+        user_group_checker.check_user_in_required_groups(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("getpass.getuser", return_value="test_user")
     @patch("checkers_py.linux.user_group_checker.get_card_devices", return_value=["card"])
@@ -157,22 +157,22 @@ class TestCheckUserInRequiredGroups(unittest.TestCase):
         expected = {
             "Current user is in the test1 group": {
                 "Command": "groups | grep test1",
-                "RetVal": "PASS",
-                "Value": ""
+                "CheckStatus": "PASS",
+                "CheckResult": ""
             },
             "Current user is in the test2 group": {
                 "Command": "groups | grep test2",
                 "HowToFix": "Contact the system administrator to add current user to the test2 group.",
                 "Message": "Current user is not part of the test2 group.",
-                "RetVal": "FAIL",
-                "Value": ""
+                "CheckStatus": "FAIL",
+                "CheckResult": ""
             },
         }
 
-        value = {}
-        user_group_checker.check_user_in_required_groups(value)
+        actual = {}
+        user_group_checker.check_user_in_required_groups(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("getpass.getuser", return_value="test_user")
     @patch("checkers_py.linux.user_group_checker.get_card_devices", return_value=["card"])
@@ -189,8 +189,8 @@ class TestCheckUserInRequiredGroups(unittest.TestCase):
         expected = {
             "Current user is in the test1 group": {
                 "Command": "groups | grep test1",
-                "RetVal": "PASS",
-                "Value": ""
+                "CheckStatus": "PASS",
+                "CheckResult": ""
             },
             "Current user is in the test2 group": {
                 "AutomationFix": "sudo usermod -a -G test2 test_user",
@@ -198,15 +198,15 @@ class TestCheckUserInRequiredGroups(unittest.TestCase):
                 "HowToFix": "Add current user to the test2 group. "
                             "Then restart the terminal and try again.",
                 "Message": "Current user is not part of the test2 group.",
-                "RetVal": "FAIL",
-                "Value": ""
+                "CheckStatus": "FAIL",
+                "CheckResult": ""
             },
         }
 
-        value = {}
-        user_group_checker.check_user_in_required_groups(value)
+        actual = {}
+        user_group_checker.check_user_in_required_groups(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

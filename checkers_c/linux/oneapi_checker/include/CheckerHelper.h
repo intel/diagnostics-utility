@@ -22,11 +22,11 @@ other than those that are expressly stated in the License.
 using namespace std;
 
 
-enum Retval: int {
-	Retval_Success = 0,
-	Retval_Warning = 1,
-	Retval_Fail = 2,
-	Retval_Error = 3
+enum CHECK_STATUS: int {
+	CHECK_STATUS_SUCCESS = 0,
+	CHECK_STATUS_WARNING = 1,
+	CHECK_STATUS_FAIL = 2,
+	CHECK_STATUS_ERROR = 3
 };
 
 

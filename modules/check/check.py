@@ -16,22 +16,22 @@ from functools import wraps
 from typing import Callable, Dict, Optional
 
 
-def _result_summary_recursive(summary_value: Dict, is_root: bool = False) -> int:
+def _result_summary_recursive(summary_check_result: Dict, is_root: bool = False) -> int:
     result_error_code = 0
-    for _, data in summary_value.items():
+    for _, data in summary_check_result.items():
         subcheck_error_code = 0
-        if "RetVal" in data:
-            if data["RetVal"] not in ["PASS", "WARNING", "FAIL", "ERROR", "INFO"]:
+        if "CheckStatus" in data:
+            if data["CheckStatus"] not in ["PASS", "WARNING", "FAIL", "ERROR", "INFO"]:
                 raise ValueError(
-                    f"Error in subtree: {data}. RetVal value can be only PASS, WARNING, FAIL, ERROR, INFO")
-            elif data["RetVal"] == "WARNING":
+                    f"Error in subtree: {data}. CheckStatus value can be only PASS, WARNING, FAIL, ERROR, INFO")  # noqa: E501
+            elif data["CheckStatus"] == "WARNING":
                 subcheck_error_code = 1
-            elif data["RetVal"] == "FAIL":
+            elif data["CheckStatus"] == "FAIL":
                 subcheck_error_code = 2
-            elif data["RetVal"] == "ERROR":
+            elif data["CheckStatus"] == "ERROR":
                 subcheck_error_code = 3
         else:
-            raise ValueError(f"Error in subtree: {data}. RetVal is required.")
+            raise ValueError(f"Error in subtree: {data}. CheckStatus is required.")
 
         if "Verbosity" in data:
             if not isinstance(data["Verbosity"], int):
@@ -49,14 +49,14 @@ def _result_summary_recursive(summary_value: Dict, is_root: bool = False) -> int
             if not isinstance(data["Command"], str):
                 raise ValueError(
                     f"Error in subtree: {data}. Command must be a string.")
-        if "Value" in data:
-            if isinstance(data["Value"], dict):
+        if "CheckResult" in data:
+            if isinstance(data["CheckResult"], dict):
                 subcheck_error_code = max(
                     subcheck_error_code,
-                    _result_summary_recursive(data["Value"])
+                    _result_summary_recursive(data["CheckResult"])
                 )
         else:
-            raise ValueError(f"Error in subtree: {data}. Value is required.")
+            raise ValueError(f"Error in subtree: {data}. CheckResult is required.")
         result_error_code = max(
             result_error_code,
             subcheck_error_code
@@ -67,10 +67,10 @@ def _result_summary_recursive(summary_value: Dict, is_root: bool = False) -> int
 def _result_summary_is_correct(
         summary: Dict) -> int:
     if len(summary) == 0:
-        raise ValueError("Value dictionary cannot be empty.")
-    if "Value" not in summary:
-        raise ValueError("Result summary is not correct: Top level should contain Value.")
-    return _result_summary_recursive(summary_value=summary["Value"], is_root=True)
+        raise ValueError("CheckResult dictionary cannot be empty.")
+    if "CheckResult" not in summary:
+        raise ValueError("Result summary is not correct: Top level should contain CheckResult.")
+    return _result_summary_recursive(summary_check_result=summary["CheckResult"], is_root=True)
 
 
 def _metadata_is_correct(metadata):
@@ -82,12 +82,12 @@ def _metadata_is_correct(metadata):
     if " " in metadata.name:
         raise ValueError(
             f"Metadata: {metadata} contains wrong 'name' value. Remove spaces from the name.")
-    tags = [elem.strip() for elem in metadata.tags.split(",")]
-    for tag in tags:
-        if " " in tag:
+    groups = [elem.strip() for elem in metadata.groups.split(",")]
+    for group in groups:
+        if " " in group:
             raise ValueError(
-                f"Metadata: {metadata} contains wrong 'tag' value. "
-                f"Remove spaces from '{tag}'.")
+                f"Metadata: {metadata} contains wrong 'group' value. "
+                f"Remove spaces from '{group}'.")
 
 
 class CheckMetadataPy:
@@ -98,10 +98,10 @@ class CheckMetadataPy:
 
     * `type`: A string value containing the check type.
 
-    * `tags`: A string value containing a tag or a sequence of tags separated by commas.
-       Used to change the set of run checks be `--filter` option.
-       For example, `python3 diagnostics.py --filter mytag` will run checks which contain
-       `mytag` tag only. String values are case sensitive.
+    * `groups`: A string value containing a group or a sequence of groups separated by commas.
+       Used to change the set of run checks be `--select` option.
+       For example, `python3 diagnostics.py --select mygroup` will run checks which contain
+       `mygroup` group only. String values are case sensitive.
 
     * `descr`: A string value containing a check description.
 
@@ -123,7 +123,7 @@ class CheckMetadataPy:
        check will be forcibly completed without saving data.
 
     * `version`: An integer value containing the check version. We recommend to increase check version
-      when you change `CheckSummary` `Value` dict tree.
+      when you change `CheckSummary` `CheckResult` dict tree.
 
     * `run`: A string value containing the name of a function to be called. A function should have the
       following declaration: `def my_func(data)` and should return `CheckSummary` object.
@@ -132,7 +132,7 @@ class CheckMetadataPy:
     """
     name: str
     type: str
-    tags: str
+    groups: str
     descr: str
     dataReq: str
     merit: int
@@ -144,7 +144,7 @@ class CheckMetadataPy:
             self,
             name: str,
             type: str,
-            tags: str,
+            groups: str,
             descr: str,
             dataReq: str,
             merit: int,
@@ -153,7 +153,7 @@ class CheckMetadataPy:
             run: str) -> None:
         self.name = name
         self.type = type
-        self.tags = tags
+        self.groups = groups
         self.descr = descr
         self.dataReq = dataReq
         self.merit = merit
@@ -164,9 +164,9 @@ class CheckMetadataPy:
 
     def __post_init__(self) -> None:
         _metadata_is_correct(self)
-        sorted_tags = [elem.strip() for elem in self.tags.split(",")]
-        sorted_tags.sort()
-        self.tags = ",".join(sorted_tags)
+        sorted_groups = [elem.strip() for elem in self.groups.split(",")]
+        sorted_groups.sort()
+        self.groups = ",".join(sorted_groups)
 
     def __str__(self) -> str:
         result = f"{type(self).__name__}("

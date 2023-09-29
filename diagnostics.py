@@ -18,11 +18,11 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from modules.check import BaseCheck, CheckMetadataPy, load_checks_from_config, load_default_checks, \
-                          load_checks_from_env, run_checks, create_dependency_order
-from modules.db_downloader import are_database_updates_available, update_databases, print_available_updates
+    load_checks_from_env, run_checks, create_dependency_order
+from modules.db_downloader import update_databases
 from modules.files_helper import configure_output_files, get_checks_to_run_from_config_data, \
-                                 read_config_data, save_json_output_file
-from modules.filter import process_filter, get_filtered_checks
+    read_config_data, save_json_output_file
+from modules.select import process_select, get_selected_checks
 from modules.os_helper import check_that_os_is_supported
 from modules.parse_args import create_parser
 from modules.log import configure_logger, configure_file_logging
@@ -30,8 +30,8 @@ from modules.log import configure_logger, configure_file_logging
 from modules.printing import print_metadata, print_summary, print_epilog
 from modules.printing.printer import print_ex, enable_stdout_printing
 
-VERSION = "2022.3.0"
-API_VERSION = "0.1"
+VERSION = "2022.4.0"
+API_VERSION = "0.2"
 
 
 def main():
@@ -92,8 +92,8 @@ def main():
             exit(1)
 
     # If checks we not specified, tool should say that it runs with limited set pf checks
-    is_filter_not_initialized = len(args.filter) == 1 and args.filter[0] == "not_initialized"
-    if not args.list and is_filter_not_initialized and not args.config and not args.update:
+    is_select_not_initialized = len(args.select) == 1 and args.select[0] == "not_initialized"
+    if not args.list and is_select_not_initialized and not args.config and not args.update:
         print_ex("Default checks will be run. For information on how to run other checks, "
                  "see 'python3 diagnostics.py --help'", txt_output_file)
         print_ex("", txt_output_file)
@@ -101,34 +101,29 @@ def main():
     # --list argument processing
     if args.list:
         # Get checks to print
-        checks_to_print: List[BaseCheck] = get_filtered_checks(loaded_checks, args.filter) \
-            if not is_filter_not_initialized else loaded_checks
+        checks_to_print: List[BaseCheck] = get_selected_checks(loaded_checks, args.select) \
+            if not is_select_not_initialized else loaded_checks
         # Print checks metadata
         print_metadata(checks_to_print, txt_output_file)
         print_epilog(txt_output_file, None, VERSION)
         exit(0)
 
     # Check DB updates
-    if not args.skip_update:
-        print_ex("Checking for available updates of compatibility database...", txt_output_file)
-        resource, metadata, databases = are_database_updates_available(loaded_checks)
-        print_ex("Checking for available updates completed successfully.", txt_output_file)
-        if args.update:
-            exit(update_databases(resource, metadata, databases))
-        else:
-            print_available_updates(databases)
-            print_ex("", txt_output_file)
+    if args.update:
+        print_ex("Updating of compatibility database...", txt_output_file)
+        update_databases(loaded_checks)
+        print_ex("Updating of compatibility database completed.", txt_output_file)
 
-    # Filter processing: Run all checks from config or set default filter if it is not initialized
-    filter = set()
+    # Select processing: Run all checks from config or set default selection if it is not initialized
+    select = set()
     if args.config:
         config_data = read_config_data(args.config)
-        filter = get_checks_to_run_from_config_data(config_data)
+        select = get_checks_to_run_from_config_data(config_data)
     else:
-        filter = process_filter(args.filter)
+        select = process_select(args.select)
 
     # Select the checks to run in right order
-    checks_to_print, checks_to_run = create_dependency_order(loaded_checks, filter)
+    checks_to_print, checks_to_run = create_dependency_order(loaded_checks, select)
     if len(checks_to_print) != len(checks_to_run):
         checks_to_run_without_print = " ".join(
             set([check.get_metadata().name for check in checks_to_run]) - set(checks_to_print))
@@ -141,7 +136,7 @@ def main():
     run_checks(checks_to_run)
 
     # Print results to user
-    print_summary(get_filtered_checks(checks_to_run, checks_to_print), args.verbosity, txt_output_file)
+    print_summary(get_selected_checks(checks_to_run, checks_to_print), args.verbosity, txt_output_file)
 
     if json_output_file and txt_output_file:
         save_json_output_file(checks_to_run, json_output_file, False)

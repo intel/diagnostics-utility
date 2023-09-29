@@ -28,18 +28,18 @@ test_filename = "test.so"
 c_metadata = Mock()
 c_metadata.name = "c_example".encode()
 c_metadata.type = "Data".encode()
-c_metadata.tags = "cpu".encode()
+c_metadata.groups = "cpu".encode()
 c_metadata.descr = "This is example of c module".encode()
 c_metadata.dataReq = '''{}'''.encode()
 c_metadata.merit = 0
 c_metadata.timeout = 1
-c_metadata.version = 1
+c_metadata.version = 2
 
-c_api_version = "0.1"
+c_api_version = "0.2"
 
 c_run_output = Mock()
 c_run_output.error_code = 0
-result_str = """{"Value": {"C example check": {"Value": "C example value", "RetVal": "PASS"}}}"""
+result_str = """{"CheckResult": {"C example check": {"CheckResult": "C example value", "CheckStatus": "PASS"}}}"""   # noqa: E501
 c_run_output.result = result_str.encode()
 
 
@@ -70,34 +70,33 @@ class TestClassCheckC(unittest.TestCase):
         expected = CheckMetadataPy(
             name='c_example',
             type='Data',
-            tags='cpu',
+            groups='cpu',
             descr='This is example of c module',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
 
-        value = self.check.get_metadata()
+        actual = self.check.get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
     def test_get_api_version_positive_correct(self):
         expected = c_api_version
 
-        value = self.check.get_api_version()
+        actual = self.check.get_api_version()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     def test_get_summury_positive_correct(self):
         expected = CheckSummary(
-            result="""{"Value": {"C example check": {"Value": "C example value", "RetVal": "PASS"}}}"""
+            result="""{"CheckResult": {"C example check": {"CheckResult": "C example value", "CheckStatus": "PASS"}}}"""  # noqa: E501
         )
+        actual = self.check.run({})
 
-        value = self.check.run({})
-
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
 
 class TestGetCheckC(unittest.TestCase):
@@ -107,21 +106,21 @@ class TestGetCheckC(unittest.TestCase):
         expected = CheckMetadataPy(
             name='c_example',
             type='Data',
-            tags='cpu',
+            groups='cpu',
             descr='This is example of c module',
             dataReq='{}',
             merit=0,
             timeout=1,
-            version=1,
+            version=2,
             run='run'
         )
         mock_file = MagicMock()
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = True
 
-        value = check_c.getChecksC(mock_file, "0.1")[0].get_metadata()
+        actual = check_c.getChecksC(mock_file, "0.2")[0].get_metadata()
 
-        self.assertEqual(expected.__dict__, value.__dict__)
+        self.assertEqual(expected.__dict__, actual.__dict__)
 
     @patch("logging.error")
     def test_get_checks_c_raise_error_if_file_not_exist(self, mock_log):
@@ -129,7 +128,7 @@ class TestGetCheckC(unittest.TestCase):
         mock_file.__str__.return_value = test_filename
         mock_file.exists.return_value = False
 
-        self.assertRaises(OSError, check_c.getChecksC, mock_file, "0.1")
+        self.assertRaises(OSError, check_c.getChecksC, mock_file, "0.2")
         mock_log.assert_called()
 
     @patch("modules.check.check_c.CheckListC", return_value=c_check_list)

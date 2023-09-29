@@ -21,5 +21,5 @@ TEST(SampleCTest, get_api_version_returns_right_version) {
     
     version = std::string(get_api_version());
 
-    EXPECT_EQ(version, "0.1");
+    EXPECT_EQ(version, "0.2");
 }

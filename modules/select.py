@@ -8,3 +8,27 @@
 # other than those that are expressly stated in the License.
 #
 # *******************************************************************************/
+
+from itertools import filterfalse
+from typing import List, Set
+
+from modules.check import BaseCheck
+
+
+def process_select(selection: List[str]) -> Set[str]:
+    """Set default select if select has not been initialized."""
+    result = set(selection)
+    if len(selection) == 1 and selection[0] == "not_initialized":
+        result = {"default"}
+    return result
+
+
+def get_selected_checks(checks: List[BaseCheck], selection: List[str]) -> List[BaseCheck]:
+    if "all" in selection:
+        return checks
+    return list(filterfalse(
+        lambda x: not list(
+            set(selection) &
+            (set(x.get_metadata().groups.split(",")) | set([x.get_metadata().name]))),
+        checks
+    ))

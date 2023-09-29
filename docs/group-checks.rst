@@ -9,10 +9,10 @@ Run a Group of Checks
   `base_system_check` is supported so there is not a group checks
   that can be run.
 
-The Diagnostics Utility for Intel® oneAPI Toolkits organizes checks in groups or categories. These groups are called "Tags". 
-To choose specific groups you want to run, use the List of Checks.
+The Diagnostics Utility for Intel® oneAPI Toolkits organizes checks in groups or categories.
+To choose specific group you want to run, use the List of Checks.
 
-For example, use the  ``gpu``  argument (tag) to run multiple checks related
+For example, use the  ``gpu``  argument to run multiple checks related
 to GPU hardware and
 software. The  ``gpu``  argument will output these details:
 
@@ -29,7 +29,7 @@ To run the utility with the  ``gpu``  argument:
 
 ::
 
-  python3 diagnostics.py --filter gpu
+  python3 diagnostics.py --select gpu
 
 You will see a result similar to this:
 
@@ -44,7 +44,7 @@ To get more information, use ``-v`` to activate verbose mode:
 
  ::
 
-  python3 diagnostics.py --filter gpu -v
+  python3 diagnostics.py --select gpu -v
 
 
 The output will contain expanded details for each check. In the example below,

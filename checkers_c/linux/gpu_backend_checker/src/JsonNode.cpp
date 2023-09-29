@@ -20,20 +20,20 @@ JsonNode::~JsonNode() {
 	// TODO Auto-generated destructor stub
 }
 
-void JsonNode::AddJsonTopNode(json_object* parent, json_object * value ) {
-	json_object_object_add(parent, "Value", value);
+void JsonNode::AddJsonTopNode(json_object* parent, json_object * check_result ) {
+	json_object_object_add(parent, "CheckResult", check_result);
 }
 
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, json_object * value ) {
-	JsonNode::AddJsonNode(parent, name, retVal, "", "", 0, value);
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, json_object * check_result ) {
+	JsonNode::AddJsonNode(parent, name, check_status, "", "", 0, check_result);
 }
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, uint32_t verbosity, json_object * value ) {
-	JsonNode::AddJsonNode(parent, name, retVal, "", "", verbosity, value);
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, uint32_t verbosity, json_object * check_result ) {
+	JsonNode::AddJsonNode(parent, name, check_status, "", "", verbosity, check_result);
 }
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, string message, string command, uint32_t verbosity, json_object * value ) {
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, string message, string command, uint32_t verbosity, json_object * check_result ) {
 	json_object *json_value = json_object_new_object();
 	json_object_object_add(parent, name.c_str(), json_value);
 	if (!message.empty())
@@ -42,20 +42,20 @@ void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, stri
 		json_object_object_add(json_value, "Command", json_object_new_string(command.c_str()));
 	if (verbosity)
 		json_object_object_add(json_value, "Verbosity", json_object_new_int(verbosity));
-	json_object_object_add(json_value, "RetVal", json_object_new_string(retVal.c_str()));
-	json_object_object_add(json_value, "Value", value);
+	json_object_object_add(json_value, "CheckStatus", json_object_new_string(check_status.c_str()));
+	json_object_object_add(json_value, "CheckResult", check_result);
 }
 
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, string value ) {
-	JsonNode::AddJsonNode (parent, name, retVal, "", "", 0, value);
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, string check_result ) {
+	JsonNode::AddJsonNode (parent, name, check_status, "", "", 0, check_result);
 }
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, uint32_t verbosity, string value ) {
-	JsonNode::AddJsonNode (parent, name, retVal, "", "", verbosity, value);
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, uint32_t verbosity, string check_result ) {
+	JsonNode::AddJsonNode (parent, name, check_status, "", "", verbosity, check_result);
 }
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, string message, string command, uint32_t verbosity, string value ) {
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, string message, string command, uint32_t verbosity, string check_result ) {
 	json_object *json_value = json_object_new_object();
 	json_object_object_add(parent, name.c_str(), json_value);
 	if (!message.empty())
@@ -64,20 +64,20 @@ void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, stri
 		json_object_object_add(json_value, "Command", json_object_new_string(command.c_str()));
 	if (verbosity)
 		json_object_object_add(json_value, "Verbosity", json_object_new_int(verbosity));
-	json_object_object_add(json_value, "RetVal", json_object_new_string(retVal.c_str()));
-	json_object_object_add(json_value, "Value", json_object_new_string(value.c_str()));
+	json_object_object_add(json_value, "CheckStatus", json_object_new_string(check_status.c_str()));
+	json_object_object_add(json_value, "CheckResult", json_object_new_string(check_result.c_str()));
 }
 
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, uint32_t value ) {
-	JsonNode::AddJsonNode(parent, name, retVal, "", "", 0, value);
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, uint32_t check_result ) {
+	JsonNode::AddJsonNode(parent, name, check_status, "", "", 0, check_result);
 }
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, uint32_t verbosity, uint32_t value ) {
-	JsonNode::AddJsonNode(parent, name, retVal, "", "", verbosity, value);
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, uint32_t verbosity, uint32_t check_result ) {
+	JsonNode::AddJsonNode(parent, name, check_status, "", "", verbosity, check_result);
 }
 
-void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, string message, string command, uint32_t verbosity, uint32_t value ) {
+void JsonNode::AddJsonNode(json_object* parent, string name, string check_status, string message, string command, uint32_t verbosity, uint32_t check_result ) {
 	json_object *json_value = json_object_new_object();
 	json_object_object_add(parent, name.c_str(), json_value);
 	if (!message.empty())
@@ -86,8 +86,8 @@ void JsonNode::AddJsonNode(json_object* parent, string name, string retVal, stri
 		json_object_object_add(json_value, "Command", json_object_new_string(command.c_str()));
 	if (verbosity)
 		json_object_object_add(json_value, "Verbosity", json_object_new_int(verbosity));
-	json_object_object_add(json_value, "RetVal", json_object_new_string(retVal.c_str()));
-	json_object_object_add(json_value, "Value", json_object_new_int64(value));		// use int64 to prevent overflow because it accepts signed integer
+	json_object_object_add(json_value, "CheckStatus", json_object_new_string(check_status.c_str()));
+	json_object_object_add(json_value, "CheckResult", json_object_new_int64(check_result));		// use int64 to prevent overflow because it accepts signed integer
 
 }
 

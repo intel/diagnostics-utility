@@ -39,46 +39,46 @@ class TestBaseSystemCheckerApiTest(unittest.TestCase):
 
         mocked_get_hostname.side_effect = lambda node: node.update({
             "Check 1": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_cpu_info.side_effect = lambda node: node.update({
             "Check 2": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_bios_information.side_effect = lambda node: node.update({
             "Check 3": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked_get_uname.side_effect = lambda node: node.update({
             "Check 4": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = base_system_checker.run_base_check({})
+        actual = base_system_checker.run_base_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = base_system_checker.get_api_version()
+        actual = base_system_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = base_system_checker.get_check_list()
+        check_list = base_system_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -88,23 +88,23 @@ class TestGetHostname(unittest.TestCase):
     def test_get_hostname_positive(self):
         expected = {
             "Hostname": {
-                "Value": "hostname",
-                "RetVal": "INFO",
+                "CheckResult": "hostname",
+                "CheckStatus": "INFO",
                 "Command": "cat /etc/hostname"
             }
         }
 
-        value = {}
-        base_system_checker.get_hostname(value)
+        actual = {}
+        base_system_checker.get_hostname(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     def test_get_hostname_open_raise_error(self, mocked_open):
         expected = {
             "Hostname": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "cat /etc/hostname",
                 "Message": "test message",
                 "HowToFix": "The system does not contain '/etc/hostname'. Ignore "
@@ -112,10 +112,10 @@ class TestGetHostname(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker.get_hostname(value)
+        actual = {}
+        base_system_checker.get_hostname(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetBiosVendor(unittest.TestCase):
@@ -124,23 +124,23 @@ class TestGetBiosVendor(unittest.TestCase):
     def test__get_bios_vendor_positive(self):
         expected = {
             "BIOS vendor": {
-                "Value": "vendor",
-                "RetVal": "INFO",
+                "CheckResult": "vendor",
+                "CheckStatus": "INFO",
                 "Command": "cat /sys/class/dmi/id/bios_vendor"
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_vendor(value)
+        actual = {}
+        base_system_checker._get_bios_vendor(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     def test__get_bios_vendor_open_raise_error(self, mocked_open):
         expected = {
             "BIOS vendor": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "cat /sys/class/dmi/id/bios_vendor",
                 "Message": "test message",
                 "HowToFix": "The system does not contain information "
@@ -148,10 +148,10 @@ class TestGetBiosVendor(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_vendor(value)
+        actual = {}
+        base_system_checker._get_bios_vendor(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetBiosVersion(unittest.TestCase):
@@ -160,23 +160,23 @@ class TestGetBiosVersion(unittest.TestCase):
     def test__get_bios_version_positive(self):
         expected = {
             "BIOS version": {
-                "Value": "version",
-                "RetVal": "INFO",
+                "CheckResult": "version",
+                "CheckStatus": "INFO",
                 "Command": "cat /sys/class/dmi/id/bios_version"
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_version(value)
+        actual = {}
+        base_system_checker._get_bios_version(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     def test__get_bios_version_open_raise_error(self, mocked_open):
         expected = {
             "BIOS version": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "cat /sys/class/dmi/id/bios_version",
                 "Message": "test message",
                 "HowToFix": "The system does not contain information "
@@ -184,10 +184,10 @@ class TestGetBiosVersion(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_version(value)
+        actual = {}
+        base_system_checker._get_bios_version(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetBiosRelease(unittest.TestCase):
@@ -197,25 +197,25 @@ class TestGetBiosRelease(unittest.TestCase):
     def test__get_bios_release_positive(self, mocked_exists):
         expected = {
             "BIOS release": {
-                "Value": "release",
-                "RetVal": "INFO",
+                "CheckResult": "release",
+                "CheckStatus": "INFO",
                 "Command": "cat /sys/class/dmi/id/bios_release",
                 "Verbosity": 1
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_release(value)
+        actual = {}
+        base_system_checker._get_bios_release(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     @patch("os.path.exists", return_value=True)
     def test__get_bios_release_open_raise_error(self, mocked_exists, mocked_open):
         expected = {
             "BIOS release": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "cat /sys/class/dmi/id/bios_release",
                 "Message": "test message",
                 "HowToFix": "The system does not contain information "
@@ -223,19 +223,19 @@ class TestGetBiosRelease(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_release(value)
+        actual = {}
+        base_system_checker._get_bios_release(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.path.exists", return_value=False)
     def test__get_bios_release_can_not_provide_info(self, mocked_exists):
         expected = {}
 
-        value = {}
-        base_system_checker._get_bios_release(value)
+        actual = {}
+        base_system_checker._get_bios_release(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetBiosDate(unittest.TestCase):
@@ -245,25 +245,25 @@ class TestGetBiosDate(unittest.TestCase):
     def test__get_bios_date_positive(self, mocked_exists):
         expected = {
             "BIOS date": {
-                "Value": "date",
-                "RetVal": "INFO",
+                "CheckResult": "date",
+                "CheckStatus": "INFO",
                 "Command": "cat /sys/class/dmi/id/bios_date",
                 "Verbosity": 2
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_date(value)
+        actual = {}
+        base_system_checker._get_bios_date(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     @patch("os.path.exists", return_value=True)
     def test__get_bios_date_open_raise_error(self, mocked_exists, mocked_open):
         expected = {
             "BIOS date": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "cat /sys/class/dmi/id/bios_date",
                 "Message": "test message",
                 "HowToFix": "The system does not contain information "
@@ -271,19 +271,19 @@ class TestGetBiosDate(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker._get_bios_date(value)
+        actual = {}
+        base_system_checker._get_bios_date(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("os.path.exists", return_value=False)
     def test__get_bios_date_can_not_provide_info(self, mocked_exists):
         expected = {}
 
-        value = {}
-        base_system_checker._get_bios_date(value)
+        actual = {}
+        base_system_checker._get_bios_date(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetBiosInformation(unittest.TestCase):
@@ -300,23 +300,23 @@ class TestGetBiosInformation(unittest.TestCase):
             mocked__get_bios_vendor):
         expected = {
             "BIOS information": {
-                "RetVal": "INFO",
-                "Value": {
+                "CheckStatus": "INFO",
+                "CheckResult": {
                     "Vendor": {
-                        "Value": "Value",
-                        "RetVal": "INFO"
+                        "CheckResult": "some data",
+                        "CheckStatus": "INFO"
                     },
                     "Version": {
-                        "Value": "Value",
-                        "RetVal": "INFO"
+                        "CheckResult": "some data",
+                        "CheckStatus": "INFO"
                     },
                     "Release": {
-                        "Value": "Value",
-                        "RetVal": "INFO"
+                        "CheckResult": "some data",
+                        "CheckStatus": "INFO"
                     },
                     "Date": {
-                        "Value": "Value",
-                        "RetVal": "INFO"
+                        "CheckResult": "some data",
+                        "CheckStatus": "INFO"
                     }
                 }
             }
@@ -324,33 +324,33 @@ class TestGetBiosInformation(unittest.TestCase):
 
         mocked__get_bios_date.side_effect = lambda node: node.update({
             "Date": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked__get_bios_release.side_effect = lambda node: node.update({
             "Release": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked__get_bios_version.side_effect = lambda node: node.update({
             "Version": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
         mocked__get_bios_vendor.side_effect = lambda node: node.update({
             "Vendor": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = {}
-        base_system_checker.get_bios_information(value)
+        actual = {}
+        base_system_checker.get_bios_information(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetUname(unittest.TestCase):
@@ -359,16 +359,17 @@ class TestGetUname(unittest.TestCase):
     def test_get_uname_positive(self, mocked_uname):
         expected = {
             "Operating system information": {
-                "Value": {
-                    "System": {"Value": "Linux", "RetVal": "INFO"},
-                    "Node": {"Value": "test", "RetVal": "INFO"},
-                    "Release": {"Value": "5.13.0-27-generic", "RetVal": "INFO"},
+                "CheckResult": {
+                    "System": {"CheckResult": "Linux", "CheckStatus": "INFO"},
+                    "Node": {"CheckResult": "test", "CheckStatus": "INFO"},
+                    "Release": {"CheckResult": "5.13.0-27-generic", "CheckStatus": "INFO"},
                     "Version": {
-                        "Value": "#29~20.04.1-Ubuntu SMP Fri Jan 14 00:32:30 UTC 2022", "RetVal": "INFO"},
-                    "Machine": {"Value": "x86_64", "RetVal": "INFO"},
-                    "Processor": {"Value": "x86_64", "RetVal": "INFO"}
+                        "CheckResult": "#29~20.04.1-Ubuntu SMP Fri Jan 14 00:32:30 UTC 2022",  # noqa: E501
+                        "CheckStatus": "INFO"},
+                    "Machine": {"CheckResult": "x86_64", "CheckStatus": "INFO"},
+                    "Processor": {"CheckResult": "x86_64", "CheckStatus": "INFO"}
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": "uname -a"
             }
         }
@@ -384,10 +385,10 @@ class TestGetUname(unittest.TestCase):
             "x86_64"
         )
 
-        value = {}
-        base_system_checker.get_uname(value)
+        actual = {}
+        base_system_checker.get_uname(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetCpuFrequency(unittest.TestCase):
@@ -399,35 +400,35 @@ class TestGetCpuFrequency(unittest.TestCase):
     def test_get_cpu_frequency_positive(self):
         expected = {
             "CPU frequency": {
-                "Value": {
+                "CheckResult": {
                     "Core 0": {
-                        "RetVal": "INFO",
-                        "Value": "3700.000 MHz",
+                        "CheckStatus": "INFO",
+                        "CheckResult": "3700.000 MHz",
                         "Verbosity": 1
                     },
                     "Core 1": {
-                        "RetVal": "INFO",
-                        "Value": "3700.000 MHz",
+                        "CheckStatus": "INFO",
+                        "CheckResult": "3700.000 MHz",
                         "Verbosity": 1
                     }
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": "cat /proc/cpuinfo"
             }
         }
 
-        value = {}
-        base_system_checker.get_cpu_frequency(value)
+        actual = {}
+        base_system_checker.get_cpu_frequency(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", side_effect=Exception("test message"))
     def test_get_cpu_frequency_open_raise_value_error(self, mocked_open):
         expected = {
             "CPU frequency": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Verbosity": 1,
                 "Command": "cat /proc/cpuinfo",
                 "Message": "test message",
@@ -436,10 +437,10 @@ class TestGetCpuFrequency(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker.get_cpu_frequency(value)
+        actual = {}
+        base_system_checker.get_cpu_frequency(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 class TestGetCpuInfo(unittest.TestCase):
@@ -449,77 +450,77 @@ class TestGetCpuInfo(unittest.TestCase):
     def test_get_cpu_info_positive(self, mocked_get_cpu_frequency, mocked_open):
         expected = {
             "CPU information": {
-                "Value": {
+                "CheckResult": {
                     "Model name": {
-                        "Value": "Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz",
-                        "RetVal": "INFO"
+                        "CheckResult": "Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz",
+                        "CheckStatus": "INFO"
                     },
                     "Architecture": {
-                        "Value": "x86_64",
-                        "RetVal": "INFO"
+                        "CheckResult": "x86_64",
+                        "CheckStatus": "INFO"
                     },
                     "Vendor": {
-                        "Value": "GenuineIntel",
-                        "RetVal": "INFO",
+                        "CheckResult": "GenuineIntel",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1
                     },
                     "CPU count": {
-                        "Value": "12",
-                        "RetVal": "INFO"
+                        "CheckResult": "12",
+                        "CheckStatus": "INFO"
                     },
                     "Thread(s) per core": {
-                        "Value": "2",
-                        "RetVal": "INFO",
+                        "CheckResult": "2",
+                        "CheckStatus": "INFO",
                         "Verbosity": 2
                     },
                     "Core(s) per socket": {
-                        "Value": "6",
-                        "RetVal": "INFO",
+                        "CheckResult": "6",
+                        "CheckStatus": "INFO",
                         "Verbosity": 2
                     },
                     "Socket(s)": {
-                        "Value": "1",
-                        "RetVal": "INFO",
+                        "CheckResult": "1",
+                        "CheckStatus": "INFO",
                         "Verbosity": 2
                     },
                     "CPU frequency": {
-                        "Value": {
+                        "CheckResult": {
                             "Core 0": {
-                                "RetVal": "INFO",
-                                "Value": "3700.000 MHz",
+                                "CheckStatus": "INFO",
+                                "CheckResult": "3700.000 MHz",
                                 "Verbosity": 1
                             },
                             "Core 1": {
-                                "RetVal": "INFO",
-                                "Value": "3700.000 MHz",
+                                "CheckStatus": "INFO",
+                                "CheckResult": "3700.000 MHz",
                                 "Verbosity": 1
                             }
                         },
-                        "RetVal": "INFO",
+                        "CheckStatus": "INFO",
                         "Verbosity": 1,
                         "Command": "cat /proc/cpuinfo"
                     }
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Command": "lscpu"
             }
         }
 
         mocked_get_cpu_frequency.side_effect = lambda node: node.update({
             "CPU frequency": {
-                "Value": {
+                "CheckResult": {
                     "Core 0": {
-                        "RetVal": "INFO",
-                        "Value": "3700.000 MHz",
+                        "CheckStatus": "INFO",
+                        "CheckResult": "3700.000 MHz",
                         "Verbosity": 1
                     },
                     "Core 1": {
-                        "RetVal": "INFO",
-                        "Value": "3700.000 MHz",
+                        "CheckStatus": "INFO",
+                        "CheckResult": "3700.000 MHz",
                         "Verbosity": 1
                     }
                 },
-                "RetVal": "INFO",
+                "CheckStatus": "INFO",
                 "Verbosity": 1,
                 "Command": "cat /proc/cpuinfo"
             }
@@ -558,17 +559,17 @@ class TestGetCpuInfo(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        base_system_checker.get_cpu_info(value)
+        actual = {}
+        base_system_checker.get_cpu_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen")
     def test_get_cpu_info_process_return_code_is_not_zero(self, mocked_open):
         expected = {
             "CPU information": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "lscpu",
                 "Message": "Cannot get information about CPU",
                 "HowToFix": "The system does not contain information "
@@ -582,17 +583,17 @@ class TestGetCpuInfo(unittest.TestCase):
 
         mocked_open.return_value = process
 
-        value = {}
-        base_system_checker.get_cpu_info(value)
+        actual = {}
+        base_system_checker.get_cpu_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("subprocess.Popen", side_effect=Exception("test message"))
     def test_get_cpu_info_subprocess_raise_exception(self, mocked_open):
         expected = {
             "CPU information": {
-                "Value": "Undefined",
-                "RetVal": "ERROR",
+                "CheckResult": "Undefined",
+                "CheckStatus": "ERROR",
                 "Command": "lscpu",
                 "Message": "test message",
                 "HowToFix": "The system does not contain information "
@@ -600,10 +601,10 @@ class TestGetCpuInfo(unittest.TestCase):
             }
         }
 
-        value = {}
-        base_system_checker.get_cpu_info(value)
+        actual = {}
+        base_system_checker.get_cpu_info(actual)
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
 
 if __name__ == "__main__":

@@ -19,17 +19,17 @@ def run_checker2(data: dict) -> CheckSummary:
     # We can check that we have required data
     check_summary = CheckSummary(
         result=json.dumps({
-            "Value": {
+            "CheckResult": {
                 "Python sample check 2": {
-                    "RetVal": "PASS",
-                    "Value": {
+                    "CheckStatus": "PASS",
+                    "CheckResult": {
                         "Python sample subcheck 1": {
-                            "Value": "Python sample value 1",
-                            "RetVal": "PASS"
+                            "CheckResult": "Python sample value 1",
+                            "CheckStatus": "PASS"
                         },
                         "Python sample subcheck 2": {
-                            "Value": "Python sample value 2",
-                            "RetVal": "PASS"
+                            "CheckResult": "Python sample value 2",
+                            "CheckStatus": "PASS"
                         }
                     }
                 }
@@ -40,19 +40,19 @@ def run_checker2(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="py_check_sample_2",
         type="Data",
-        tags="sample,python",
+        groups="sample,python",
         descr="This is a description of python check sample #2. Depends on `c_check_sample`.",
-        dataReq="{\"c_check_sample\": 1}",
+        dataReq="{\"c_check_sample\": 2}",
         merit=0,
         timeout=5,
-        version=1,
+        version=2,
         run="run_checker2"
     )
     return [someCheck]

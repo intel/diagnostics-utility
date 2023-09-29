@@ -31,9 +31,9 @@ class TestGetLinuxDistribution(unittest.TestCase):
     def test__get_linux_distribution_positive(self):
         expected = ("Ubuntu", "20.04")
 
-        value = _get_linux_distribution()
+        actual = _get_linux_distribution()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("builtins.open", mock_open(read_data="""TEST="Test"\n"""))
     def test__get_linux_distribution_negative(self):
@@ -47,18 +47,18 @@ class TestGetOs(unittest.TestCase):
     def test__get_os_windows_os_positive(self, mocked__get_windows_version, mocked_system):
         expected = ("Windows", "10")
 
-        value = _get_os()
+        actual = _get_os()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("platform.system", return_value="Linux")
     @patch("builtins.open", mock_open(read_data=SUPPORTED_OS_RELEASE_CONTENT))
     def test__get_os_linux_os_positive(self, mocked_system):
         expected = ("Ubuntu", "20.04")
 
-        value = _get_os()
+        actual = _get_os()
 
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("platform.system", return_value="Unsupported")
     def test__get_os_not_supported_os_negative(self, mocked_system):
@@ -71,37 +71,37 @@ class TestIsOsSupported(unittest.TestCase):
     def test_os_is_supported(self, mock__get_os):
         expected = True
 
-        value = is_os_supported()
+        actual = is_os_supported()
 
         mock__get_os.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.os_helper._get_os", return_value=("NOT_SUPPORTED", "NOT_SUPPORTED"))
     def test_os_is_not_supported_fully(self, mock__get_os):
         expected = False
 
-        value = is_os_supported()
+        actual = is_os_supported()
 
         mock__get_os.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.os_helper._get_os", return_value=("Os", "1.1"))
     def test_os_is_not_supported_version(self, mock__get_os):
         expected = False
 
-        value = is_os_supported()
+        actual = is_os_supported()
 
         mock__get_os.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.os_helper._get_os", side_effect=Exception())
     def test_get_os_raise_exception(self, mock__get_os):
         expected = False
 
-        value = is_os_supported()
+        actual = is_os_supported()
 
         mock__get_os.assert_called_once()
-        self.assertEqual(expected, value)
+        self.assertEqual(expected, actual)
 
     @patch("modules.os_helper.is_os_supported", return_value=True)
     def test_check_that_os_is_supported_positive(self, mock_is_os_supported):

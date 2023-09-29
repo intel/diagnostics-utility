@@ -26,23 +26,23 @@ class TestExamplePyChecker2(unittest.TestCase):
     def test_run_checker1_positive(self):
         expected = CheckSummary
 
-        value = py_checker_sample_2.run_checker2({})
+        actual = py_checker_sample_2.run_checker2({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = py_checker_sample_2.get_api_version()
+        actual = py_checker_sample_2.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = py_checker_sample_2.get_check_list()
+        check_list = py_checker_sample_2.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 

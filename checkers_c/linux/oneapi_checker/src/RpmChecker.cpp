@@ -28,7 +28,7 @@ bool RpmChecker::Initialize(string& message) {
 
 bool RpmChecker::GetAppInfo(string& message) {
 	string out;
-	int retval;
+	int exit_status;
 
 	if (CheckerHelper::GetOsType() != RpmBased) {
 		message = "Application information is not available for products installed by RPM.";
@@ -36,8 +36,8 @@ bool RpmChecker::GetAppInfo(string& message) {
 	}
 
 	// Extract information about installed packages
-	retval = CheckerHelper::RunCommand("rpm -q -a --qf '%{Name}\t%{Version}\t%{Arch}\t%{Summary}\t:%{Vendor}\n' | grep :Intel", out);
-	if (retval != 0)	{
+	exit_status = CheckerHelper::RunCommand("rpm -q -a --qf '%{Name}\t%{Version}\t%{Arch}\t%{Summary}\t:%{Vendor}\n' | grep :Intel", out);
+	if (exit_status != 0)	{
 		message ="Cannot obtain installed package.";
 		return false;
 	}

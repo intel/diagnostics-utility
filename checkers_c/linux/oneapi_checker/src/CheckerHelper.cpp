@@ -69,16 +69,16 @@ OsType CheckerHelper::GetOsType()
 
 //#elif defined(LINX86) || defined(LINX64)
 	string out;
-	int retval;
+	int exit_status;
 	// Check that dpkg is installed
-	retval = CheckerHelper::RunCommand("which dpkg 2>/dev/null", out);
-	if (retval == 0)	{
+	exit_status = CheckerHelper::RunCommand("which dpkg 2>/dev/null", out);
+	if (exit_status == 0)	{
 		return DebianBased;
 	}
 
 	// Check that rpm is installed
-	retval = CheckerHelper::RunCommand("which rpm 2>/dev/null", out);
-	if (retval == 0)	{
+	exit_status = CheckerHelper::RunCommand("which rpm 2>/dev/null", out);
+	if (exit_status == 0)	{
 		return RpmBased;
 	}
 

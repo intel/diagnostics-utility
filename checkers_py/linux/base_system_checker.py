@@ -21,62 +21,62 @@ from typing import List, Dict
 
 
 def get_hostname(json_node: Dict) -> None:
-    value = {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Command": "cat /etc/hostname"
     }
     try:
         with open("/etc/hostname", "r") as etc_hostname:
             hostname = etc_hostname.readline().strip()
-            value["Value"] = hostname
+            check_result["CheckResult"] = hostname
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "The system does not contain '/etc/hostname'. Ignore this error."
-    json_node.update({"Hostname": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "The system does not contain '/etc/hostname'. Ignore this error."
+    json_node.update({"Hostname": check_result})
 
 
 def _get_bios_vendor(json_node: Dict) -> None:
-    value = {"BIOS vendor": {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {"BIOS vendor": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Command": "cat /sys/class/dmi/id/bios_vendor"
     }}
     try:
         with open("/sys/class/dmi/id/bios_vendor", "r") as bios_vendor_file:
             bios_vendor = bios_vendor_file.readline().strip()
-            value["BIOS vendor"]["Value"] = bios_vendor
+            check_result["BIOS vendor"]["CheckResult"] = bios_vendor
     except Exception as error:
-        value["BIOS vendor"]["RetVal"] = "ERROR"
-        value["BIOS vendor"]["Message"] = str(error)
-        value["BIOS vendor"]["HowToFix"] = "The system does not contain information about BIOS. " \
-                                           "Ignore this error."
-    json_node.update(value)
+        check_result["BIOS vendor"]["CheckStatus"] = "ERROR"
+        check_result["BIOS vendor"]["Message"] = str(error)
+        check_result["BIOS vendor"]["HowToFix"] = "The system does not contain information about BIOS. " \
+            "Ignore this error."
+    json_node.update(check_result)
 
 
 def _get_bios_version(json_node: Dict) -> None:
-    value = {"BIOS version": {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {"BIOS version": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Command": "cat /sys/class/dmi/id/bios_version"
     }}
     try:
         with open("/sys/class/dmi/id/bios_version", "r") as bios_verion_file:
             bios_version = bios_verion_file.readline().strip()
-            value["BIOS version"]["Value"] = bios_version
+            check_result["BIOS version"]["CheckResult"] = bios_version
     except Exception as error:
-        value["BIOS version"]["RetVal"] = "ERROR"
-        value["BIOS version"]["Message"] = str(error)
-        value["BIOS version"]["HowToFix"] = "The system does not contain information about BIOS. " \
-                                            "Ignore this error."
-    json_node.update(value)
+        check_result["BIOS version"]["CheckStatus"] = "ERROR"
+        check_result["BIOS version"]["Message"] = str(error)
+        check_result["BIOS version"]["HowToFix"] = "The system does not contain information about BIOS. " \
+            "Ignore this error."
+    json_node.update(check_result)
 
 
 def _get_bios_release(json_node: Dict) -> None:
-    value = {"BIOS release": {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {"BIOS release": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Command": "cat /sys/class/dmi/id/bios_release"
     }}
     can_provide_info = os.path.exists("/sys/class/dmi/id/bios_release")
@@ -84,20 +84,21 @@ def _get_bios_release(json_node: Dict) -> None:
         try:
             with open("/sys/class/dmi/id/bios_release", "r") as bios_release_file:
                 bios_release = bios_release_file.readline().strip()
-                value["BIOS release"]["Value"] = bios_release
-                value["BIOS release"]["Verbosity"] = 1
+                check_result["BIOS release"]["CheckResult"] = bios_release
+                check_result["BIOS release"]["Verbosity"] = 1
         except Exception as error:
-            value["BIOS release"]["RetVal"] = "ERROR"
-            value["BIOS release"]["Message"] = str(error)
-            value["BIOS release"]["HowToFix"] = "The system does not contain information about BIOS. " \
-                                                "Ignore this error."
-        json_node.update(value)
+            check_result["BIOS release"]["CheckStatus"] = "ERROR"
+            check_result["BIOS release"]["Message"] = str(error)
+            check_result["BIOS release"]["HowToFix"] = ""\
+                "The system does not contain information about BIOS. " \
+                "Ignore this error."
+        json_node.update(check_result)
 
 
 def _get_bios_date(json_node: Dict) -> None:
-    value = {"BIOS date": {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {"BIOS date": {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Command": "cat /sys/class/dmi/id/bios_date"
     }}
     can_provide_info = os.path.exists("/sys/class/dmi/id/bios_date")
@@ -105,18 +106,18 @@ def _get_bios_date(json_node: Dict) -> None:
         try:
             with open("/sys/class/dmi/id/bios_date", "r") as bios_date_file:
                 bios_date = bios_date_file.readline().strip()
-                value["BIOS date"]["Value"] = bios_date
-                value["BIOS date"]["Verbosity"] = 2
+                check_result["BIOS date"]["CheckResult"] = bios_date
+                check_result["BIOS date"]["Verbosity"] = 2
         except Exception as error:
-            value["BIOS date"]["RetVal"] = "ERROR"
-            value["BIOS date"]["Message"] = str(error)
-            value["BIOS date"]["HowToFix"] = "The system does not contain information about BIOS. " \
-                                             "Ignore this error."
-        json_node.update(value)
+            check_result["BIOS date"]["CheckStatus"] = "ERROR"
+            check_result["BIOS date"]["Message"] = str(error)
+            check_result["BIOS date"]["HowToFix"] = "The system does not contain information about BIOS. " \
+                "Ignore this error."
+        json_node.update(check_result)
 
 
 def get_bios_information(json_node: Dict) -> None:
-    value = {"Value": "Undefined", "RetVal": "INFO"}
+    check_result = {"CheckResult": "Undefined", "CheckStatus": "INFO"}
     bios_info = {}
 
     _get_bios_vendor(bios_info)
@@ -124,51 +125,51 @@ def get_bios_information(json_node: Dict) -> None:
     _get_bios_release(bios_info)
     _get_bios_date(bios_info)
 
-    value["Value"] = bios_info
-    json_node.update({"BIOS information": value})
+    check_result["CheckResult"] = bios_info
+    json_node.update({"BIOS information": check_result})
 
 
 def get_uname(json_node: Dict) -> None:
     uname = platform.uname()
-    value = {
-        "Value": {
+    check_result = {
+        "CheckResult": {
             "System": {
-                "Value": uname.system,
-                "RetVal": "INFO"
+                "CheckResult": uname.system,
+                "CheckStatus": "INFO"
             },
             "Node": {
-                "Value": uname.node,
-                "RetVal": "INFO"
+                "CheckResult": uname.node,
+                "CheckStatus": "INFO"
             },
             "Release": {
-                "Value": uname.release,
-                "RetVal": "INFO"
+                "CheckResult": uname.release,
+                "CheckStatus": "INFO"
             },
             "Version": {
-                "Value": uname.version,
-                "RetVal": "INFO"
+                "CheckResult": uname.version,
+                "CheckStatus": "INFO"
             },
             "Machine": {
-                "Value": uname.machine,
-                "RetVal": "INFO"
+                "CheckResult": uname.machine,
+                "CheckStatus": "INFO"
             },
             "Processor": {
-                "Value": uname.processor,
-                "RetVal": "INFO"
+                "CheckResult": uname.processor,
+                "CheckStatus": "INFO"
             }
         },
-        "RetVal": "INFO",
+        "CheckStatus": "INFO",
         "Command": "uname -a"
     }
-    json_node.update({"Operating system information": value})
+    json_node.update({"Operating system information": check_result})
 
 
 def get_cpu_frequency(json_node: Dict) -> None:
     verbosity_level = 1
     MHz_pattern = re.compile(r"cpu MHz\s*\:\s((\d*[.])?\d+)")
-    value = {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Verbosity": verbosity_level,
         "Command": "cat /proc/cpuinfo"
     }
@@ -181,24 +182,24 @@ def get_cpu_frequency(json_node: Dict) -> None:
                 if result:
                     cpu_frequency.update(
                         {f"Core {core_number}": {
-                            "Value": f"{result.group(1)} MHz",
-                            "RetVal": "INFO",
+                            "CheckResult": f"{result.group(1)} MHz",
+                            "CheckStatus": "INFO",
                             "Verbosity": verbosity_level
                         }})
                     core_number += 1
-            value["Value"] = cpu_frequency
+            check_result["CheckResult"] = cpu_frequency
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "The system does not contain information about CPU frequency. " \
-                            "Ignore this error."
-    json_node.update({"CPU frequency": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "The system does not contain information about CPU frequency. " \
+            "Ignore this error."
+    json_node.update({"CPU frequency": check_result})
 
 
 def get_cpu_info(json_node: Dict) -> None:
-    value = {
-        "Value": "Undefined",
-        "RetVal": "INFO",
+    check_result = {
+        "CheckResult": "Undefined",
+        "CheckStatus": "INFO",
         "Command": "lscpu"
     }
     try:
@@ -214,32 +215,39 @@ def get_cpu_info(json_node: Dict) -> None:
             output.update({key: val})
 
         cpu_info = {}
-        cpu_info.update({"Model name": {"Value": output["Model name"], "RetVal": "INFO"}})
-        cpu_info.update({"Architecture": {"Value": output["Architecture"], "RetVal": "INFO"}})
-        cpu_info.update({"Vendor": {"Value": output["Vendor ID"], "RetVal": "INFO", "Verbosity": 1}})
-        cpu_info.update({"CPU count": {"Value": output["CPU(s)"], "RetVal": "INFO"}})
+        cpu_info.update({"Model name": {"CheckResult": output["Model name"], "CheckStatus": "INFO"}})
+        cpu_info.update({"Architecture": {"CheckResult": output["Architecture"], "CheckStatus": "INFO"}})
+        cpu_info.update({"Vendor": {"CheckResult": output["Vendor ID"], "CheckStatus": "INFO", "Verbosity": 1}})  # noqa: E501
+        cpu_info.update({"CPU count": {"CheckResult": output["CPU(s)"], "CheckStatus": "INFO"}})
         cpu_info.update(
-            {"Thread(s) per core": {"Value": output["Thread(s) per core"], "RetVal": "INFO", "Verbosity": 2}})
+            {"Thread(s) per core":
+             {"CheckResult": output["Thread(s) per core"],
+              "CheckStatus": "INFO",
+                 "Verbosity": 2}})
         cpu_info.update(
-            {"Core(s) per socket": {"Value": output["Core(s) per socket"], "RetVal": "INFO", "Verbosity": 2}})
-        cpu_info.update({"Socket(s)": {"Value": output["Socket(s)"], "RetVal": "INFO", "Verbosity": 2}})
+            {"Core(s) per socket":
+             {"CheckResult": output["Core(s) per socket"],
+              "CheckStatus": "INFO",
+                 "Verbosity": 2}})
+        cpu_info.update(
+            {"Socket(s)": {"CheckResult": output["Socket(s)"], "CheckStatus": "INFO", "Verbosity": 2}})
         get_cpu_frequency(cpu_info)
-        value["Value"] = cpu_info
+        check_result["CheckResult"] = cpu_info
     except Exception as error:
-        value["RetVal"] = "ERROR"
-        value["Message"] = str(error)
-        value["HowToFix"] = "The system does not contain information about CPU. " \
-                            "Ignore this error."
-    json_node.update({"CPU information": value})
+        check_result["CheckStatus"] = "ERROR"
+        check_result["Message"] = str(error)
+        check_result["HowToFix"] = "The system does not contain information about CPU. " \
+            "Ignore this error."
+    json_node.update({"CPU information": check_result})
 
 
 def run_base_check(data: dict) -> CheckSummary:
-    result_json = {"Value": {}}
+    result_json = {"CheckResult": {}}
 
-    get_hostname(result_json["Value"])
-    get_cpu_info(result_json["Value"])
-    get_bios_information(result_json["Value"])
-    get_uname(result_json["Value"])
+    get_hostname(result_json["CheckResult"])
+    get_cpu_info(result_json["CheckResult"])
+    get_bios_information(result_json["CheckResult"])
+    get_uname(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
@@ -249,19 +257,19 @@ def run_base_check(data: dict) -> CheckSummary:
 
 
 def get_api_version() -> str:
-    return "0.1"
+    return "0.2"
 
 
 def get_check_list() -> List[CheckMetadataPy]:
     someCheck = CheckMetadataPy(
         name="base_system_check",
         type="Data",
-        tags="sysinfo,compile,runtime,host,target",
+        groups="sysinfo,compile,runtime,host,target",
         descr="This check shows information about hostname, CPU, BIOS and operating system.",
         dataReq="{}",
         merit=0,
         timeout=5,
-        version=1,
+        version=2,
         run="run_base_check"
     )
     return [someCheck]

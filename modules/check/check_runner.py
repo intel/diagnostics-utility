@@ -36,16 +36,16 @@ def check_run(check, data) -> CheckSummary:
         result = parent_connection.recv()
         if isinstance(result, Exception):
             json_dict = {
-                "RetVal": "ERROR",
+                "CheckStatus": "ERROR",
                 "Verbosity": 0,
                 "Message": "",
-                "Value": {
+                "CheckResult": {
                     f"{check.get_metadata().name}": {
-                        "Value": "",
+                        "CheckResult": "",
                         "Verbosity": 0,
                         "Message": "The check crashed at runtime. No data was received. "
                                    "See call stack above.",
-                        "RetVal": "ERROR"
+                        "CheckStatus": "ERROR"
                     }
                 }
             }
@@ -55,15 +55,15 @@ def check_run(check, data) -> CheckSummary:
     else:
         process.terminate()
         json_dict = {
-            "RetVal": "ERROR",
+            "CheckStatus": "ERROR",
             "Verbosity": 0,
             "Message": "",
-            "Value": {
+            "CheckResult": {
                 f"{check.get_metadata().name}": {
-                    "Value": "Timeout was exceeded.",
+                    "CheckResult": "Timeout was exceeded.",
                     "Verbosity": 0,
                     "Message": "",
-                    "RetVal": "ERROR"
+                    "CheckStatus": "ERROR"
                 }
             }
         }
@@ -93,14 +93,14 @@ def _get_dependency_checks_map(checks: List[BaseCheck], dataReq: Dict) -> Dict[s
 
 
 def create_dependency_order(
-        loaded_checks: List[BaseCheck], filter: Set[str]) -> Tuple[List[str], List[BaseCheck]]:
+        loaded_checks: List[BaseCheck], selection: Set[str]) -> Tuple[List[str], List[BaseCheck]]:
     checks_to_print: List[str] = []
     ordered_checks_map: Dict[str, BaseCheck] = {}
     for check in loaded_checks:
         check_metadata = check.get_metadata()
-        if "all" not in filter and \
-           len((set(check_metadata.tags.split(",")) | {check_metadata.name}) & filter) == 0:
-            continue
+        if "all" not in selection and \
+           len((set(check_metadata.groups.split(",")) | {check_metadata.name}) & selection) == 0:
+            continue  # pragma: no cover
         checks_to_print.append(check_metadata.name)
         dependency_checks = _get_dependency_checks_map(loaded_checks, json.loads(check_metadata.dataReq))
         for name, dependency in dependency_checks.items():

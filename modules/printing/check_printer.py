@@ -46,7 +46,7 @@ class CheckSummaryPrinter:
 
     def _get_widths(self, summary: Dict, depth: int, widths: List[int]):
         for key, value in summary.items():
-            if key == 'Value' and type(value) is dict:
+            if key == 'CheckResult' and type(value) is dict:
                 shift = 2 if depth == 0 else depth * 2 + 2
                 widths.extend([len(nested_key) + shift for nested_key in [*value]])
                 for _, nested_value in value.items():
@@ -233,20 +233,20 @@ class CheckSummaryPrinter:
                 "\"HowToFix\" field."
 
             color = Colors.Default
-            if data['RetVal'] == "PASS":
+            if data['CheckStatus'] == "PASS":
                 color = Colors.Green
-            elif data['RetVal'] == "ERROR":
+            elif data['CheckStatus'] == "ERROR":
                 color = Colors.Red
                 print_solution_description = True
-            elif data['RetVal'] == "FAIL":
+            elif data['CheckStatus'] == "FAIL":
                 color = Colors.Red
                 print_solution_description = True
-            elif data['RetVal'] == "WARNING":
+            elif data['CheckStatus'] == "WARNING":
                 color = Colors.Yellow
-            elif data['RetVal'] == "INFO":
+            elif data['CheckStatus'] == "INFO":
                 color = Colors.Blue
 
-            if isinstance(data['Value'], dict):
+            if isinstance(data['CheckResult'], dict):
                 command_exist = True if 'Command' in data and data['Command'] != "" else False
                 message_exist = True if 'Message' in data and data['Message'] != "" else False
                 logs_exist = True if 'Logs' in data and data['Logs'] != "" else False
@@ -276,20 +276,20 @@ class CheckSummaryPrinter:
                             data['AutomationFix'], color, depth, out+[automation_fix_out])
 
                 if examine_summary is not None:
-                    if isinstance(examine_summary[key]['Value'], dict):
+                    if isinstance(examine_summary[key]['CheckResult'], dict):
                         self.print_summary_tree(
-                            data['Value'],
+                            data['CheckResult'],
                             depth=depth+1,
                             out=out+[current_out],
-                            examine_summary=examine_summary[key]['Value']
+                            examine_summary=examine_summary[key]['CheckResult']
                         )
                     else:
                         self.print_message(
-                            f"The value is not a dictionary. The value is '{examine_summary[key]['Value']}'.",
+                            f"The value is not a dictionary. The value is '{examine_summary[key]['CheckResult']}'.",  # noqa: E501
                             Colors.Red, depth, out=out+[False])
-                        self.print_summary_tree(data['Value'], depth=depth+1, out=out+[current_out])
+                        self.print_summary_tree(data['CheckResult'], depth=depth+1, out=out+[current_out])
                 else:
-                    self.print_summary_tree(data['Value'], depth=depth+1, out=out+[current_out])
+                    self.print_summary_tree(data['CheckResult'], depth=depth+1, out=out+[current_out])
             else:
                 command_exist = True if 'Command' in data and data['Command'] != "" else False
                 message_exist = True if 'Message' in data and data['Message'] != "" else False
@@ -305,7 +305,7 @@ class CheckSummaryPrinter:
                 how_to_fix_out = current_out if not automation_fix_exist else False
                 automation_fix_out = current_out
 
-                self.print_line(key, str(data['Value']), data['RetVal'], color, depth, out+[line_out])
+                self.print_line(key, str(data['CheckResult']), data['CheckStatus'], color, depth, out+[line_out])   # noqa: E501
                 if command_exist:
                     self.print_command(data['Command'], depth, out+[command_out])
                 if message_exist:
@@ -319,10 +319,10 @@ class CheckSummaryPrinter:
                         self.print_automation_fix(
                             data['AutomationFix'], color, depth, out+[automation_fix_out])
 
-                if examine_summary is not None and examine_summary[key]['Value'] != data['Value']:
+                if examine_summary is not None and examine_summary[key]['CheckResult'] != data['CheckResult']:  # noqa: E501
                     self.print_message(
                         f"The values of the current and compared runs are not equal. "
-                        f"The value is '{examine_summary[key]['Value']}'!!!!!!!!!!!!!!!!!!!!!!!",
+                        f"The value is '{examine_summary[key]['CheckResult']}'!!!!!!!!!!!!!!!!!!!!!!!",
                         Colors.Red, depth, out+[current_out])
 
 
@@ -338,8 +338,8 @@ def _verbosity_processing(summary: Dict, required_verbosity: int, parent_verbosi
             result_verbosity = parent_verbosity
             logging.warning(
                 "The verbosity level of the subtree is less than the verbosity level of the higher node.")
-        if isinstance(data['Value'], dict) and result_verbosity <= required_verbosity:
-            _verbosity_processing(data['Value'], required_verbosity, parent_verbosity=result_verbosity)
+        if isinstance(data['CheckResult'], dict) and result_verbosity <= required_verbosity:
+            _verbosity_processing(data['CheckResult'], required_verbosity, parent_verbosity=result_verbosity)
         if result_verbosity > required_verbosity:
             del_keys.append(key)
     for key in del_keys:
@@ -363,13 +363,13 @@ def print_full_summary(
 
         try:
             summary_result = json.loads(summary.result)
-            examine_summary = examine_data[metadata.name]['Value'] if examine_data is not None \
+            examine_summary = examine_data[metadata.name]['CheckResult'] if examine_data is not None \
                 else None
             if len(summary_result) == 0:
                 raise ValueError
-            _verbosity_processing(summary_result['Value'], required_verbosity)
+            _verbosity_processing(summary_result['CheckResult'], required_verbosity)
             check_printer = CheckSummaryPrinter(summary_result, output_file)
-            check_printer.print_summary_tree(summary_result['Value'], examine_summary=examine_summary)
+            check_printer.print_summary_tree(summary_result['CheckResult'], examine_summary=examine_summary)
 
         except (ValueError, KeyError, TypeError):  # includes simplejson.decoder.JSONDecodeError
             print_ex("Incorrect or empty JSON format.", output_file, color=Colors.Red)
@@ -379,10 +379,10 @@ def print_full_summary(
 def _get_status_message(summary: Dict, result_status: str) -> List[str]:
     result_massages = []
     for _, data in summary.items():
-        if data["RetVal"] == result_status and 'Message' in data and data['Message'] != "":
+        if data["CheckStatus"] == result_status and 'Message' in data and data['Message'] != "":
             result_massages.append(data['Message'])
-        if isinstance(data['Value'], dict):
-            result_massages.extend(_get_status_message(data['Value'], result_status))
+        if isinstance(data['CheckResult'], dict):
+            result_massages.extend(_get_status_message(data['CheckResult'], result_status))
     return result_massages
 
 
@@ -398,6 +398,7 @@ def print_short_summary(
         summary = check.get_summary()
 
         if summary is None:
+            checks_run -= 1
             continue
 
         result_status = ""
@@ -428,7 +429,7 @@ def print_short_summary(
 
         try:
             summary_result = json.loads(summary.result)
-            result_messages = _get_status_message(summary_result["Value"], result_status)
+            result_messages = _get_status_message(summary_result["CheckResult"], result_status)
             if len(result_messages) != 0:
                 for message in result_messages:
                     print_ex(message, output_file, color=result_color)

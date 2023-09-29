@@ -25,7 +25,7 @@ other than those that are expressly stated in the License.
 #include "RpmChecker.h"
 
 
-#define API_VERSION "0.1"
+#define API_VERSION "0.2"
 char api_version[MAX_STRING_LEN];
 
 using namespace std;
@@ -42,10 +42,10 @@ int test(string &message) {
 
 	string message1, message2, message3;
 	bool binary_installer_is_found = false, package_manager_installer_is_found = false, rpm_package_manager_installer_is_found = false;
-	int result = Retval_Success;
+	int result = CHECK_STATUS_SUCCESS;
 	if(!BInstallerChecker::Initialize(message1)){
 		JsonNode::AddJsonNode(apps, "oneAPI products", ERROR, message1, "", 0, "");
-		result = Retval_Error;
+		result = CHECK_STATUS_ERROR;
 	}
 	else {
 		message1.clear();
@@ -54,7 +54,7 @@ int test(string &message) {
 
 	if(!AptChecker::Initialize(message2)){
 		JsonNode::AddJsonNode(apps, "oneAPI products", ERROR, message2, "", 0, "");
-		result = Retval_Error;
+		result = CHECK_STATUS_ERROR;
 	}
 	else {
 		message2.clear();
@@ -64,7 +64,7 @@ int test(string &message) {
 
 	if(!RpmChecker::Initialize(message3)){
 		JsonNode::AddJsonNode(apps, "oneAPI products", ERROR, message3, "", 0, "");
-		result = Retval_Error;
+		result = CHECK_STATUS_ERROR;
 	}
 	else {
 		message3.clear();
@@ -104,13 +104,13 @@ int test(string &message) {
 	message = string(json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY));
 
 	if (message.find("WARNING") != std::string::npos) {
-		result = Retval_Success;
+		result = CHECK_STATUS_SUCCESS;
 	}
 	if (message.find("FAIL") != std::string::npos) {
-		result = Retval_Fail;
+		result = CHECK_STATUS_FAIL;
 	}
 	if (message.find("ERROR") != std::string::npos) {
-		result = Retval_Error;
+		result = CHECK_STATUS_ERROR;
 	}
 
 	return result;
@@ -121,9 +121,9 @@ int main() {
 
 	// Run tests
 	string message;
-	int retVal = test(message);
+	int check_status = test(message);
 	cout << message << endl;
-	return retVal;
+	return check_status;
 }
 
 //-------------------------------------------------------------------------
@@ -144,7 +144,7 @@ extern "C" struct CheckResult app_check(char *data)
 }
 
 
-// "{\"Value\":{\"GPU\":{}},\"Value\":{\"App\":{}}}" "{\"Value\":{\"GPU\":{}}}"
+// "{\"CheckResult\":{\"GPU\":{}},\"CheckResult\":{\"App\":{}}}" "{\"CheckResult\":{\"GPU\":{}}}"
 REGISTER_CHECKER(app_check_struct,
 				 "oneapi_app_check",
 				 "GetData",
@@ -153,7 +153,7 @@ REGISTER_CHECKER(app_check_struct,
 				 "{}",
 				 20,
 				 10,
-				 1,
+				 2,
 				 app_check)
 
 

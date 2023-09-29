@@ -30,28 +30,28 @@ class TestOneapiEnvCheckerApiTest(unittest.TestCase):
 
         mocked_get_oneapi_env_versions.side_effect = lambda node: node.update({
             "Check": {
-                "Value": "Value",
-                "RetVal": "INFO"
+                "CheckResult": "some data",
+                "CheckStatus": "INFO"
             }
         })
 
-        value = oneapi_env_checker.run_oneapi_env_check({})
+        actual = oneapi_env_checker.run_oneapi_env_check({})
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_api_version_returns_str(self):
         expected = str
 
-        value = oneapi_env_checker.get_api_version()
+        actual = oneapi_env_checker.get_api_version()
 
-        self.assertIsInstance(value, expected)
+        self.assertIsInstance(actual, expected)
 
     def test_get_check_list_returns_list_metadata(self):
         expected = CheckMetadataPy
 
-        value = oneapi_env_checker.get_check_list()
+        check_list = oneapi_env_checker.get_check_list()
 
-        for metadata in value:
+        for metadata in check_list:
             self.assertIsInstance(metadata, expected)
 
 
@@ -61,8 +61,8 @@ class TestGetOneapiEnvVersions(unittest.TestCase):
     def test_get_oneapi_env_versions_empty_map_negative(self, mocked_get_json_content_from_file):
         expected_value = {
             "oneAPI products installed in the environment": {
-                "Value": {},
-                "RetVal": "ERROR",
+                "CheckResult": {},
+                "CheckStatus": "ERROR",
                 "Message": "oneAPI product names map is empty.",
                 "HowToFix": "This error is unexpected. Please report the issue to "
                             "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
@@ -79,8 +79,8 @@ class TestGetOneapiEnvVersions(unittest.TestCase):
     def test_get_oneapi_env_versions_cannot_get_map_negative(self, mocked_get_json_content):
         expected_value = {
             "oneAPI products installed in the environment": {
-                "Value": {},
-                "RetVal": "ERROR",
+                "CheckResult": {},
+                "CheckStatus": "ERROR",
                 "Message": "Error",
                 "HowToFix": "This error is unexpected. Please report the issue to "
                             "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
@@ -101,8 +101,8 @@ class TestGetOneapiEnvVersions(unittest.TestCase):
             mocked_get_json_content):
         expected_value = {
             "oneAPI products installed in the environment": {
-                "Value": {},
-                "RetVal": "WARNING",
+                "CheckResult": {},
+                "CheckStatus": "WARNING",
                 "Message": "There are no oneAPI products found in the current environment."
             }
         }
@@ -120,18 +120,18 @@ class TestGetOneapiEnvVersions(unittest.TestCase):
             mocked_get_json_content):
         expected_value = {
             "oneAPI products installed in the environment": {
-                "Value": {
+                "CheckResult": {
                     "Long compiler name": {
-                        "Value": {
+                        "CheckResult": {
                             "Version": {
-                                "Value": "2021.4.0",
-                                "RetVal": "INFO"
+                                "CheckResult": "2021.4.0",
+                                "CheckStatus": "INFO"
                             }
                         },
-                        "RetVal": "INFO"
+                        "CheckStatus": "INFO"
                     }
                 },
-                "RetVal": "INFO"
+                "CheckStatus": "INFO"
             }
         }
 
@@ -148,19 +148,19 @@ class TestGetOneapiEnvVersions(unittest.TestCase):
             mocked_get_json_content):
         expected_value = {
             "oneAPI products installed in the environment": {
-                "Value": {
+                "CheckResult": {
                     "Long compiler name": {
-                        "Value": {
+                        "CheckResult": {
                             "Version": {
-                                "Value": "2021.3.0,2021.4.0",
-                                "RetVal": "WARNING",
+                                "CheckResult": "2021.3.0,2021.4.0",
+                                "CheckStatus": "WARNING",
                                 "Message": "Several versions of Long compiler name was found in the current environment."  # noqa: E501
                             }
                         },
-                        "RetVal": "INFO"
+                        "CheckStatus": "INFO"
                     }
                 },
-                "RetVal": "INFO"
+                "CheckStatus": "INFO"
             }
         }
 
@@ -177,8 +177,8 @@ class TestGetOneapiEnvVersions(unittest.TestCase):
             mocked_get_json_content_from_file):
         expected_value = {
             "oneAPI products installed in the environment": {
-                "Value": {},
-                "RetVal": "WARNING",
+                "CheckResult": {},
+                "CheckStatus": "WARNING",
                 "Message": "There are no oneAPI products found in the current environment."
             }
         }
