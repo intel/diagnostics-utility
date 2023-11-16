@@ -1,0 +1,51 @@
+/*******************************************************************************
+Copyright Intel Corporation.
+This software and the related documents are Intel copyrighted materials, and
+your use of them is governed by the express license under which they were
+provided to you (License). Unless the License provides otherwise, you may not
+use, modify, copy, publish, distribute, disclose or transmit this software or
+the related documents without Intel's prior written permission. This software
+and the related documents are provided as is, with no express or implied
+warranties, other than those that are expressly stated in the License.
+
+*******************************************************************************/
+
+#ifndef CLDRIVERCHECKER_H_
+#define CLDRIVERCHECKER_H_
+
+#define CL_TARGET_OPENCL_VERSION 210
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
+#include <CL/cl.h>
+#endif
+
+#include "CheckerHelper.h"
+#include "JsonNode.h"
+
+using namespace std;
+
+class CL_DriverChecker {
+ public:
+  CL_DriverChecker();
+  virtual ~CL_DriverChecker();
+
+  virtual bool Load(string &message);
+  virtual void GetDriverInfo(string &message);
+  virtual void GetDeviceInfo(cl_device_id deviceId, string &message);
+
+  virtual string GetErrorMessage(cl_int error);
+  virtual string GetDeviceTypeString(cl_device_type type);
+  // Represent array as a comma separated string
+  virtual string GetArrayString(size_t *array, size_t array_size);
+  virtual string GetCacheTypeString(cl_device_mem_cache_type type);
+  virtual string GetLocalMemTypeString(cl_device_local_mem_type type);
+};
+
+#endif /* CLDRIVERCHECKER_H_ */

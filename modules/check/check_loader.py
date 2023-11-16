@@ -22,7 +22,7 @@ from modules.check.check_exe import getChecksExe
 from modules.check.check_py import getChecksPy
 
 from modules.files_helper import read_config_data, get_checkers_to_load_from_config_data, \
-                                    get_files_list_from_folder
+    get_files_list_from_folder
 from modules.log import trace  # type: ignore
 
 
@@ -33,7 +33,12 @@ DEFAULT_CHECKERS_PATHS = [
     _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py",
     _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_c" / platform.system().lower(),
     _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_exe" / platform.system().lower(),
-    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py" / platform.system().lower()
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py" / platform.system().lower(),
+    _FULL_PATH_TO_CURRENT_FILE / ".." / ".." / "checkers_py" / "any_os",
+    # new layout paths
+    _FULL_PATH_TO_CURRENT_FILE / ".." / "opt" / "diagnostics" / "checkers_c",
+    _FULL_PATH_TO_CURRENT_FILE / ".." / "opt" / "diagnostics" / "checkers_exe",
+    _FULL_PATH_TO_CURRENT_FILE / ".." / "opt" / "diagnostics" / "checkers_py"
 ]
 
 

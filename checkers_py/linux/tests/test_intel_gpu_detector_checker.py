@@ -12,6 +12,7 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 
@@ -22,6 +23,8 @@ from checkers_py.linux import intel_gpu_detector_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestIntelGpuDetectorCheckerApiTest(unittest.TestCase):
 
     @patch("checkers_py.linux.intel_gpu_detector_checker.get_gpu_info")
@@ -55,6 +58,8 @@ class TestIntelGpuDetectorCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestFunctionCmd(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -73,6 +78,8 @@ class TestFunctionCmd(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetI915DriverInfo(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -207,6 +214,8 @@ class TestGetI915DriverInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetTopologyPath(unittest.TestCase):
 
     @patch("os.path.relpath", return_value="0000:03:00.0")
@@ -225,6 +234,8 @@ class TestGetTopologyPath(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetTileCount(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -353,6 +364,8 @@ class TestGetTileCount(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCountInitializedGPU(unittest.TestCase):
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd", return_value=(0, "file1\nfile2\n"))
@@ -376,6 +389,8 @@ class TestCountInitializedGPU(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCheckGPUInfoPath(unittest.TestCase):
 
     @patch("os.access", return_value=True)
@@ -397,6 +412,8 @@ class TestCheckGPUInfoPath(unittest.TestCase):
             intel_gpu_detector_checker._check_gpu_info_path()
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetInitializedGPU(unittest.TestCase):
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._get_tile_count")
@@ -503,6 +520,8 @@ class TestGetInitializedGPU(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCountUninitializedGPU(unittest.TestCase):
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd")
@@ -554,6 +573,8 @@ class TestCountUninitializedGPU(unittest.TestCase):
         self.assertEqual(expected_msg, str(msg.exception))
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetUninitializedGPU(unittest.TestCase):
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._function_cmd")
@@ -610,6 +631,8 @@ class TestGetUninitializedGPU(unittest.TestCase):
             intel_gpu_detector_checker._get_uninitializedGPU([], {})
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetGpuInfo(unittest.TestCase):
 
     @patch("checkers_py.linux.intel_gpu_detector_checker._get_i915_driver_loaded_info")

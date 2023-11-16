@@ -66,6 +66,15 @@ To update the database, run the  ``--update`` argument:
 
 
 
+If your machine does not have access to the internet for database updates,
+or if for some reason the database file has been deleted from the package
+(eg manual deletion, etc) it is possible to manually download the database
+file.
+
+In this case, download the database and the ``--metadata.json`` file from
+the `public github repository <https://github.com/intel/diagnostics-utility/tree/master/databases>`_
+and put them in the **{onediag_root}/databases** folder.
+
 -----------------------
 Resolving Failed Checks
 -----------------------
@@ -122,11 +131,11 @@ check:
 | gpu_backend_check           | OpenCL or LevelZero Driver is not loaded. Load the driver.                                                                                         |
 |                             | Current user may not have permissions to access driver folder. Try running as  ``sudo``                                                            |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| oneapi_app_check            | Information only. If a oneapi is found, the check will INFO. If a oneAPI component is not found, the check will ERROR.                             |
+| oneapi_toolkit_check        | Information only. If a oneAPI toolkit is found, the check will INFO. If a oneAPI toolkit is not found, the check will FAIL.                        |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | driver_compatibility_check  | Check drivers to ensure they are compatible with installed oneAPI components.                                                                      |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| gcc_compiler_check          | GCC compiler is not installed.                                                                                                                     |
+| compiler_check              | Compiler is not installed.                                                                                                                         |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | intel_gpu_detector_check    | Information only. If a gpu is found, the check will PASS. If a gpu is not found, the check will FAIL.                                              |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+

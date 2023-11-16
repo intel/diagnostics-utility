@@ -140,7 +140,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
     check_result = {
         "CheckResult": "Undefined",
         "CheckStatus": "WARNING",
-        "Message": "For this GPU, good numbers are not known."
+        "Message": "For this GPU, values are not known."
     }
     device_metrics = {}
 
@@ -150,7 +150,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
     if device.max_freq == "unknown":
         frequency["GPU Frequency, MHz (Max/Target)"].update({"CheckStatus": "ERROR"})
         frequency["GPU Frequency, MHz (Max/Target)"].update(
-            {"Message": "The Level Zero driver cannot find out information about frequency.",
+            {"Message": "Intel® oneAPI Level Zero driver cannot find out information about frequency.",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501)
     device_metrics.update(frequency)
     mem_bandwidth = {
@@ -160,7 +160,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
     if device.mem_bandwidth == "unknown" and device.gpu_type == "Discrete":
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update(
-            {"Message": "The Level Zero driver cannot find out information about memory bandwidth.",
+            {"Message": "Intel® oneAPI Level Zero driver cannot find out information about memory bandwidth.",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
         device_metrics.update(mem_bandwidth)
     elif device.mem_bandwidth != "unknown" and device.gpu_type == "Discrete":
@@ -175,7 +175,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
     if device.pcie_bandwidth == "unknown" and device.gpu_type == "Discrete":
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update(
-            {"Message": "The Level Zero driver cannot find out information about PCIe bandwidth.",
+            {"Message": "Intel® oneAPI Level Zero driver cannot find out information about PCIe bandwidth.",
              "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
         device_metrics.update(pcie_bandwidth)
     elif device.pcie_bandwidth != "unknown" and device.gpu_type == "Discrete":
@@ -196,7 +196,7 @@ def compare_metrics_for_known_device(json_node: Dict, device: Device) -> None:
     if device.max_freq == "unknown":
         frequency["GPU Frequency, MHz (Max/Target)"].update({"CheckStatus": "ERROR"})  # noqa
         frequency["GPU Frequency, MHz (Max/Target)"].update(
-            {"Message": "The Level Zero driver cannot find out information about frequency.",  # noqa
+            {"Message": "Intel® oneAPI Level Zero driver cannot find out information about frequency.",  # noqa
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
     elif float(device.max_freq) < float(known_devices[device.id]['freq']):
         frequency["GPU Frequency, MHz (Max/Target)"].update({"CheckStatus": "FAIL"})
@@ -211,7 +211,7 @@ def compare_metrics_for_known_device(json_node: Dict, device: Device) -> None:
     if device.mem_bandwidth == "unknown":
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update(
-            {"Message": "The Level Zero driver cannot find out information about memory bandwidth.",
+            {"Message": "Intel® oneAPI Level Zero driver cannot find out information about memory bandwidth.",
             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
     elif float(device.mem_bandwidth) < float(known_devices[device.id]['mem_bw']):
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "FAIL"})
@@ -226,7 +226,7 @@ def compare_metrics_for_known_device(json_node: Dict, device: Device) -> None:
     if device.pcie_bandwidth == "unknown":
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update(
-            {"Message": "The Level Zero driver cannot find out information about PCIe bandwidth.",
+            {"Message": "Intel® oneAPI Level Zero driver cannot find out information about PCIe bandwidth.",
              "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa
     elif float(device.pcie_bandwidth) < float(known_devices[device.id]['pcie_bw']):
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "FAIL"})
@@ -262,7 +262,7 @@ def run_gpu_metrics_check(data: Dict) -> CheckSummary:
                             "information as a result.")
         devices = parse_devices(data)
         if len(devices) == 0:
-            raise Exception("Level Zero driver did not provide information about GPUs.")
+            raise Exception("Intel® oneAPI Level Zero driver did not provide information about GPUs.")
         for device in devices:
             process_device(result_json["CheckResult"], device)
 
@@ -298,7 +298,7 @@ def get_check_list() -> List[CheckMetadataPy]:
         name="gpu_metrics_check",
         type="Data",
         groups="gpu,runtime,target",
-        descr="This check verifies that GPU metrics are good.",
+        descr="This check verifies that GPU metrics' results are satisfactory.",
         dataReq="{\"gpu_backend_check\": 2, \"intel_gpu_detector_check\": 2}",
         merit=40,
         timeout=5,

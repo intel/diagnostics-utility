@@ -13,6 +13,7 @@
 # NOTE: workaround to import modules
 import json
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 
@@ -23,6 +24,8 @@ from checkers_py.linux import gpu_metrics_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCheckGPUInfoPath(unittest.TestCase):
 
     @patch("os.access", return_value=False)
@@ -34,6 +37,8 @@ class TestCheckGPUInfoPath(unittest.TestCase):
             gpu_metrics_checker.have_administrative_priviliges()
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGpuMetricsCheckerApiTest(unittest.TestCase):
 
     @patch("checkers_py.linux.gpu_metrics_checker.have_administrative_priviliges")
@@ -63,7 +68,7 @@ class TestGpuMetricsCheckerApiTest(unittest.TestCase):
                                    mocked_have_administrative_priviliges):
         expected_type = CheckSummary
         expected_error_code = 3
-        expected_message = "Level Zero driver did not provide information about GPUs."
+        expected_message = "Intel® oneAPI Level Zero driver did not provide information about GPUs."
 
         check_summary = gpu_metrics_checker.run_gpu_metrics_check({})
 
@@ -104,6 +109,8 @@ class TestGpuMetricsCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestProcessDevice(unittest.TestCase):
 
     @patch("checkers_py.linux.gpu_metrics_checker.compare_metrics_for_known_device")
@@ -129,6 +136,8 @@ class TestProcessDevice(unittest.TestCase):
         mocked_unknown_device.assert_called_once()
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestDevice(unittest.TestCase):
 
     def test_device_init_does_not_raise_error(self):
@@ -145,6 +154,8 @@ class TestDevice(unittest.TestCase):
         )
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestParseDevices(unittest.TestCase):
 
     def test_parse_devices_positive(self):
@@ -373,6 +384,8 @@ class TestParseDevices(unittest.TestCase):
         self.assertEqual(str(raised.exception), device_message)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestShowMetricsForUnknownDevice(unittest.TestCase):
 
     def test_show_metrics_for_unknown_device_unknown_metrics(self):
@@ -382,24 +395,24 @@ class TestShowMetricsForUnknownDevice(unittest.TestCase):
                     "GPU Frequency, MHz (Max/Target)": {
                         "CheckResult": "unknown/unknown",
                         "CheckStatus": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about frequency.",
+                        "Message": "Intel® oneAPI Level Zero driver cannot find out information about frequency.",  # noqa E501
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/unknown",
                         "CheckStatus": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about memory bandwidth.",  # noqa E501
+                        "Message": "Intel® oneAPI Level Zero driver cannot find out information about memory bandwidth.",  # noqa E501
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/unknown",
                         "CheckStatus": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about PCIe bandwidth.",
+                        "Message": "Intel® oneAPI Level Zero driver cannot find out information about PCIe bandwidth.",  # noqa E501
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                 },
                 "CheckStatus": "WARNING",
-                "Message": "For this GPU, good numbers are not known."
+                "Message": "For this GPU, values are not known."
             }
         }
 
@@ -438,7 +451,7 @@ class TestShowMetricsForUnknownDevice(unittest.TestCase):
                     },
                 },
                 "CheckStatus": "WARNING",
-                "Message": "For this GPU, good numbers are not known."
+                "Message": "For this GPU, values are not known."
             }
         }
 
@@ -460,6 +473,8 @@ class TestShowMetricsForUnknownDevice(unittest.TestCase):
         self.assertEqual(actual_metrics, expected_metrics)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCompareMetricsForKnownDevice(unittest.TestCase):
 
     def test_compare_metrics_for_known_device_unknown_metrics(self):
@@ -469,19 +484,19 @@ class TestCompareMetricsForKnownDevice(unittest.TestCase):
                     "GPU Frequency, MHz (Max/Target)": {
                         "CheckResult": "unknown/1200",
                         "CheckStatus": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about frequency.",  # noqa E501
+                        "Message": "Intel® oneAPI Level Zero driver cannot find out information about frequency.",  # noqa E501
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/30",
                         "CheckStatus": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about memory bandwidth.",  # noqa E501
+                        "Message": "Intel® oneAPI Level Zero driver cannot find out information about memory bandwidth.",  # noqa E501
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/10",
                         "CheckStatus": "ERROR",
-                        "Message": "The Level Zero driver cannot find out information about PCIe bandwidth.",  # noqa E501
+                        "Message": "Intel® oneAPI Level Zero driver cannot find out information about PCIe bandwidth.",  # noqa E501
                         "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                 },
@@ -592,6 +607,8 @@ class TestCompareMetricsForKnownDevice(unittest.TestCase):
         self.assertEqual(expected_metrics, actual_metrics)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCheckIfTimeoutInGpuBackendCheck(unittest.TestCase):
 
     def test_timeout_in_gpu_backend_check_occured_positive(self):

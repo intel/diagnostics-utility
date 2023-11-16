@@ -136,7 +136,7 @@ class TestGpuHelper(unittest.TestCase):
                                         "CheckStatus": "PASS"
                                     },
                                     "Driver information": {
-                                       "CheckStatus": "INFO"
+                                        "CheckStatus": "INFO"
                                     }
                                 }
                             }
@@ -164,7 +164,7 @@ class TestGpuHelper(unittest.TestCase):
                                         "CheckStatus": "ERROR"
                                     },
                                     "Driver information": {
-                                       "CheckStatus": "ERROR"
+                                        "CheckStatus": "ERROR"
                                     }
                                 }
                             }

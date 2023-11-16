@@ -12,6 +12,7 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 
 from modules.check.check import CheckSummary
@@ -23,11 +24,12 @@ import unittest  # noqa: E402
 from unittest.mock import MagicMock, patch, call  # noqa: E402
 
 from modules.check.check_runner import run_checks, check_run, _get_dependency_checks_map,\
-    create_dependency_order  # noqa: E402
+    create_dependency_order, _check_run  # noqa: E402
 
 
+@unittest.skipUnless(not platform.system(
+        ) == "Windows", "does not work on Windows")
 class TestCheckRun(unittest.TestCase):
-
     def test_check_run_positive(self):
         mocked_check = MagicMock()
         mocked_check.get_metadata.return_value = MagicMock()
@@ -296,6 +298,17 @@ class TestRunChecks(unittest.TestCase):
             call(mocked_check_1, {})
         ]
         mocked_check_run.assert_has_calls(expected_calls, any_order=True)
+
+    def test__check_run(self):
+        mocked_connection = MagicMock()
+        mocked_check = MagicMock()
+        mocked_connection.send = MagicMock()
+        mocked_check.run = MagicMock(return_value='result')
+
+        _check_run(mocked_connection, mocked_check, {})
+
+        mocked_check.run.assert_called_with({})
+        mocked_connection.send.assert_called_with('result')
 
 
 if __name__ == '__main__':

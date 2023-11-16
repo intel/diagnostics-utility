@@ -264,13 +264,13 @@ def get_cpu_info(json_node: Dict) -> None:
 
 
 def run_base_check(data: dict) -> CheckSummary:
-    result_json = {"CheckResult": {}}
+    result_json = {"CheckResult": {},
+                   "CheckStatus": "INFO"}
 
     get_hostname(result_json["CheckResult"])
     get_cpu_info(result_json["CheckResult"])
     get_bios_information(result_json["CheckResult"])
     get_os_information(result_json["CheckResult"])
-
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
     )
@@ -287,7 +287,7 @@ def get_check_list() -> List[CheckMetadataPy]:
         name="base_system_check",
         type="Data",
         groups="default,sysinfo,compile,runtime,host,target",
-        descr="This check shows information about hostname, CPU, BIOS and the operating system.",
+        descr="This check shows information about hostname, CPU, BIOS and operating system.",
         dataReq="{}",
         merit=0,
         timeout=5,

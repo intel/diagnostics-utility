@@ -12,16 +12,21 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 
 import unittest  # noqa: E402
 from unittest.mock import MagicMock, patch  # noqa: E402
+try:
+    from checkers_py.linux import user_group_checker  # noqa: E402
+    from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
+except ImportError:
+    raise unittest.SkipTest('run on linux only')
 
-from checkers_py.linux import user_group_checker  # noqa: E402
-from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
-
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestUserGroupCheckerApiTest(unittest.TestCase):
 
     @patch("os.getuid", return_value=0)
@@ -83,6 +88,8 @@ class TestUserGroupCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCheckUserInRequiredGroups(unittest.TestCase):
 
     def test__get_required_groups_positive(self):

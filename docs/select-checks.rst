@@ -36,7 +36,7 @@ The command below will run all checks and output the minimum details.
 
   ==========================================================================================================
 
-  Check name: oneapi_app_check
+  Check name: oneapi_toolkit_check
   Description: This is a module for getting oneAPI product information.
   Result status: PASS
   ==========================================================================================================
@@ -68,8 +68,8 @@ For more information about Verbose options, see :ref:`verbosity`.
 ::
 
   ======================================================================================================================================================================================================
-  Check name: oneapi_app_check
-  Description: This check shows version information of installed oneAPI   products.
+  Check name: oneapi_toolkit_check
+  Description: This check shows information about installed oneAPI toolkits.
   ======================================================================================================================================================================================================
 
   |    APP
@@ -169,7 +169,7 @@ To run a specific check, use the check name from the :ref:`check-table` table. F
 
 ::
 
-  python3 diagnostics.py --select gcc_compiler_check
+  python3 diagnostics.py --select compiler_check
 
 
 **Example output**
@@ -179,15 +179,15 @@ To run a specific check, use the check name from the :ref:`check-table` table. F
   Checks results:
 
   ===========================================================================
-  Check name: gcc_compiler_check
-  Description: This check shows information about the GCC compiler..
+  Check name: compiler_check
+  Description: This check shows information about the compiler..
   Result status: PASS
   ===========================================================================
 
   1 CHECK, 1 PASS, 0 FAIL, 0 WARNINGS, 0 ERRORS
 
-  Console output file: /home/test/intel/diagnostics/logs/diagnostics_select_gcc_compiler_check_hostname_20211123_130559427725.txt
-  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_gcc_compiler_check_hostname_20211123_130559427767.json
+  Console output file: /home/test/intel/diagnostics/logs/diagnostics_select_compiler_check_hostname_20211123_130559427725.txt
+  JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_compiler_check_hostname_20211123_130559427767.json
 
   The report was generated for the machine: hostname
   by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
@@ -195,7 +195,7 @@ To run a specific check, use the check name from the :ref:`check-table` table. F
 To view more information about the check, use the verbosity argument (-v): ::
 
 
-  python3 diagnostics.py --select gcc_compiler_check -v
+  python3 diagnostics.py --select compiler_check -v
 
 There are six levels of verbosity. To learn more, see :ref:`verbosity`.
 

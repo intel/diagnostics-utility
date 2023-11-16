@@ -12,11 +12,13 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 
 import tempfile  # noqa: E402
 import unittest  # noqa: E402
+from unittest.mock import patch  # noqa: E402
 
 import modules.log as log  # noqa: E402
 
@@ -52,11 +54,24 @@ class TestConfigureLogger(unittest.TestCase):
         log.configure_logger(0)
         log.configure_logger(0)
 
+    @unittest.skipIf(platform.system(
+    ) == "Windows", "does not work on Windows")
     def test_configure_logger_second_time_when_file_handler_exists_no_raise_error(self):
         with tempfile.NamedTemporaryFile() as temp:
             log.configure_logger(0)
             log.configure_file_logging(0, temp.name)
             log.configure_logger(0)
+
+    @unittest.skipIf(platform.system(
+    ) == "Linux", "Exception on Windows")
+    def test_configure_file_logging(self):
+        self.assertRaises(Exception, log.configure_file_logging, 0, '')
+
+    @unittest.skipIf(platform.system(
+    ) == "Linux", "Exception on Windows")
+    @patch("logging.FileHandler", return_value=["data"])
+    def test_configure_file_logging_err(self, mocked_FileHandler):
+        self.assertRaises(Exception, log.configure_file_logging, 0, '')
 
 
 if __name__ == '__main__':

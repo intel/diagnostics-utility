@@ -12,19 +12,25 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 
+
 import unittest  # noqa: E402
+unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 from unittest.mock import MagicMock, patch  # noqa: E402
 
 from checkers_py.linux import oneapi_gpu_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestOneapiGpuCheckerApiTest(unittest.TestCase):
 
-    @patch("checkers_py.linux.oneapi_gpu_checker.get_dpcpp_offload_info")
+    @patch("checkers_py.linux.oneapi_gpu_checker.get_icpx_offload_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_openmp_offload_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_gpu_errors_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_dmesg_i915_init_errors_info")
@@ -45,7 +51,7 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
             mocked_get_dmesg_i915_init_errors_info,
             mocked_get_gpu_errors_info,
             mocked_get_openmp_offload_info,
-            mocked_get_dpcpp_offload_info,):
+            mocked_get_icpx_offload_info,):
         expected = CheckSummary
 
         mocked_intel_gpus_not_found_handler.side_effect = lambda node: node.update({
@@ -96,7 +102,7 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
                 "CheckStatus": "INFO"
             }
         })
-        mocked_get_dpcpp_offload_info.side_effect = lambda node: node.update({
+        mocked_get_icpx_offload_info.side_effect = lambda node: node.update({
             "Check 8": {
                 "CheckResult": "some data",
                 "CheckStatus": "INFO"
@@ -108,7 +114,7 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
         mocked_are_intel_gpus_found.assert_called_once()
         self.assertIsInstance(actual, expected)
 
-    @patch("checkers_py.linux.oneapi_gpu_checker.get_dpcpp_offload_info")
+    @patch("checkers_py.linux.oneapi_gpu_checker.get_icpx_offload_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_openmp_offload_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_gpu_errors_info")
     @patch("checkers_py.linux.oneapi_gpu_checker.get_dmesg_i915_init_errors_info")
@@ -127,7 +133,7 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
             mocked_get_dmesg_i915_init_errors_info,
             mocked_get_gpu_errors_info,
             mocked_get_openmp_offload_info,
-            mocked_get_dpcpp_offload_info,):
+            mocked_get_icpx_offload_info,):
         expected = CheckSummary
 
         mocked_get_i915_driver_loaded_info.side_effect = lambda node: node.update({
@@ -172,7 +178,7 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
                 "CheckStatus": "INFO"
             }
         })
-        mocked_get_dpcpp_offload_info.side_effect = lambda node: node.update({
+        mocked_get_icpx_offload_info.side_effect = lambda node: node.update({
             "Check 8": {
                 "CheckResult": "some data",
                 "CheckStatus": "INFO"
@@ -200,6 +206,8 @@ class TestOneapiGpuCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetI915DriverInfo(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -334,6 +342,8 @@ class TestGetI915DriverInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetIntelDeviceAvailableInfo(unittest.TestCase):
 
     @patch("checkers_py.linux.oneapi_gpu_checker.get_render_devices", return_value=["/dev/dri/renderD128"])
@@ -367,6 +377,8 @@ class TestGetIntelDeviceAvailableInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetPermissionsToRenderInfo(unittest.TestCase):
 
     @patch("os.access", return_value=True)
@@ -404,6 +416,8 @@ class TestGetPermissionsToRenderInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetPermissionsToCardInfo(unittest.TestCase):
 
     @patch("os.access", return_value=True)
@@ -440,6 +454,8 @@ class TestGetPermissionsToCardInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -550,6 +566,8 @@ class TestGetDmesgI915InitErrorsInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetGpuErrorsInfo(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -704,6 +722,8 @@ class TestGetGpuErrorsInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_MATMUL_FILE", "matmul")
 @patch("checkers_py.linux.oneapi_gpu_checker.PATH_TO_SOURCE_OFFLOAD", "../oneapi_check_offloads")
 class TestCompileTestMatmul(unittest.TestCase):
@@ -734,14 +754,14 @@ class TestCompileTestMatmul(unittest.TestCase):
     def test__compile_test_matmul_icpx_return_not_zero(self, mocked_open):
         expected = {
             "Compile test matmul": {
-                    "CheckResult": "",
-                    "CheckStatus": "FAIL",
-                    "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
+                "CheckResult": "",
+                "CheckStatus": "FAIL",
+                "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
-                    "Message": "Non zero return code from command: "
+                "Message": "Non zero return code from command: "
                                "'icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul'",
-                    "HowToFix": "Check compiled source file for syntax errors."
+                "HowToFix": "Check compiled source file for syntax errors."
             }
         }
         expected_error_code = 1
@@ -765,11 +785,13 @@ class TestCompileTestMatmul(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
-                "Message": "Matmul compilation failed - icpx not found.",
-                "HowToFix": "Try to: " \
-                           "1) install Intel® C++ Compiler based on " \
-                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
+                "Message": "Matmul compilation failed - icpx compiler is not found.",
+                "HowToFix": "Try to: "
+                           "1) install Intel® C++ Compiler based on "
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " # noqa E501
+                           "2) Initialize oneAPI environment:"
+                           " source <ONEAPI_INSTALL_DIR>/setvars.sh on Linux. "
+                           "Default install location is /opt/intel/oneapi"   # noqa E501
                 }
         }
         expected_error_code = 1
@@ -780,6 +802,8 @@ class TestCompileTestMatmul(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_MATMUL_FILE", "matmul")
 class TestRunTestMatmul(unittest.TestCase):
 
@@ -950,6 +974,8 @@ class TestRunTestMatmul(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_BINOPTION_FILE", "binoption")
 @patch("checkers_py.linux.oneapi_gpu_checker.PATH_TO_SOURCE_OFFLOAD", "../oneapi_check_offloads")
 class TestCompileTestBinoption(unittest.TestCase):
@@ -1014,11 +1040,13 @@ class TestCompileTestBinoption(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                            "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
-                "Message": "Binoption compilation failed - icpx not found.",
-                "HowToFix": "Try to: " \
-                           "1) install Intel® C++ Compiler based on " \
-                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
+                "Message": "Binoption compilation failed - icpx compiler is not found.",
+                "HowToFix": "Try to: "
+                           "1) install Intel® C++ Compiler based on "
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " # noqa E501
+                           "2) Initialize oneAPI environment:"
+                           " source <ONEAPI_INSTALL_DIR>/setvars.sh on Linux. "
+                           "Default install location is /opt/intel/oneapi"   # noqa E501
                 }
         }
         expected_error_code = 1
@@ -1030,6 +1058,8 @@ class TestCompileTestBinoption(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_BINOPTION_FILE", "binoption")
 class TestRunTestBinoption(unittest.TestCase):
 
@@ -1206,6 +1236,8 @@ class TestRunTestBinoption(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetOpenmpOffloadInfo(unittest.TestCase):
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_test_binoption")
@@ -1309,7 +1341,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                 }
-                })
+            })
             return status
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
@@ -1381,7 +1413,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "Message": "Non zero return code from command: "
                                "'icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul'"
-                    }
+                }
             })
             return 1
 
@@ -1431,7 +1463,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                 }
-                })
+            })
             return status
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
@@ -1456,7 +1488,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                         "CheckStatus": "ERROR",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
-                        "Message": "icpx not found"
+                        "Message": "icpx compiler is not found"
                     },
                     "Test simple matrix multiplication with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
@@ -1500,8 +1532,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "CheckStatus": "ERROR",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/matmul_offload.cpp -o matmul",
-                    "Message": "icpx not found"
-                    }
+                    "Message": "icpx compiler is not found"
+                }
             })
             return 1
 
@@ -1551,7 +1583,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "CheckStatus": "PASS",
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption"
                 }
-                })
+            })
             return status
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
@@ -1673,7 +1705,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                     "Message": "Check failed because compile test binoption failed."
                 }
-                })
+            })
             return status
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
@@ -1714,7 +1746,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                         "CheckStatus": "ERROR",
                         "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                    "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
-                        "Message": "icpx not found"
+                        "Message": "icpx compiler is not found"
                     },
                     "Test simple binary options program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
@@ -1772,7 +1804,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "CheckStatus": "ERROR",
                     "Command": "icpx -fiopenmp -fopenmp-targets=spir64 -D__STRICT_ANSI__ "
                                "../oneapi_check_offloads/binoption_standalone.cpp -o binoption",
-                    "Message": "icpx not found"
+                    "Message": "icpx compiler is not found"
                 }
             })
             return 1
@@ -1793,7 +1825,7 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
                     "Command": "OMP_TARGET_OFFLOAD=MANDATORY LIBOMPTARGET_PLUGIN=OPENCL binoption",
                     "Message": "Check failed because compile test binoption failed."
                 }
-                })
+            })
             return status
 
         mocked_run_binoption.side_effect = side_effect_run_binoption
@@ -1803,6 +1835,8 @@ class TestGetOpenmpOffloadInfo(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_SIMPLE_SYCL_CODE_FILE", "simple-sycl-code")
 @patch("checkers_py.linux.oneapi_gpu_checker.PATH_TO_SOURCE_OFFLOAD", "../oneapi_check_offloads")
 class TestCompileSimpleSyclCode(unittest.TestCase):
@@ -1813,7 +1847,7 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
             "Compile simple SYCL code": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code"
             }
         }
@@ -1830,14 +1864,14 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
-    def test__compile_simple_sycl_code_dpcpp_return_not_zero(self, mocked_open):
+    def test__compile_simple_sycl_code_icpx_return_not_zero(self, mocked_open):
         expected = {
             "Compile simple SYCL code": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code",
-                "Message": "'dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                "Message": "'icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code'",
                 "HowToFix": "Check compiled source file for syntax errors."
             }
@@ -1862,13 +1896,15 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
             "Compile simple SYCL code": {
                 "CheckResult": "",
                 "CheckStatus": "ERROR",
-                "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                            "-o simple-sycl-code",
-                "Message": "Sycl code compilation failed - DPC++ (dpcpp) not found.",
-                "HowToFix": "Try to: " \
-                            "1) install Intel® C++ Compiler based on " \
-                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                            "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
+                "Message": "SYCL code compilation failed - icpx compiler is not found.",
+                "HowToFix": "Try to: "
+                           "1) install Intel® C++ Compiler based on "
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " # noqa E501
+                           "2) Initialize oneAPI environment:"
+                           " source <ONEAPI_INSTALL_DIR>/setvars.sh on Linux. "
+                           "Default install location is /opt/intel/oneapi"   # noqa E501
             }
         }
 
@@ -1881,6 +1917,8 @@ class TestCompileSimpleSyclCode(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_SIMPLE_SYCL_CODE_FILE", "simple-sycl-code")
 class TestRunSimpleSyclCode(unittest.TestCase):
 
@@ -1891,12 +1929,12 @@ class TestRunSimpleSyclCode(unittest.TestCase):
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
             },
             "Test simple DPC++ program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
             }
         }
         expected_error_code = 0
@@ -1924,14 +1962,14 @@ class TestRunSimpleSyclCode(unittest.TestCase):
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                 "Message": "Check failed because compile simple SYCL code failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             },
             "Test simple DPC++ program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                 "Message": "Check failed because compile simple SYCL code failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             }
@@ -1951,14 +1989,14 @@ class TestRunSimpleSyclCode(unittest.TestCase):
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple DPC++ program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
             }
         }
 
@@ -1986,12 +2024,12 @@ class TestRunSimpleSyclCode(unittest.TestCase):
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
             },
             "Test simple DPC++ program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             }
@@ -2022,14 +2060,14 @@ class TestRunSimpleSyclCode(unittest.TestCase):
             "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             },
             "Test simple DPC++ program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                 "Message": "An error occurred while running simple-sycl-code. ExitCode: 1",
                 "HowToFix": "Look into output for more details: \n"
             }
@@ -2055,6 +2093,8 @@ class TestRunSimpleSyclCode(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_PARALLEL_FOR_1D_FILE", "parallel-for-1D")
 @patch("checkers_py.linux.oneapi_gpu_checker.PATH_TO_SOURCE_OFFLOAD", "../oneapi_check_offloads")
 class TestCompileParallelForProgram(unittest.TestCase):
@@ -2065,7 +2105,7 @@ class TestCompileParallelForProgram(unittest.TestCase):
             "Compile parallel for program": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D"
             }
         }
@@ -2084,14 +2124,14 @@ class TestCompileParallelForProgram(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
     @patch("subprocess.Popen")
-    def test__compile_parallel_for_program_dpcpp_return_not_zero(self, mocked_open):
+    def test__compile_parallel_for_program_icpx_return_not_zero(self, mocked_open):
         expected = {
             "Compile parallel for program": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
-                "Message": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                "Message": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
                 "HowToFix": "Check compiled source file for syntax errors."
             }
@@ -2116,13 +2156,15 @@ class TestCompileParallelForProgram(unittest.TestCase):
             "Compile parallel for program": {
                 "CheckResult": "",
                 "CheckStatus": "ERROR",
-                "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                            "-o parallel-for-1D",
-                "Message": "Parallel code compilation failed - DPC++ (dpcpp) not found.",
-                "HowToFix": "Try to: " \
-                            "1) install Intel® C++ Compiler based on " \
-                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                            "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
+                "Message": "Parallel code compilation failed - icpx compiler is not found.",
+                "HowToFix": "Try to: "
+                           "1) install Intel® C++ Compiler based on "
+                           "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " # noqa E501
+                           "2) Initialize oneAPI environment:"
+                           " source <ONEAPI_INSTALL_DIR>/setvars.sh on Linux. "
+                           "Default install location is /opt/intel/oneapi"   # noqa E501
             }
         }
         expected_error_code = 1
@@ -2134,6 +2176,8 @@ class TestCompileParallelForProgram(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 @patch("checkers_py.linux.oneapi_gpu_checker.TMP_PARALLEL_FOR_1D_FILE", "parallel-for-1D")
 class TestRunParallelForProgram(unittest.TestCase):
 
@@ -2144,12 +2188,12 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
             }
         }
         expected_error_code = 0
@@ -2177,14 +2221,14 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                 "Message": "Check failed because compile parallel for program failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                 "Message": "Check failed because compile parallel for program failed.",
                 "HowToFix": "Check compiled source file for syntax errors."
             }
@@ -2204,7 +2248,7 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
                 "HowToFix":  "Look into output for more details: \n"
@@ -2212,7 +2256,7 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
             }
         }
 
@@ -2240,12 +2284,12 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "PASS",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
             },
             "Test simple DPC++ parallel-for program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
                 "HowToFix":  "Look into output for more details: \n"
@@ -2277,7 +2321,7 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
                 "HowToFix":  "Look into output for more details: \n"
@@ -2285,7 +2329,7 @@ class TestRunParallelForProgram(unittest.TestCase):
             "Test simple DPC++ parallel-for program with OpenCL™.": {
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
-                "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                 "Message": "An error occurred while running parallel-for-1D. "
                            "ExitCode: 1",
                 "HowToFix":  "Look into output for more details: \n"
@@ -2312,14 +2356,16 @@ class TestRunParallelForProgram(unittest.TestCase):
         self.assertEqual(expected_error_code, error_code)
 
 
-class TestGetDpcppOffloadInfo(unittest.TestCase):
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
+class TestGetIcpxOffloadInfo(unittest.TestCase):
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._run_simple_sycl_code")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_simple_sycl_code")
-    def test_get_dpcpp_offload_info_positive(self, mocked_compile_sycl, mocked_run_sycl,
-                                             mocked_compile_parallel, mocked_run_parallel):
+    def test_get_icpx_offload_info_positive(self, mocked_compile_sycl, mocked_run_sycl,
+                                             mocked_compile_parallel, mocked_run_parallel): # noqa E501
 
         expected = {
             "DPC++ GPU pipeline tests": {
@@ -2327,34 +2373,34 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                     "Compile simple SYCL code": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
                     },
                     "Test simple DPC++ program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
                     },
                     "Compile parallel for program": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
                     }
                 },
                 "CheckStatus": "PASS"
@@ -2366,7 +2412,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile simple SYCL code": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code"
                 }
             })
@@ -2379,12 +2425,12 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
                 },
                 "Test simple DPC++ program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
                 }
             })
             return status
@@ -2396,7 +2442,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile parallel for program": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D"
                 }
             })
@@ -2409,12 +2455,12 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
                 }
             })
             return status
@@ -2422,15 +2468,15 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
         actual = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        oneapi_gpu_checker.get_icpx_offload_info(actual)
         self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._run_simple_sycl_code")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_simple_sycl_code")
-    def test_get_dpcpp_offload_info_sycl_failed(self, mocked_compile_sycl, mocked_run_sycl,
-                                                mocked_compile_parallel, mocked_run_parallel):
+    def test_get_icpx_offload_info_sycl_failed(self, mocked_compile_sycl, mocked_run_sycl,
+                                                mocked_compile_parallel, mocked_run_parallel): # noqa E501
 
         expected = {
             "DPC++ GPU pipeline tests": {
@@ -2438,38 +2484,38 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                     "Compile simple SYCL code": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code",
-                        "Message": "'dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                        "Message": "'icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code'"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Test simple DPC++ program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Compile parallel for program": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
                     }
                 },
                 "CheckStatus": "FAIL",
@@ -2484,9 +2530,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile simple SYCL code": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code",
-                    "Message": "'dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                    "Message": "'icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code'"
                 }
             })
@@ -2499,13 +2545,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 },
                 "Test simple DPC++ program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 }
             })
@@ -2518,7 +2564,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile parallel for program": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D"
                 }
             })
@@ -2531,12 +2577,12 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
                 }
             })
             return status
@@ -2544,15 +2590,15 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
         actual = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        oneapi_gpu_checker.get_icpx_offload_info(actual)
         self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._run_simple_sycl_code")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_simple_sycl_code")
-    def test_get_dpcpp_offload_info_sycl_raised_exception(self, mocked_compile_sycl, mocked_run_sycl,
-                                                          mocked_compile_parallel, mocked_run_parallel):
+    def test_get_icpx_offload_info_sycl_raised_exception(self, mocked_compile_sycl, mocked_run_sycl,
+                                                          mocked_compile_parallel, mocked_run_parallel): # noqa E501
 
         expected = {
             "DPC++ GPU pipeline tests": {
@@ -2560,37 +2606,37 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                     "Compile simple SYCL code": {
                         "CheckResult": "",
                         "CheckStatus": "ERROR",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code",
-                        "Message": "DPC++ (dpcpp) not found."
+                        "Message": "icpx compiler is not found."
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Test simple DPC++ program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                         "Message": "Check failed because compile simple SYCL code failed."
                     },
                     "Compile parallel for program": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
                     }
                 },
                 "CheckStatus": "FAIL",
@@ -2605,9 +2651,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile simple SYCL code": {
                     "CheckResult": "",
                     "CheckStatus": "ERROR",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code",
-                    "Message": "DPC++ (dpcpp) not found."
+                    "Message": "icpx compiler is not found."
                 }
             })
             return 1
@@ -2619,13 +2665,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 },
                 "Test simple DPC++ program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code",
                     "Message": "Check failed because compile simple SYCL code failed."
                 }
             })
@@ -2638,7 +2684,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile parallel for program": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D"
                 }
             })
@@ -2651,12 +2697,12 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D"
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D"
                 }
             })
             return status
@@ -2664,15 +2710,15 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
         actual = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        oneapi_gpu_checker.get_icpx_offload_info(actual)
         self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._run_simple_sycl_code")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_simple_sycl_code")
-    def test_get_dpcpp_offload_info_parallel_failed(self, mocked_compile_sycl, mocked_run_sycl,
-                                                    mocked_compile_parallel, mocked_run_parallel):
+    def test_get_icpx_offload_info_parallel_failed(self, mocked_compile_sycl, mocked_run_sycl,
+                                                    mocked_compile_parallel, mocked_run_parallel): # noqa E501
 
         expected = {
             "DPC++ GPU pipeline tests": {
@@ -2680,37 +2726,37 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                     "Compile simple SYCL code": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
                     },
                     "Test simple DPC++ program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
                     },
                     "Compile parallel for program": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D",
-                        "Message": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                        "Message": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D"
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     }
                 },
@@ -2725,7 +2771,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile simple SYCL code": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code"
                 }
             })
@@ -2738,12 +2784,12 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
                 },
                 "Test simple DPC++ program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
                 }
             })
             return status
@@ -2755,9 +2801,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile parallel for program": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D",
-                    "Message":  "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                    "Message":  "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                 "-o parallel-for-1D"
                 }
             })
@@ -2770,13 +2816,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 }
             })
@@ -2785,15 +2831,15 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
         actual = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        oneapi_gpu_checker.get_icpx_offload_info(actual)
         self.assertEqual(expected, actual)
 
     @patch("checkers_py.linux.oneapi_gpu_checker._run_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_parallel_for_program")
     @patch("checkers_py.linux.oneapi_gpu_checker._run_simple_sycl_code")
     @patch("checkers_py.linux.oneapi_gpu_checker._compile_simple_sycl_code")
-    def test_get_dpcpp_offload_info_parallel_raised_exception(self, mocked_compile_sycl, mocked_run_sycl,
-                                                              mocked_compile_parallel, mocked_run_parallel):
+    def test_get_icpx_offload_info_parallel_raised_exception(self, mocked_compile_sycl, mocked_run_sycl,
+                                                              mocked_compile_parallel, mocked_run_parallel): # noqa E501
 
         expected = {
             "DPC++ GPU pipeline tests": {
@@ -2801,36 +2847,36 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                     "Compile simple SYCL code": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                    "-o simple-sycl-code"
                     },
                     "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
                     },
                     "Test simple DPC++ program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "PASS",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
                     },
                     "Compile parallel for program": {
                         "CheckResult": "",
                         "CheckStatus": "ERROR",
-                        "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                        "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                    "-o parallel-for-1D",
-                        "Message": "DPC++ (dpcpp) not found."
+                        "Message": "icpx compiler is not found."
                     },
                     "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     },
                     "Test simple DPC++ parallel-for program with OpenCL™.": {
                         "CheckResult": "",
                         "CheckStatus": "FAIL",
-                        "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                        "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                         "Message": "Check failed because compile parallel for program failed."
                     }
                 },
@@ -2845,7 +2891,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile simple SYCL code": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/simple-sycl-code.cpp "
                                "-o simple-sycl-code"
                 }
             })
@@ -2858,12 +2904,12 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu simple-sycl-code"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu simple-sycl-code"
                 },
                 "Test simple DPC++ program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "PASS",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu simple-sycl-code"
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu simple-sycl-code"
                 }
             })
             return status
@@ -2875,9 +2921,9 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Compile parallel for program": {
                     "CheckResult": "",
                     "CheckStatus": "ERROR",
-                    "Command": "dpcpp -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
+                    "Command": "icpx -std=c++17 -fsycl ../oneapi_check_offloads/parallel-for-1D.cpp "
                                "-o parallel-for-1D",
-                    "Message":  "DPC++ (dpcpp) not found."
+                    "Message":  "icpx compiler is not found."
                 }
             })
             return 1
@@ -2889,13 +2935,13 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
                 "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=level_zero:gpu parallel-for-1D",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 },
                 "Test simple DPC++ parallel-for program with OpenCL™.": {
                     "CheckResult": "",
                     "CheckStatus": "FAIL",
-                    "Command": "SYCL_DEVICE_FILTER=opencl:gpu parallel-for-1D",
+                    "Command": "ONEAPI_DEVICE_SELECTOR=opencl:gpu parallel-for-1D",
                     "Message": "Check failed because compile parallel for program failed."
                 }
             })
@@ -2904,7 +2950,7 @@ class TestGetDpcppOffloadInfo(unittest.TestCase):
         mocked_run_parallel.side_effect = side_effect_run_parallel
 
         actual = {}
-        oneapi_gpu_checker.get_dpcpp_offload_info(actual)
+        oneapi_gpu_checker.get_icpx_offload_info(actual)
         self.assertEqual(expected, actual)
 
 
