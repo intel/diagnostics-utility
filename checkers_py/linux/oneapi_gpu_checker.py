@@ -28,7 +28,8 @@ TMP_PARALLEL_FOR_1D_FILE = os.path.join(tempfile.mkdtemp(), "parallel-for-1D")
 MISSING_COMPILER_MESSAGE = "Try to: " \
                            "1) install Intel® C++ Compiler based on " \
                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
-                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh. Default install location is /opt/intel/oneapi"  # noqa E501
+                           "2) Initialize oneAPI environment: source <ONEAPI_INSTALL_DIR>/setvars.sh on Linux. " \
+                           "Default install location is /opt/intel/oneapi"  # noqa E501
 
 
 def get_i915_driver_loaded_info(json_node: Dict) -> None:
@@ -219,7 +220,7 @@ def _compile_test_matmul(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile test matmul"]["CheckStatus"] = "ERROR"
-        result["Compile test matmul"]["Message"] = "Matmul compilation failed - icpx not found."
+        result["Compile test matmul"]["Message"] = "Matmul compilation failed - icpx compiler is not found."
         result["Compile test matmul"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
@@ -320,7 +321,7 @@ def _compile_test_binoption(json_node: Dict) -> int:
     except Exception:
         error_code += 1
         result["Compile test binoption"]["CheckStatus"] = "ERROR"
-        result["Compile test binoption"]["Message"] = "Binoption compilation failed - icpx not found."  # noqa E501
+        result["Compile test binoption"]["Message"] = "Binoption compilation failed - icpx compiler is not found."  # noqa E501
         result["Compile test binoption"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
@@ -421,12 +422,12 @@ def _compile_simple_sycl_code(json_node: Dict) -> int:
     result = {"Compile simple SYCL code": {
         "CheckResult": "",
         "CheckStatus": "PASS",
-        "Command": f"dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp "
+        "Command": f"icpx -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp "
                    f"-o {TMP_SIMPLE_SYCL_CODE_FILE}"
     }}
     try:
         compile = subprocess.Popen(
-            ["dpcpp", "-std=c++17", "-fsycl", f"{PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp",
+            ["icpx", "-std=c++17", "-fsycl", f"{PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp",
              "-o", TMP_SIMPLE_SYCL_CODE_FILE],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL)
@@ -434,14 +435,14 @@ def _compile_simple_sycl_code(json_node: Dict) -> int:
             error_code += 1
             result["Compile simple SYCL code"]["CheckStatus"] = "FAIL"
             result["Compile simple SYCL code"]["Message"] = \
-                f"'dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp " \
+                f"'icpx -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/simple-sycl-code.cpp " \
                 f"-o {TMP_SIMPLE_SYCL_CODE_FILE}'"
             result["Compile simple SYCL code"]["HowToFix"] = \
                 "Check compiled source file for syntax errors."
     except Exception:
         error_code += 1
         result["Compile simple SYCL code"]["CheckStatus"] = "ERROR"
-        result["Compile simple SYCL code"]["Message"] = "Sycl code compilation failed - DPC++ (dpcpp) not found."  # noqa E501
+        result["Compile simple SYCL code"]["Message"] = "SYCL code compilation failed - icpx compiler is not found."  # noqa E501
         result["Compile simple SYCL code"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
@@ -454,12 +455,12 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
         "Test simple DPC++ program with Intel® oneAPI Level Zero.": {
             "CheckResult": "",
             "CheckStatus": "PASS",
-            "Command": f"SYCL_DEVICE_FILTER=level_zero:gpu {TMP_SIMPLE_SYCL_CODE_FILE}"
+            "Command": f"ONEAPI_DEVICE_SELECTOR=level_zero:gpu {TMP_SIMPLE_SYCL_CODE_FILE}"
         },
         "Test simple DPC++ program with OpenCL™.": {
             "CheckResult": "",
             "CheckStatus": "PASS",
-            "Command": f"SYCL_DEVICE_FILTER=opencl:gpu {TMP_SIMPLE_SYCL_CODE_FILE}"
+            "Command": f"ONEAPI_DEVICE_SELECTOR=opencl:gpu {TMP_SIMPLE_SYCL_CODE_FILE}"
         }
     }
     if compile_status != 0:
@@ -475,7 +476,7 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
         result["Test simple DPC++ program with OpenCL™."]["HowToFix"] = \
             "Check compiled source file for syntax errors."
     else:
-        test_env["SYCL_DEVICE_FILTER"] = "level_zero:gpu"
+        test_env["ONEAPI_DEVICE_SELECTOR"] = "level_zero:gpu"
         run_level_zero = subprocess.Popen(
             [TMP_SIMPLE_SYCL_CODE_FILE], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             encoding="utf-8", env=test_env)
@@ -495,7 +496,7 @@ def _run_simple_sycl_code(compile_status: int, json_node: Dict) -> int:
                 result["Test simple DPC++ program with Intel® oneAPI Level Zero."]["HowToFix"] = \
                     f"Look into output for more details: \n{run_level_zero_stdout}"
 
-        test_env["SYCL_DEVICE_FILTER"] = "opencl:gpu"
+        test_env["ONEAPI_DEVICE_SELECTOR"] = "opencl:gpu"
         run_opencl = subprocess.Popen(
             [TMP_SIMPLE_SYCL_CODE_FILE], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             encoding="utf-8", env=test_env)
@@ -523,12 +524,12 @@ def _compile_parallel_for_program(json_node: Dict) -> int:
     result = {"Compile parallel for program": {
         "CheckResult": "",
         "CheckStatus": "PASS",
-        "Command": f"dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp "
+        "Command": f"icpx -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp "
                    f"-o {TMP_PARALLEL_FOR_1D_FILE}"
     }}
     try:
         compile = subprocess.Popen(
-            ["dpcpp", "-std=c++17", "-fsycl", f"{PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp",
+            ["icpx", "-std=c++17", "-fsycl", f"{PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp",
              "-o", TMP_PARALLEL_FOR_1D_FILE],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL)
@@ -536,14 +537,14 @@ def _compile_parallel_for_program(json_node: Dict) -> int:
             error_code += 1
             result["Compile parallel for program"]["CheckStatus"] = "FAIL"
             result["Compile parallel for program"]["Message"] = \
-                f"dpcpp -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp " \
+                f"icpx -std=c++17 -fsycl {PATH_TO_SOURCE_OFFLOAD}/parallel-for-1D.cpp " \
                 f"-o {TMP_PARALLEL_FOR_1D_FILE}"
             result["Compile parallel for program"]["HowToFix"] = \
                 "Check compiled source file for syntax errors."
     except Exception:
         error_code += 1
         result["Compile parallel for program"]["CheckStatus"] = "ERROR"
-        result["Compile parallel for program"]["Message"] = "Parallel code compilation failed - DPC++ (dpcpp) not found."  # noqa
+        result["Compile parallel for program"]["Message"] = "Parallel code compilation failed - icpx compiler is not found."  # noqa
         result["Compile parallel for program"]["HowToFix"] = MISSING_COMPILER_MESSAGE
     json_node.update(result)
     return error_code
@@ -556,12 +557,12 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
         "Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero.": {
             "CheckResult": "",
             "CheckStatus": "PASS",
-            "Command": f"SYCL_DEVICE_FILTER=level_zero:gpu {TMP_PARALLEL_FOR_1D_FILE}"
+            "Command": f"ONEAPI_DEVICE_SELECTOR=level_zero:gpu {TMP_PARALLEL_FOR_1D_FILE}"
         },
         "Test simple DPC++ parallel-for program with OpenCL™.": {
             "CheckResult": "",
             "CheckStatus": "PASS",
-            "Command": f"SYCL_DEVICE_FILTER=opencl:gpu {TMP_PARALLEL_FOR_1D_FILE}"
+            "Command": f"ONEAPI_DEVICE_SELECTOR=opencl:gpu {TMP_PARALLEL_FOR_1D_FILE}"
         }
     }
     if compile_status != 0:
@@ -577,7 +578,7 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
         result["Test simple DPC++ parallel-for program with OpenCL™."]["HowToFix"] = \
             "Check compiled source file for syntax errors."
     else:
-        test_env["SYCL_DEVICE_FILTER"] = "level_zero:gpu"
+        test_env["ONEAPI_DEVICE_SELECTOR"] = "level_zero:gpu"
         run_level_zero = subprocess.Popen(
             [TMP_PARALLEL_FOR_1D_FILE], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             encoding="utf-8", env=test_env)
@@ -597,7 +598,7 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
                 result["Test simple DPC++ parallel-for program with Intel® oneAPI Level Zero."]["HowToFix"] \
                     = f"Look into output for more details: \n{run_level_zero_stdout}"
 
-        test_env["SYCL_DEVICE_FILTER"] = "opencl:gpu"
+        test_env["ONEAPI_DEVICE_SELECTOR"] = "opencl:gpu"
         run_opencl = subprocess.Popen(
             [TMP_PARALLEL_FOR_1D_FILE], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             encoding="utf-8", env=test_env)
@@ -620,7 +621,7 @@ def _run_parallel_for_program(compile_status: int, json_node: Dict) -> int:
     return error_code
 
 
-def get_dpcpp_offload_info(json_node: Dict) -> None:
+def get_icpx_offload_info(json_node: Dict) -> None:
     error_code = 0
     check_result = {"CheckResult": {}, "CheckStatus": "PASS"}
 
@@ -650,7 +651,7 @@ def run_oneapi_gpu_check(data: dict) -> CheckSummary:
     get_dmesg_i915_init_errors_info(result_json["CheckResult"])
     get_gpu_errors_info(result_json["CheckResult"])
     get_openmp_offload_info(result_json["CheckResult"])
-    get_dpcpp_offload_info(result_json["CheckResult"])
+    get_icpx_offload_info(result_json["CheckResult"])
 
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)

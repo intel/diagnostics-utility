@@ -80,7 +80,7 @@ def check_hangcheck_is_disabled(json_node: Dict) -> None:
         "CheckResult": "",
         "CheckStatus": "FAIL",
         "Message": "To disable GPU hangcheck, visit "
-                   "https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-intel-oneapi-hpc-linux/top/before-you-begin.html."  # noqa: E501
+                   "https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-hpc-cluster/2023-0/step-4-set-up-user-permissions-for-using-the.html#GPU-DISABLE-HANGCHECK."  # noqa: E501
     }
 
     if (os.path.isfile(UBUNTU_GRUB_FILE_PATH)):
@@ -90,7 +90,7 @@ def check_hangcheck_is_disabled(json_node: Dict) -> None:
 
     if (check_result["CheckStatus"] == "FAIL"):
         check_result["HowToFix"] = "Try disable GPU hangcheck, based on instructions from " \
-            "https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-intel-oneapi-hpc-linux/top/before-you-begin.html."  # noqa E501
+            "https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-hpc-cluster/2023-0/step-4-set-up-user-permissions-for-using-the.html#GPU-DISABLE-HANGCHECK."  # noqa E501
 
     json_node.update({"GPU hangcheck is disabled": check_result})
 

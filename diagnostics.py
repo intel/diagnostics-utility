@@ -17,8 +17,9 @@ import platform
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from modules.check import BaseCheck, CheckMetadataPy, load_checks_from_config, load_default_checks, \
-    load_checks_from_env, run_checks, create_dependency_order
+from modules.check import BaseCheck, CheckMetadataPy,  \
+    run_checks, create_dependency_order
+from modules.check.check_loader import load_checks_from_config, load_checks_from_env, load_default_checks
 from modules.db_downloader import update_databases
 from modules.files_helper import configure_output_files, get_checks_to_run_from_config_data, \
     read_config_data, save_json_output_file
@@ -30,7 +31,7 @@ from modules.log import configure_logger, configure_file_logging
 from modules.printing import print_metadata, print_summary, print_epilog
 from modules.printing.printer import print_ex, enable_stdout_printing
 
-VERSION = "2022.4.0"
+VERSION = "2024.0.0"
 API_VERSION = "0.2"
 
 

@@ -141,14 +141,14 @@ also be used to run that check.
        |  ``target``
      - This check shows information from OpenCL™ and Intel® oneAPI Level
        Zero drivers.
-   * -  ``oneapi_app_check``
+   * -  ``oneapi_toolkit_check``
      - |  ``compile``
        |  ``default``
        |  ``host``
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - This check shows version information of installed oneAPI products.
+     - This check shows information about installed oneAPI toolkits.
    * -  ``intel_gpu_detector_check``
      - |  ``profiling``
        |  ``default``
@@ -166,14 +166,14 @@ also be used to run that check.
        |  ``runtime``
        |  ``sysinfo``
        |  ``target``
-     - This check shows the version information of the oneAPI products
-       installed in the environment.
-   * -  ``gcc_compiler_check`
+     - This check shows if the oneAPI environment is configured and provides
+       a list of oneapi components with their versions if they are present in the environment.
+   * -  ``compiler_check``
      - |  ``compile``
        |  ``default``
        |  ``host``
        |  ``sysinfo``
-     - This check shows information about the GCC compiler..
+     - This check shows information about the compiler..
    * -  ``base_system_check``
      - |  ``compile``
        |  ``host``
@@ -271,25 +271,25 @@ to run the **check**, see :ref:`check-table`.
    * -  ``compile``
      - |  ``driver_compatibility_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_app_check``
+       |  ``oneapi_toolkit_check``
        |  ``oneapi_env_check``
-       |  ``gcc_compiler_check``
+       |  ``compiler_check``
        |  ``base_system_check``
        |  ``user_resources_limits_check``
    * -  ``default``
      - |  ``user_group_check``
        |  ``driver_compatibility_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_app_check``
+       |  ``oneapi_toolkit_check``
        |  ``intel_gpu_detector_check``
        |  ``oneapi_env_check``
-       |  ``gcc_compiler_check``
+       |  ``compiler_check``
    * -  ``host``
      - |  ``driver_compatibility_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_app_check``
+       |  ``oneapi_toolkit_check``
        |  ``oneapi_env_check``
-       |  ``gcc_compiler_check``
+       |  ``compiler_check``
        |  ``base_system_check``
        |  ``user_resources_limits_check``
    * -  ``runtime``
@@ -298,7 +298,7 @@ to run the **check**, see :ref:`check-table`.
        |  ``driver_compatibility_check``
        |  ``gpu_metrics_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_app_check``
+       |  ``oneapi_toolkit_check``
        |  ``intel_gpu_detector_check``
        |  ``oneapi_env_check``
        |  ``base_system_check``
@@ -309,10 +309,10 @@ to run the **check**, see :ref:`check-table`.
        |  ``driver_compatibility_check``
        |  ``oneapi_gpu_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_app_check``
+       |  ``oneapi_toolkit_check``
        |  ``intel_gpu_detector_check``
        |  ``oneapi_env_check``
-       |  ``gcc_compiler_check``
+       |  ``compiler_check``
        |  ``base_system_check``
        |  ``kernel_options_check``
        |  ``user_resources_limits_check``
@@ -322,7 +322,7 @@ to run the **check**, see :ref:`check-table`.
        |  ``driver_compatibility_check``
        |  ``gpu_metrics_check``
        |  ``gpu_backend_check``
-       |  ``oneapi_app_check``
+       |  ``oneapi_toolkit_check``
        |  ``intel_gpu_detector_check``
        |  ``oneapi_env_check``
        |  ``base_system_check``

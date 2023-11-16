@@ -66,7 +66,7 @@ def _is_regression(driver_name: str, driver_version: str, cursor) -> bool:
     return True if row else False
 
 
-def _is_ge_then_latest_version_in_db(driver_name: str, driver_version: str, cursor) -> bool:
+def _is_latest_version(driver_name: str, driver_version: str, cursor) -> bool:
     cursor.execute(
         """
         SELECT lv.Version FROM LatestVersion AS lv INNER JOIN Component AS com
@@ -76,8 +76,9 @@ def _is_ge_then_latest_version_in_db(driver_name: str, driver_version: str, curs
         """ % (driver_name,)
     )
     row = cursor.fetchone()
-    driver_version_in_db = row[0]
-    return True if driver_version >= driver_version_in_db else False
+    if row is None:
+        return False
+    return True if row[0] <= driver_version else False
 
 
 def get_gpu_driver_version(data: Dict) -> Dict:
@@ -101,7 +102,7 @@ def get_gpu_driver_version(data: Dict) -> Dict:
 def get_product_versions_install(data: Dict) -> Dict:
     product_versions = {}
     try:
-        products = data["oneapi_app_check"]["CheckResult"]["APP"]["CheckResult"]["oneAPI products"]["CheckResult"]  # noqa: E501
+        products = data["oneapi_toolkit_check"]["CheckResult"]["APP"]["CheckResult"]["oneAPI products"]["CheckResult"]  # noqa: E501
     except Exception:
         pass
     else:
@@ -164,15 +165,12 @@ def _check_drivers(json_node: Dict, gpu_driver_versions: Dict, cursor):
                     },
                     "CheckStatus": "INFO"
                 }
-                if not _is_ge_then_latest_version_in_db(driver_name, driver_version, cursor):
-                    level_zero_link = "https://dgpu-docs.intel.com/technologies/level-zero.html"
-                    opecl_link = "https://www.intel.com/content/www/us/en/developer/tools/opencl-sdk/overview.html"  # noqa: E501
-                    link = level_zero_link if driver_name == "Intel® oneAPI Level Zero" else \
-                        opecl_link if driver_name == "OpenCL™" else ""
+                if not _is_latest_version(driver_name, driver_version, cursor):
+                    gpu_drivers_link = "https://dgpu-docs.intel.com/installation-guides/index.html"
                     driver_check_result["CheckResult"]["Version"]["CheckStatus"] = "WARNING"
                     driver_check_result["CheckResult"]["Version"]["Message"] = \
                         f"{driver_version} is not the latest available version of {driver_name} driver. " \
-                        f"To get the latest version, visit {link}."
+                        f"To get the latest version, visit {gpu_drivers_link}."
                 _check_regression(driver_check_result["CheckResult"], driver_name, driver_version, cursor)
                 check_result["CheckResult"].update({driver_name: driver_check_result})
         except Exception as error:
@@ -207,13 +205,14 @@ def _check_compatibilities(json_node: Dict, product_versions: Dict, gpu_driver_v
                         f"There is no information about {product} compatibilities. " \
                         "To get the latest version of oneAPI products, visit https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-linux/top/installation.html."  # noqa: E501
                 for comp, comp_version in product_compatibilities.items():
-                    if comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] != comp_version:
+                    if comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] < comp_version:
                         product_check_result["CheckResult"] = "No"
                         product_check_result["CheckStatus"] = "FAIL"
                         product_check_result["Message"] = \
-                            f"Installed version of {comp} not compatible with the version of the {product}."
+                            f"Installed version of {comp} may not be compatible with the version of the {product}. " \
+                            f"Recommended  version of {comp} is {comp_version}"  # noqa: E501
                         break
-                    elif comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] == comp_version:
+                    elif comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] >= comp_version:
                         product_check_result["CheckResult"] = "Yes"
                 check_result["CheckResult"].update({f"{product}-{product_version}": product_check_result})
         except Exception as error:
@@ -282,7 +281,7 @@ def get_check_list() -> List[CheckMetadataPy]:
         type="Data",
         groups="default,sysinfo,compile,runtime,host,target",
         descr="This check verifies compatibility of oneAPI products versions and GPU drivers versions.",
-        dataReq="{\"gpu_backend_check\": 2, \"oneapi_env_check\": 2 , \"oneapi_app_check\": 2}",
+        dataReq="{\"gpu_backend_check\": 2, \"oneapi_env_check\": 2 , \"oneapi_toolkit_check\": 2}",
         merit=60,
         timeout=5,
         version=CHECK_VERSION,

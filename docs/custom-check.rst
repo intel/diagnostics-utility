@@ -16,7 +16,7 @@ It looks similar to this:
 
   [
       {
-          "name": "gcc_compiler_check"
+          "name": "compiler_check"
       },
       {
           "name": "gpu_backend_check"
@@ -44,8 +44,8 @@ If your config file has a different name or path, change the
   Checks results:
 
   =============================================================================================
-  Check name: gcc_compiler_check
-  Description: This check shows information about the GCC compiler.
+  Check name: compiler_check
+  Description: This check shows information about the compiler.
   Result status: PASS
   =============================================================================================
 

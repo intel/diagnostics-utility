@@ -32,7 +32,7 @@ project = 'Diagnostics Utility for Intel® oneAPI Toolkits User Guide'
 copyright = 'Intel Corporation'
 
 # The full version, including alpha/beta/rc tags
-release = '2022.3'
+release = '2023.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -43,6 +43,15 @@ release = '2022.3'
 # extensions = [
 #   'sphinx_tabs.tabs'
 # ]
+
+
+nbsphinx_allow_errors = True
+
+# for svg files handling for latex
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+    "--InlineBackend.rc={'figure.dpi': 150}",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -114,17 +123,32 @@ ditaxml_topic_meta["primary_owner"] = "Moore, Benjamin D (benjamin.d.moore@intel
 ditaxml_topic_meta["primary_business_owner"] = "Feldhousen, Jeanette S (jeanette.s.feldhousen@intel.com)"
 ditaxml_topic_meta["notification_dl"] = "benjamin.d.moore@intel.com,taryn.e.apel@intel.com,infodev.book.publishing.notices@intel.com"  # noqa: E501
 ditaxml_topic_meta["program_identifier"] = "idz"
-ditaxml_topic_meta["publish_date"] = "2023-03-31"
-ditaxml_topic_meta["revision_date"] = "2023-03-31"
+ditaxml_topic_meta["publish_date"] = "2023-07-10"
+ditaxml_topic_meta["revision_date"] = "2023-07-13"
 ditaxml_topic_meta["classification_type"] = "Public"
 ditaxml_topic_meta["content_classification"] = "Public"
 ditaxml_topic_meta["metadata_classification"] = "Public"
 ditaxml_topic_meta["noindexfollowarchive"] = "false"
 ditaxml_topic_meta["latest_version"] = "true"
 ditaxml_topic_meta["group_content_id"] = "771725"  # 771725_771726 for 2023.0
-ditaxml_topic_meta["publication_content_id"] = "773660"  # 771726 = 2023.0
+ditaxml_topic_meta["publication_content_id"] = "781960"  # 771726 = 2023.0 773660 = 2023.1
 ditaxml_topic_meta["publication_root_node"] = "oneapi"
 ditaxml_topic_meta["publication_name"] = "user-guide-diagnostic-utility"
 ditaxml_prod_info = {}
 ditaxml_prod_info["prodname"] = ""
-ditaxml_prod_info["version"] = "2022.3"
+ditaxml_prod_info["version"] = "2023.2"
+
+imgmath_image_format = "svg"
+
+ditaxml_nocp_parameters = {
+    "operation": "publish",
+    "environment": "production",
+    "ipix-path": "IPIX_Importtointelsite\\oneapi\\programming-guide",
+    "dita-map": "C:\\git\\programming-guide\\_build\\ditaxml\\toc.ditamap",
+    "publication-name": "Intel® oneAPI Programming Guide",
+    "output-format": "NOCP staging",  # change to NOCP production to go live
+    "conversion-out": "C:\\nocp-publish\\conversion-out\\programming-guide"
+}
+
+ditaxml_publish_to_nocp = True
+ditaxml_blockquote_warning = True

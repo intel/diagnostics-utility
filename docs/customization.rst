@@ -32,7 +32,7 @@ to the terminal:
      - Select checks to run by group or check name.
        Each check can be marked with one or more
        groups. For a full list of available checks and groups, see :ref:`check-table`.
-     -  ``python3 diagnostics.py --select oneapi_app_check``
+     -  ``python3 diagnostics.py --select oneapi_toolkit_check``
 
    * - ``--list``
      - Show list of available checks in the terminal window. You can also

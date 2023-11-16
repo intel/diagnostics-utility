@@ -13,6 +13,7 @@
 # NOTE: workaround to import modules
 from collections import namedtuple
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../"))
 
@@ -23,6 +24,8 @@ from checkers_py.linux import base_system_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestBaseSystemCheckerApiTest(unittest.TestCase):
 
     @patch("checkers_py.linux.base_system_checker.get_hostname")
@@ -82,6 +85,8 @@ class TestBaseSystemCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetHostname(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="hostname"))
@@ -118,6 +123,8 @@ class TestGetHostname(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetBiosVendor(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="vendor"))
@@ -154,6 +161,8 @@ class TestGetBiosVendor(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetBiosVersion(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="version"))
@@ -190,6 +199,8 @@ class TestGetBiosVersion(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetBiosRelease(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="release"))
@@ -238,6 +249,8 @@ class TestGetBiosRelease(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetBiosDate(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="date"))
@@ -286,6 +299,8 @@ class TestGetBiosDate(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetBiosInformation(unittest.TestCase):
 
     @patch("checkers_py.linux.base_system_checker._get_bios_vendor")
@@ -353,6 +368,8 @@ class TestGetBiosInformation(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetUname(unittest.TestCase):
 
     @patch("platform.uname")
@@ -391,6 +408,8 @@ class TestGetUname(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetCpuFrequency(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="model name      : Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz\n"
@@ -443,6 +462,8 @@ class TestGetCpuFrequency(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetCpuInfo(unittest.TestCase):
 
     @patch("subprocess.Popen")

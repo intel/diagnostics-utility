@@ -12,6 +12,7 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../"))
 
@@ -22,6 +23,8 @@ from checkers_py.linux import kernel_options_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestKernelBootOptionsCheckerApiTest(unittest.TestCase):
 
     @patch("checkers_py.linux.kernel_options_checker.get_kernel_settings")
@@ -62,6 +65,8 @@ class TestKernelBootOptionsCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestCheckPerfStreamParanoid(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -120,6 +125,8 @@ class TestCheckPerfStreamParanoid(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetKernelSettings(unittest.TestCase):
 
     @patch("checkers_py.linux.kernel_options_checker._check_perf_stream_paranoid")
@@ -146,6 +153,8 @@ class TestGetKernelSettings(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+        ) == "Windows", "run on linux only")
 class TestGetKernelBootOptions(unittest.TestCase):
 
     def setUp(self):

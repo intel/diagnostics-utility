@@ -12,6 +12,7 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
@@ -23,6 +24,8 @@ from checkers_py.linux import driver_compatibility_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestDriverCompatibilityCheckerApiTest(unittest.TestCase):
 
     @patch("checkers_py.linux.driver_compatibility_checker.check_compatibilities")
@@ -56,11 +59,13 @@ class TestDriverCompatibilityCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestCheckCompatibilities(unittest.TestCase):
 
     def setUp(self):
         self.data = {
-            "oneapi_app_check": {
+            "oneapi_toolkit_check": {
                 "CheckResult": {
                     "APP": {
                         "CheckStatus": "INFO",
@@ -222,30 +227,30 @@ class TestCheckCompatibilities(unittest.TestCase):
         with self.assertRaises(ValueError):
             driver_compatibility_checker._is_regression("name", "version", cursor)
 
-    def test__is_ge_then_latest_version_in_db_yes_positive(self):
+    def test__is_latest_version_yes_positive(self):
         cursor = MagicMock()
         cursor.fetchone.return_value = "version"
         expected_value = True
 
-        real_value = driver_compatibility_checker._is_ge_then_latest_version_in_db("name", "version", cursor)
+        real_value = driver_compatibility_checker._is_latest_version("name", "version", cursor)
 
         self.assertEqual(real_value, expected_value)
 
-    def test__is_ge_then_latest_version_in_db_no_positive(self):
+    def test__is_latest_version_no_positive(self):
         cursor = MagicMock()
-        cursor.fetchone.return_value = ("11.22.33",)
+        cursor.fetchone.return_value = ("1.3.26000",)
         expected_value = False
 
-        real_value = driver_compatibility_checker._is_ge_then_latest_version_in_db("name", "10.20.30", cursor)
+        real_value = driver_compatibility_checker._is_latest_version("name", "1.3.25977", cursor)
 
         self.assertEqual(real_value, expected_value)
 
-    def test__is_ge_then_latest_version_in_db_negative(self):
+    def test__is_latest_version_negative(self):
         cursor = MagicMock()
         cursor.execute.side_effect = ValueError()
 
         with self.assertRaises(ValueError):
-            driver_compatibility_checker._is_ge_then_latest_version_in_db("name", "version", cursor)
+            driver_compatibility_checker._is_latest_version("name", "version", cursor)
 
     def test_get_gpu_driver_version_positive(self):
         expected_value = {"Intel® oneAPI Level Zero": "1.0.19310", "OpenCL™": "21.11.19310"}
@@ -333,9 +338,9 @@ class TestCheckCompatibilities(unittest.TestCase):
 
         self.assertEqual(real_value, expected_value)
 
-    @patch("checkers_py.linux.driver_compatibility_checker._is_ge_then_latest_version_in_db", return_value=True)  # noqa E501
+    @patch("checkers_py.linux.driver_compatibility_checker._is_latest_version", return_value=True)
     @patch("checkers_py.linux.driver_compatibility_checker._check_regression")
-    def test__check_drivers_positive(self, mocked__check_regression, mocked__is_ge_then_latest_version_in_db):
+    def test__check_drivers_positive(self, mocked__check_regression, mocked__is_latest_version):
         mocked__check_regression.side_effect = lambda node, name, version, cursor: node.update({
             "Regression": {
                 "CheckStatus": "PASS",
@@ -382,8 +387,8 @@ class TestCheckCompatibilities(unittest.TestCase):
 
         self.assertEqual(real_value, expected_value)
 
-    @patch("checkers_py.linux.driver_compatibility_checker._is_ge_then_latest_version_in_db", side_effect=ValueError("Error"))  # noqa: E501
-    def test__check_drivers_error_positive(self, mocked__is_ge_then_latest_version_in_db):
+    @patch("checkers_py.linux.driver_compatibility_checker._is_latest_version", side_effect=ValueError("Error"))  # noqa: E501
+    def test__check_drivers_error_positive(self, mocked__is_latest_version):
         expected_value = {
             "GPU drivers information": {
                 "Message": "Error",
@@ -431,7 +436,8 @@ class TestCheckCompatibilities(unittest.TestCase):
                 "CheckStatus": "PASS",
                 "CheckResult": {
                     "name-version": {
-                        "Message": "Installed version of LevelZero not compatible with the version of the name.",  # noqa: E501
+                        "Message": "Installed version of LevelZero may not be compatible with the version of the name."  # noqa: E501
+                        " Recommended  version of LevelZero is 1.1.19310",
                         "CheckStatus": "FAIL",
                         "CheckResult": "No"
                     }
@@ -541,14 +547,14 @@ class TestCheckCompatibilities(unittest.TestCase):
         self.assertEqual(real_value, expected_value)
 
     @patch("sqlite3.connect")
-    @patch("checkers_py.linux.driver_compatibility_checker._is_ge_then_latest_version_in_db", side_effect=[True, True])   # noqa E501
+    @patch("checkers_py.linux.driver_compatibility_checker._is_latest_version", side_effect=[True, True])
     @patch("checkers_py.linux.driver_compatibility_checker._is_regression", side_effect=[False, False])
     @patch("checkers_py.linux.driver_compatibility_checker._get_compatibilities_for_product", side_effect=[{"Intel® oneAPI Level Zero": "1.0.19310", "OpenCL™": "21.11.19310"}]*3)  # noqa: E501
     def test_check_compatibilities_positive(
             self,
             moked__get_compatibilities_for_product,
             moked__is_regression,
-            mocked__is_ge_then_latest_version_in_db,
+            mocked__is_latest_version,
             mocked_connect):
         expected_value = {
             "oneAPI products compatibilities with drivers": {

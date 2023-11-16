@@ -29,7 +29,7 @@ Syntax
 
 If you are viewing this document on GitHub, some text may appear as RST code.
 To view a rendered version of this document, go to the
-`User Guide on Intel Developer Zone <https://software.intel.com/content/www/us/en/develop/documentation/diagnostic-utility-user-guide/top.html>`_.
+`User Guide on Intel Developer Zone <https://www.intel.com/content/www/us/en/docs/oneapi/user-guide-diagnostic-utility>`_.
 
 
 

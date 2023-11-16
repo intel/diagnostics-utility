@@ -282,6 +282,10 @@ class TestLoadDefaultChecks(unittest.TestCase):
              self.mock_check_exe_2],
             [],
             [],
+            [],
+            [],
+            [],
+            [],
             []
         ]
 
@@ -299,6 +303,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
         mocked_load_checks.side_effect = [
             [self.mock_sys_check_1,
              self.mock_sys_check_2],
+            [],
+            [],
+            [],
             [],
             [],
             [],
@@ -326,6 +333,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             [],
             [],
             [],
+            [],
+            [],
+            [],
             []
         ]
 
@@ -348,6 +358,9 @@ class TestLoadDefaultChecks(unittest.TestCase):
             [],
             [],
             [],
+            [],
+            [],
+            [],
             []
         ]
 
@@ -367,6 +380,10 @@ class TestLoadDefaultChecks(unittest.TestCase):
             [],
             [self.mock_check_exe_1,
              self.mock_check_exe_2],
+            [],
+            [],
+            [],
+            [],
             [],
             [],
             []

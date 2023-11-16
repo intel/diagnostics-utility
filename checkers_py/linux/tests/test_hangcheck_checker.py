@@ -12,6 +12,7 @@
 
 # NOTE: workaround to import modules
 import os
+import platform
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../'))
 
@@ -22,6 +23,8 @@ from checkers_py.linux import hangcheck_checker  # noqa: E402
 from modules.check import CheckSummary, CheckMetadataPy  # noqa: E402
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestHangcheckCheckerApiTest(unittest.TestCase):
 
     @patch("checkers_py.linux.hangcheck_checker.intel_gpus_not_found_handler")
@@ -104,6 +107,8 @@ class TestHangcheckCheckerApiTest(unittest.TestCase):
             self.assertIsInstance(metadata, expected)
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestCheckHangcheckInGrub(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data=""))
@@ -172,6 +177,8 @@ class TestCheckHangcheckInGrub(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestCheckHangcheckInConfig(unittest.TestCase):
 
     @patch("builtins.open", mock_open(read_data="N"))
@@ -214,6 +221,8 @@ class TestCheckHangcheckInConfig(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestCheckHangcheckIsDisabled(unittest.TestCase):
 
     @patch("os.path.isfile", side_effect=[True, True])
@@ -313,9 +322,9 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
                 "CheckResult": "",
                 "CheckStatus": "FAIL",
                 "Message": "To disable GPU hangcheck, visit "
-                           "https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-intel-oneapi-hpc-linux/top/before-you-begin.html.",  # noqa: E501
+                           "https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-hpc-cluster/2023-0/step-4-set-up-user-permissions-for-using-the.html#GPU-DISABLE-HANGCHECK.",  # noqa: E501
                 "HowToFix": "Try disable GPU hangcheck, based on instructions from "
-                            "https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-intel-oneapi-hpc-linux/top/before-you-begin.html."  # noqa E501
+                            "https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-hpc-cluster/2023-0/step-4-set-up-user-permissions-for-using-the.html#GPU-DISABLE-HANGCHECK."  # noqa E501
             }
         }
 
@@ -327,6 +336,8 @@ class TestCheckHangcheckIsDisabled(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+@unittest.skipIf(platform.system(
+) == "Windows", "run on linux only")
 class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
 
     @patch("subprocess.Popen")
@@ -366,7 +377,7 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
                         "CheckStatus": "FAIL",
                         "Message": "preempt_timeout_ms=1 - long-running jobs may not run to completion.",
                         "HowToFix": "To disable preemption timeout, visit "
-                            "https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-hpc-cluster/top/step-4-set-up-user-permissions.html#step-4-set-up-user-permissions-for-using-the-device-files-for-intel-gpus_disable-timeout" # noqa E501
+                            "https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-hpc-cluster/top/step-4-set-up-user-permissions.html#step-4-set-up-user-permissions-for-using-the-device-files-for-intel-gpus_disable-timeout"  # noqa E501
                     }
                 },
                 "CheckStatus": "PASS",
@@ -396,7 +407,7 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
                         "CheckStatus": "FAIL",
                         "Message": "preempt_timeout_ms=1 - long-running jobs may not run to completion.",
                         "HowToFix": "To disable preemption timeout, visit "
-                            "https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-hpc-cluster/top/step-4-set-up-user-permissions.html#step-4-set-up-user-permissions-for-using-the-device-files-for-intel-gpus_disable-timeout" # noqa E501
+                            "https://www.intel.com/content/www/us/en/develop/documentation/installation-guide-for-intel-oneapi-toolkits-hpc-cluster/top/step-4-set-up-user-permissions.html#step-4-set-up-user-permissions-for-using-the-device-files-for-intel-gpus_disable-timeout"  # noqa E501
                     }
                 },
                 "CheckStatus": "PASS",
