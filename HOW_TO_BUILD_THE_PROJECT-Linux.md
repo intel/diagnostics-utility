@@ -48,7 +48,7 @@
 
     ```bash
     # Go to root directory of git repository
-    $ cd .../diagnostics-utility
+    $ cd .../applications.validation.one-diagnostics.source
     # Installing with Python package manager
     $ python3 -m pip install -r docs/requirements.txt
     ```
@@ -67,7 +67,7 @@ Cmake build options:
 
 ```bash
 # Go to root directory of git repository
-$ cd .../diagnostics-utility
+$ cd .../applications.validation.one-diagnostics.source
 # Create a build directory
 $ mkdir build
 $ cd build
@@ -82,7 +82,7 @@ $ make install
 👉 The application should be available to test in the root directory:
 
 ```bash
-$ cd .../diagnostics-utility
+$ cd .../applications.validation.one-diagnostics.source
 $ ./diagnostics.py --help
 usage: diagnostics.py [--select SELECTION [SELECTION ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 

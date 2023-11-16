@@ -12,7 +12,7 @@
 
 function(replaceinplace IN_FILE pattern replace)
   file(READ ${IN_FILE} CONTENTS)
-  string(REGEX REPLACE ${pattern} ${replace} STRIPPED ${CONTENTS})
+  string(REGEX REPLACE ${pattern} ${replace} STRIPPED "${CONTENTS}")
   file(WRITE ${IN_FILE} "${STRIPPED}")
 endfunction()
 
@@ -20,10 +20,12 @@ file(GLOB_RECURSE file_list "${CMAKE_INSTALL_PREFIX}/install/checkers_py/*.py")
 foreach(txtfile ${file_list})
   #message(STATUS "file for update path to module = '${txtfile}'")
   replaceinplace(${txtfile} "checkers_py.linux" "checkers_py")
+  replaceinplace(${txtfile} "checkers_py.windows" "checkers_py")
 endforeach()
 
 file(GLOB_RECURSE file_list "${CMAKE_INSTALL_PREFIX}/install/checkers_py/*/*.py")
 foreach(txtfile ${file_list})
   #message(STATUS "file for update path to module = '${txtfile}'")
   replaceinplace(${txtfile} "checkers_py.linux" "checkers_py")
+  replaceinplace(${txtfile} "checkers_py.windows" "checkers_py")
 endforeach()

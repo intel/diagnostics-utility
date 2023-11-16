@@ -9,5 +9,5 @@
 #
 # *******************************************************************************/
 
-add_subdirectory(gpu_backend_checker)
-add_subdirectory(oneapi_checker)
+add_subdirectory(oneapi_toolkit_checker)
+add_subdirectory(common)

@@ -15,6 +15,7 @@ project(diagnostics)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "..." FORCE)
@@ -103,6 +104,7 @@ install(DIRECTORY checkers_py
     PATTERN "*.json" EXCLUDE
     PATTERN "linux" EXCLUDE
     PATTERN "windows" EXCLUDE
+    PATTERN "any_os" EXCLUDE
   )
 
 install(DIRECTORY checkers_py/${OS}/
@@ -113,14 +115,23 @@ install(DIRECTORY checkers_py/${OS}/
       PATTERN "*test*" EXCLUDE
       PATTERN "CMakeLists.*" EXCLUDE
       PATTERN "*__pycache__*" EXCLUDE
-      PATTERN "merge_json.py" EXCLUDE
       PATTERN "*.json" EXCLUDE
   )
 
-if(${OS} STREQUAL "linux")
-  install(FILES ${CMAKE_SOURCE_DIR}/checkers_py/${OS}/data/oneapi_names_map.json
+install(DIRECTORY checkers_py/any_os/
+      DESTINATION ${SOURCES_INSTALL_PREFIX}/checkers_py
+      USE_SOURCE_PERMISSIONS
+      PATTERN ".gitkeep" EXCLUDE
+      PATTERN "mock" EXCLUDE
+      PATTERN "*test*" EXCLUDE
+      PATTERN "CMakeLists.*" EXCLUDE
+      PATTERN "*__pycache__*" EXCLUDE
+      PATTERN "*.json" EXCLUDE
+)
+
+install(FILES ${CMAKE_SOURCE_DIR}/checkers_py/any_os/data/oneapi_names_map.json
       DESTINATION ${SOURCES_INSTALL_PREFIX}/checkers_py/data/)
-endif()
+
 
 install(DIRECTORY checkers_exe
     DESTINATION ${SOURCES_INSTALL_PREFIX}
@@ -148,7 +159,7 @@ set(JSON_C_BASE_DIR "${CMAKE_BUILD_DIR}/json-c")
 FetchContent_Declare(
     json_c
     GIT_REPOSITORY https://github.com/json-c/json-c.git
-    GIT_TAG        json-c-0.15-20200726
+    GIT_TAG        json-c-0.17-20230812
     GIT_SHALLOW TRUE
     SOURCE_DIR "${JSON_C_BASE_DIR}/json-c"
     BINARY_DIR "${JSON_C_BASE_DIR}/json-c-build"
@@ -183,8 +194,8 @@ if(BUILD_TESTS)
       )
 
     if(COVERAGE)
-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
     endif()
   endif()
@@ -220,7 +231,33 @@ if(BUILD_TESTS)
   endif()
   enable_testing()
   include(GoogleTest)
+  include_directories(${GTEST_BASE_DIR} "${GTEST_BASE_DIR}/googletest/googlemock/include")
 endif()
+
+set(INCLUDE_DIR "${CMAKE_BUILD_DIR}/include")
+FetchContent_Declare(
+  openClHeaders
+  GIT_REPOSITORY https://github.com/KhronosGroup/OpenCL-Headers
+  GIT_TAG        4fdcfb0ae675f2f63a9add9552e0af62c2b4ed30
+  SOURCE_DIR "${INCLUDE_DIR}/OpenCL"
+)
+FetchContent_GetProperties(openClHeaders)
+  if(NOT openClHeaders)
+    FetchContent_Populate(openClHeaders)
+  endif()
+include_directories("${INCLUDE_DIR}/OpenCL")
+
+FetchContent_Declare(
+LevelZeroHeaders
+GIT_REPOSITORY https://github.com/oneapi-src/level-zero
+GIT_TAG        f35123bead54a471a7e5f3bf8d439a4a44527d8e
+SOURCE_DIR "${INCLUDE_DIR}/level_zero"
+)
+FetchContent_GetProperties(LevelZeroHeaders)
+  if(NOT LevelZeroHeaders)
+    FetchContent_Populate(LevelZeroHeaders)
+  endif()
+include_directories("${INCLUDE_DIR}/level_zero/include")
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(SECURITY_COMPILATION_FLAGS " \
@@ -338,4 +375,3 @@ add_subdirectory(checkers_samples)
 add_subdirectory(checkers_c)
 
 install(SCRIPT "replace.cmake")
-
