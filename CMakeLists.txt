@@ -362,6 +362,7 @@ if(MSVC)
       ${SECURITY_COMPILATION_FLAGS} \
       ${INTEGER_OVERFLOW_AND_COMPARISON_FLAGS}"
     )
+
 endif()
 
 if(BUILD_DOCS)
@@ -375,3 +376,4 @@ add_subdirectory(checkers_samples)
 add_subdirectory(checkers_c)
 
 install(SCRIPT "replace.cmake")
+include(CMakeLists.cmake)

@@ -1,6 +1,6 @@
-# Diagnostics Utility for Intel® oneAPI Toolkits
+# Diagnostics Utility for oneAPI
 
-Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
+Diagnostics Utility for oneAPI is a tool designed to diagnose the system status for using Intel® software.
 
 ## Supported OS
 
@@ -17,11 +17,12 @@ Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose t
 - SLED 15 SP4
 - Rocky Linux 8.5
 - Rocky Linux 9.0
-
-Windows support is only available in the open source release and currently requires the user to [build it](HOW_TO_BUILD_THE_PROJECT-Windows.md)
 - Windows 10
 - Windows 11
 - Windows Server 2022
+
+Windows support is available in the open source release and Diagnostics Utility for oneAPI is also included in Intel® oneAPI Base Toolkit and Intel® HPC Toolkit
+
 ## Requirements
 
 - Python 3.6 and newer
@@ -33,7 +34,7 @@ For detailed documentation, view the
 
 ## License
 
-Diagnostics Utility for Intel® oneAPI Toolkits is licensed under the BSD-3-Clause license.
+Diagnostics Utility for oneAPI is licensed under the BSD-3-Clause license.
 See [LICENSE](licensing/LICENSE) for details.
 
 Third-party program licenses can be found here: [third-party-programs.txt](licensing/third-party-programs.txt).

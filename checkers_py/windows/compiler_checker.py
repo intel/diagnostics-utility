@@ -74,7 +74,7 @@ def get_msvc_compiler_version() -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     return {"Version": check_result}

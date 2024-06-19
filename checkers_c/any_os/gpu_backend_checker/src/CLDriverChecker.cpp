@@ -178,7 +178,7 @@ void CL_DriverChecker::GetDriverInfo(string &message) {
           "clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices)",
           0, num_devices);
 
-      vector<cl_device_id> devices(num_platforms);
+      vector<cl_device_id> devices(num_devices);
       result = fp_clGetDeviceIDs(platforms[iter], CL_DEVICE_TYPE_ALL,
                                  num_devices, devices.data(), nullptr);
       if (result != CL_SUCCESS) {

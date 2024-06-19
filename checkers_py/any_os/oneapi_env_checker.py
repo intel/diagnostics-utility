@@ -93,7 +93,7 @@ def get_versions_of_oneapi_products_installed_in_env():
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     return {"oneAPI products installed in the environment": check_result}

@@ -28,7 +28,7 @@ Note: A checker file can contain more than one check. You can choose only one by
 Find the name and path of each of the checks you wish to run from
 the :ref:`check-table` and add each of the checks to the JSON file.
 
-Then run the Diagnostics Utility for Intel® oneAPI Toolkits using the config argument:
+Then run the Diagnostics Utility for oneAPI using the config argument:
 
 ::
 
@@ -62,5 +62,5 @@ If your config file has a different name or path, change the
   JSON output file: /home/test/intel/diagnostics/logs/diagnostics_config_example_config_hostname_20211123_103737097593.json
 
   The report was generated for the machine: hostname
-  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
+  by the Diagnostics Utility for oneAPI 2024.2.0
 

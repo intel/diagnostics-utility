@@ -76,7 +76,7 @@ class TestGetVersionsOfOneapiProductsInstalledInEnv(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Message": "oneAPI product names map is empty.",
                 "HowToFix": "This error is unexpected. Please report the issue to "
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "Diagnostics Utility for oneAPI repository: "
                             "https://github.com/intel/diagnostics-utility."
             }
         }
@@ -97,7 +97,7 @@ class TestGetVersionsOfOneapiProductsInstalledInEnv(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Message": "Error",
                 "HowToFix": "This error is unexpected. Please report the issue to "
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "Diagnostics Utility for oneAPI repository: "
                             "https://github.com/intel/diagnostics-utility."
             }
         }

@@ -359,19 +359,19 @@ class TestShowMetricsForUnknownDevice(unittest.TestCase):
                         "CheckResult": "unknown/unknown",
                         "CheckStatus": "ERROR",
                         "Message": "Intel® oneAPI Level Zero driver cannot provide information about frequency.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/unknown",
                         "CheckStatus": "ERROR",
                         "Message": "Intel® oneAPI Level Zero driver cannot provide information about memory bandwidth.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/unknown",
                         "CheckStatus": "ERROR",
                         "Message": "Intel® oneAPI Level Zero driver cannot provide information about PCIe bandwidth.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                 },
                 "CheckStatus": "WARNING",
@@ -447,19 +447,19 @@ class TestCompareMetricsForKnownDevice(unittest.TestCase):
                         "CheckResult": "unknown/1200",
                         "CheckStatus": "ERROR",
                         "Message": "Intel® oneAPI Level Zero driver cannot provide information about frequency.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "Memory bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/30",
                         "CheckStatus": "ERROR",
                         "Message": "Intel® oneAPI Level Zero driver cannot provide information about memory bandwidth.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                     "PCIe bandwidth, GB/s (Max/Target)": {
                         "CheckResult": "unknown/10",
                         "CheckStatus": "ERROR",
                         "Message": "Intel® oneAPI Level Zero driver cannot provide information about PCIe bandwidth.",  # noqa E501
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     },
                 },
                 "CheckStatus": "WARNING",

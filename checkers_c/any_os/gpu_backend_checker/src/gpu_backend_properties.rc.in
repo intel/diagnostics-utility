@@ -1,0 +1,112 @@
+// Copyright Intel Corporation.
+// This software and the related documents are Intel copyrighted materials, and
+// your use of them is governed by the express license under which they were
+// provided to you (License). Unless the License provides otherwise, you may not
+// use, modify, copy, publish, distribute, disclose or transmit this software or
+// the related documents without Intel's prior written permission. This software
+// and the related documents are provided as is, with no express or implied
+// warranties, other than those that are expressly stated in the License.
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#define VERSION_COMPANY_NAME	    "Intel Corporation"
+#define VERSION_PRODUCT_NAME        "Diagnostics Utility for oneAPI"
+#define VERSION_PRODUCT_VERSION     "2024.2.0.0"
+#define VERSION_LEGAL_COPYRIGHT     "Copyright (C) Intel Corporation"
+#define VERSION_ORIG_FILENAME       "gpu_backend_checker.dll"
+#define VERSION_FILE_DESCR          "GPU backend checker for Diagnostics Utility for oneAPI"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2024,2,0,0
+ PRODUCTVERSION 2024,2,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", VERSION_COMPANY_NAME
+            VALUE "FileDescription", VERSION_FILE_DESCR
+            VALUE "FileVersion", VERSION_PRODUCT_VERSION
+            VALUE "LegalCopyright", VERSION_LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", VERSION_ORIG_FILENAME
+            VALUE "ProductName", VERSION_PRODUCT_NAME
+            VALUE "ProductVersion", VERSION_PRODUCT_VERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

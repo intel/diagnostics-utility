@@ -65,6 +65,6 @@ def is_os_supported() -> bool:
 
 def check_that_os_is_supported() -> None:
     if not is_os_supported():
-        print("Your operating system is not supported by the Diagnostics Utility\n"
-              "for Intel® oneAPI Toolkits. You can force the program to run using the --force flag.")
+        print("Your operating system is not supported by the Diagnostics Utility for oneAPI.\n"
+              "You can force the program to run using the --force flag.")
         exit(1)

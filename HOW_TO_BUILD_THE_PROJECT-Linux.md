@@ -86,6 +86,6 @@ $ cd .../applications.validation.one-diagnostics.source
 $ ./diagnostics.py --help
 usage: diagnostics.py [--select SELECTION [SELECTION ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 
-Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
+Diagnostics Utility for oneAPI is a tool designed to diagnose the system status for using Intel® software.
 ...
 ```

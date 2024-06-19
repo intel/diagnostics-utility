@@ -316,7 +316,7 @@ class TestCheckCompatibilities(unittest.TestCase):
                 "Message": "Error",
                 "CheckStatus": "ERROR",
                 "CheckResult": "Undefined",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
         real_value = {}
@@ -380,7 +380,7 @@ class TestCheckCompatibilities(unittest.TestCase):
                 "Message": "Error",
                 "CheckStatus": "ERROR",
                 "CheckResult": {},
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
@@ -489,7 +489,7 @@ class TestCheckCompatibilities(unittest.TestCase):
                 "Message": "Error",
                 "CheckStatus": "ERROR",
                 "CheckResult": {},
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 

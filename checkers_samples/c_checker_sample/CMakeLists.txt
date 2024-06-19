@@ -10,16 +10,18 @@
 # *******************************************************************************/
 
 set(CHECKERS_LIB_NAME c_checker_sample)
+set(SAMPLE_CHECKER_INCLUDE_DIR include)
 
 AUX_SOURCE_DIRECTORY(src CHECKERS_SRC)
 
-add_library(${CHECKERS_LIB_NAME} SHARED ${CHECKERS_SRC})
-target_include_directories(${CHECKERS_LIB_NAME} PRIVATE ../../include)
-
 if(${OS} STREQUAL "windows")
-  install(TARGETS ${CHECKERS_LIB_NAME} RUNTIME DESTINATION ${SOURCES_INSTALL_PREFIX}/checkers_samples)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/sample_properties.rc.in ${CMAKE_CURRENT_BINARY_DIR}/sample_properties.rc @ONLY)
+    add_library(${CHECKERS_LIB_NAME} SHARED ${CHECKERS_SRC} ${CMAKE_CURRENT_BINARY_DIR}/sample_properties.rc)
+    target_include_directories(${CHECKERS_LIB_NAME} PRIVATE ../../include ${SAMPLE_CHECKER_INCLUDE_DIR})
 else()
-  install(TARGETS ${CHECKERS_LIB_NAME} DESTINATION ${SOURCES_INSTALL_PREFIX}/checkers_samples)
+    add_library(${CHECKERS_LIB_NAME} SHARED ${CHECKERS_SRC})
+    target_include_directories(${CHECKERS_LIB_NAME} PRIVATE ../../include)
+    install(TARGETS ${CHECKERS_LIB_NAME} DESTINATION ${SOURCES_INSTALL_PREFIX}/checkers_samples)
 endif()
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")

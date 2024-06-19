@@ -208,7 +208,7 @@ numfig_secnum_depth = 0
 
 # Added for hybrid
 
-project = "Diagnostics Utility for Intel® oneAPI Toolkits"
+project = "Diagnostics Utility for oneAPI User Guide"
 copyright = "2021, Intel"
 author = "Intel"
 
@@ -353,7 +353,7 @@ html_theme_path = ['_themes']
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 
-html_title = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
+html_title = "Diagnostics Utility for oneAPI User Guide"
 html_favicon = "_static/favicon.png"
 html_logo = '_static/oneAPI-rgb-rev-100.png'
 
@@ -458,7 +458,7 @@ latex_documents = [
     (
         master_doc,
         'get_started.tex',
-        u'Diagnostics Utility for Intel oneAPI Toolkits User Guide',
+        u'Diagnostics Utility for oneAPI User Guide',
         u'',
         'manual',
     ),
@@ -504,10 +504,10 @@ texinfo_documents = [
     (
         master_doc,
         'index',
-        u'Diagnostics Utility for Intel® oneAPI Toolkits User Guide',
+        u'Diagnostics Utility for oneAPI User Guide',
         author,
         'Intel® Software',
-        'Diagnostics Utility for Intel® oneAPI Toolkits User Guide.',
+        'Diagnostics Utility for oneAPI User Guide.',
         'Miscellaneous',
     ),
 ]
@@ -569,7 +569,7 @@ ditaxml_topic_meta["content type"] = "Developer Guide"
 ditaxml_topic_meta[
     "description"
 ] = "Diagnose installation errors."
-ditaxml_topic_meta["document title"] = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
+ditaxml_topic_meta["document title"] = "Diagnostics Utility for oneAPI User Guide"
 ditaxml_topic_meta["IDZ custom tags"] = "idzcustomtags:productdocumentation"
 ditaxml_topic_meta["keywords"] = "None"
 ditaxml_topic_meta["language"] = "en"
@@ -598,7 +598,7 @@ ditaxml_topic_meta["security classification"] = "Public Content"
 ditaxml_topic_meta[
     "shortDescription"
 ] = "Maximize your hardware’s ability to execute the code."
-ditaxml_topic_meta["shortTitle"] = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
+ditaxml_topic_meta["shortTitle"] = "Diagnostics Utility for oneAPI User Guide"
 ditaxml_topic_meta["entitlement"] = "intel_usr"
 ditaxml_topic_meta["entitlementtype"] = "any"
 ditaxml_topic_meta["noindexfollowarchive"] = "true"

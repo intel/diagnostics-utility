@@ -114,7 +114,7 @@ class TestGetGpuDriverInfo(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Message": "Oops!",
                 "HowToFix": "This error is unexpected. Please report the issue to "
-                "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                "Diagnostics Utility for oneAPI repository: "
                 "https://github.com/intel/diagnostics-utility."}
         }
         actual = intel_gpu_detector_checker.get_gpu_driver_info()

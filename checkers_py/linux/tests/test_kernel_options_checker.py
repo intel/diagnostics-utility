@@ -95,7 +95,7 @@ class TestCheckPerfStreamParanoid(unittest.TestCase):
             "Message": "test message",
             "CheckStatus": "ERROR",
             "CheckResult": "Undefined",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
         }}
 
         actual = {}
@@ -110,7 +110,7 @@ class TestCheckPerfStreamParanoid(unittest.TestCase):
             "Message": "Cannot get information about operating sysctl option",
             "CheckStatus": "ERROR",
             "CheckResult": "Undefined",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
         }}
 
         process = MagicMock()
@@ -199,7 +199,7 @@ class TestGetKernelBootOptions(unittest.TestCase):
                 "Message": "test message",
                 "CheckStatus": "ERROR",
                 "Command": "cat /proc/cmdline",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
@@ -216,7 +216,7 @@ class TestGetKernelBootOptions(unittest.TestCase):
                 "Message": "Cannot get information about kernel boot options",
                 "CheckStatus": "ERROR",
                 "Command": "cat /proc/cmdline",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 

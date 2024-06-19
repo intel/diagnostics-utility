@@ -168,7 +168,7 @@ class TestCheckHangcheckInGrub(unittest.TestCase):
             "Command": "grep i915.enable_hangcheck=0 /etc/default/grub",
             "Message": "test message",
             "CheckStatus": "ERROR",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
         }
 
         actual = {}
@@ -212,7 +212,7 @@ class TestCheckHangcheckInConfig(unittest.TestCase):
             "Command": "cat /sys/module/i915/parameters/enable_hangcheck",
             "CheckStatus": "ERROR",
             "Message": "test message",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
         }
 
         actual = {}
@@ -436,7 +436,7 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +",
                 "Message": "Cannot get information about preempt_timeout_ms",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
             }
         }
 
@@ -460,7 +460,7 @@ class TestCheckNonZeroPreEmptionTimeouts(unittest.TestCase):
                 "Command": "find /sys/devices -regex .*/drm/card[0-9]*/engine/[rc]cs[0-9]*/preempt_timeout_ms"
                            " -exec cat {} +",
                 "Message": "test message",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa: E501
             }
         }
 

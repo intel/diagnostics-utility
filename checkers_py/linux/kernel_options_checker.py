@@ -31,7 +31,7 @@ def _check_perf_stream_paranoid(json_node: Dict) -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
     json_node.update({"Perf stream paranoid": check_result})
 
@@ -64,7 +64,7 @@ def get_kernel_boot_options(json_node: Dict) -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
     json_node.update({"Kernel boot options": check_result})
 

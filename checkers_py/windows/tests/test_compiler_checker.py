@@ -140,7 +140,7 @@ class TestGetMsvcCompilerVersion(unittest.TestCase):
                 "Command": "cl",
                 "Message": "Oops",
                 "HowToFix": "This error is unexpected. Please report the issue to "
-                "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                "Diagnostics Utility for oneAPI repository: "
                 "https://github.com/intel/diagnostics-utility."
             }
         }

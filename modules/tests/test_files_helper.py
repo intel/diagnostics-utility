@@ -329,7 +329,7 @@ class TestArgsString(unittest.TestCase):
         args.force = True
         args.verbosity = 5
 
-        expected_value = "select_fil_list_config_config_force_verbosity_5"
+        expected_value = "select_list_config_force_verbosity"
 
         real_value = files_helper._args_string(args)
 

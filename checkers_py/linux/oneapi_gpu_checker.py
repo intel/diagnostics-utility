@@ -11,6 +11,7 @@
 
 import os
 import json
+import shutil
 import subprocess
 import tempfile
 from typing import List, Dict
@@ -21,10 +22,11 @@ from checkers_py.linux.common.gpu_helper import get_card_devices, get_render_dev
 
 FULL_PATH_TO_CHECKER = os.path.dirname(os.path.realpath(__file__))
 PATH_TO_SOURCE_OFFLOAD = os.path.join(FULL_PATH_TO_CHECKER, "oneapi_check_offloads")
-TMP_MATMUL_FILE = os.path.join(tempfile.mkdtemp(), "matmul")
-TMP_BINOPTION_FILE = os.path.join(tempfile.mkdtemp(), "binoption")
-TMP_SIMPLE_SYCL_CODE_FILE = os.path.join(tempfile.mkdtemp(), "simple-sycl-code")
-TMP_PARALLEL_FOR_1D_FILE = os.path.join(tempfile.mkdtemp(), "parallel-for-1D")
+TMP_FOLDER = tempfile.mkdtemp()
+TMP_MATMUL_FILE = os.path.join(TMP_FOLDER, "matmul.exe")
+TMP_BINOPTION_FILE = os.path.join(TMP_FOLDER, "binoption.exe")
+TMP_SIMPLE_SYCL_CODE_FILE = os.path.join(TMP_FOLDER, "simple-sycl-code.exe")
+TMP_PARALLEL_FOR_1D_FILE = os.path.join(TMP_FOLDER, "parallel-for-1D.exe")
 MISSING_COMPILER_MESSAGE = "Try to: " \
                            "1) install Intel® C++ Compiler based on " \
                            "https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html " \
@@ -58,7 +60,7 @@ def get_i915_driver_loaded_info(json_node: Dict) -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
     json_node.update({"Intel® Graphics Driver is loaded.": check_result})
 
@@ -141,7 +143,7 @@ def get_dmesg_i915_init_errors_info(json_node: Dict) -> None:
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "Try to re-run this check with administrative privileges. " \
             "If issue persists, please report it to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     json_node.update({"dmesg doesn't contain i915 errors": check_result})
@@ -187,7 +189,7 @@ def get_gpu_errors_info(json_node: Dict) -> None:
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "Try to re-run this check with administrative privileges. " \
             "If issue persists, please report it to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     json_node.update({"dmesg doesn't contain user errors related to GPU operations": check_result})
@@ -653,6 +655,8 @@ def run_oneapi_gpu_check(data: dict) -> CheckSummary:
     get_openmp_offload_info(result_json["CheckResult"])
     get_icpx_offload_info(result_json["CheckResult"])
 
+    remove_folder(TMP_FOLDER)
+
     check_summary = CheckSummary(
         result=json.dumps(result_json, indent=4)
     )
@@ -677,3 +681,11 @@ def get_check_list() -> List[CheckMetadataPy]:
         run="run_oneapi_gpu_check"
     )
     return [someCheck]
+
+
+def remove_folder(folder):
+    try:
+        shutil.rmtree(folder)
+    except Exception as e:
+        print(f"ERROR: {e}")
+    return

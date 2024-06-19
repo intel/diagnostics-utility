@@ -18,7 +18,7 @@ from pathlib import Path
 def create_parser(version: str):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
-        description="The Diagnostics Utility for Intel® oneAPI Toolkits is a tool "
+        description="The Diagnostics Utility for oneAPI is a tool "
                     "designed to diagnose the system status for using Intel® software.",
         epilog=f"Important notes:\n"
                f"\n"
@@ -55,7 +55,7 @@ def create_parser(version: str):
                f"4. For more details see online documentation:\n"
                f"   https://www.intel.com/content/www/us/en/develop/documentation/diagnostic-utility-user-guide/top.html \n"  # noqa: E501
                f"\n"
-               f"Diagnostics Utility for Intel® oneAPI Toolkits {version}\n"
+               f"Diagnostics Utility for oneAPI {version}\n"
                f"Copyright (C) Intel Corporation. All rights reserved.",
         add_help=False
     )
@@ -70,7 +70,7 @@ def create_parser(version: str):
         help="Select checks to run by group name or check name.\n"
              "Each check can belong to one or more groups.\n"
              "To view all available checks with their names and marked groups,\n"
-             "run the Diagnostics Utility for Intel® oneAPI Toolkits\n"
+             "run the Diagnostics Utility for oneAPI\n"
              "with the \"--list\" option."
     )
     parser.add_argument(
@@ -125,7 +125,7 @@ def create_parser(version: str):
     parser.add_argument(
         "-V", "--version",
         action="version",
-        version=f"Diagnostics Utility for Intel® oneAPI Toolkits\n"
+        version=f"Diagnostics Utility for oneAPI\n"
                 f"Version: {version}\n"
                 f"Date of creation: @DATE_OF_CREATION@\n"
                 f"Git commit: @GIT_COMMIT@\n"

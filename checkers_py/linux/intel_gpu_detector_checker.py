@@ -54,7 +54,7 @@ def _get_i915_driver_loaded_info(json_node: Dict) -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
     json_node.update({"Intel® Graphics Driver is loaded": check_result})
 
@@ -282,7 +282,7 @@ def get_gpu_info(json_node: Dict) -> None:
                         "CheckResult": "",
                         "CheckStatus": "ERROR",
                         "Message": str(error),
-                        "HowToFix": "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
+                        "HowToFix": "Try to run the Diagnostics Utility for oneAPI "
                                     "with administrative privilege or join the video and render groups."
                     }
                 })
@@ -293,7 +293,7 @@ def get_gpu_info(json_node: Dict) -> None:
                         "CheckStatus": "ERROR",
                         "Message": str(error),
                         "HowToFix": "This error is unexpected. Please report the issue to "
-                                    "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                                    "Diagnostics Utility for oneAPI repository: "
                                     "https://github.com/intel/diagnostics-utility."
                     }
                 })
@@ -320,7 +320,7 @@ def get_gpu_info(json_node: Dict) -> None:
                         "CheckResult": "",
                         "CheckStatus": "ERROR",
                         "Message": str(error),
-                        "HowToFix": "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits "
+                        "HowToFix": "Try to run the Diagnostics Utility for oneAPI "
                                     "with administrative privilege or join the video and render groups."
                     }
                 })
@@ -331,7 +331,7 @@ def get_gpu_info(json_node: Dict) -> None:
                         "CheckStatus": "ERROR",
                         "Message": str(error),
                         "HowToFix": "This error is unexpected. Please report the issue to "
-                                    "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                                    "Diagnostics Utility for oneAPI repository: "
                                     "https://github.com/intel/diagnostics-utility."
                     }
                 })
@@ -368,7 +368,7 @@ def get_gpu_info(json_node: Dict) -> None:
                 "Message": str(error),
                 "CheckResult": "",
                 "HowToFix": "This error is unexpected. Please report the issue to "
-                            "Diagnostics Utility for Intel® oneAPI Toolkits repository: "
+                            "Diagnostics Utility for oneAPI repository: "
                             "https://github.com/intel/diagnostics-utility."
             }
         }
