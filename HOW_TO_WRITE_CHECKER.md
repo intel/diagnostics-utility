@@ -1,6 +1,6 @@
 # Diagnostic Utility Concepts
 
-The Diagnostics Utility for Intel® oneAPI Toolkits uses two basic concepts:
+The Diagnostics Utility for oneAPI uses two basic concepts:
 
 | Concept  | Description |
 |:---------|:------------|
@@ -18,7 +18,7 @@ Checks are used for:
   specific requirements for individual components.
 * Information checks should only show data that will be useful to the user.
 * Before implementing new checks, review checks that already exist
-  in the Diagnostics Utility for Intel® oneAPI Toolkits.
+  in the Diagnostics Utility for oneAPI.
 
 The Diagnostic Utility has the ability to run checks that depend on the
 result of other checks. There are some basic system checks that can be useful

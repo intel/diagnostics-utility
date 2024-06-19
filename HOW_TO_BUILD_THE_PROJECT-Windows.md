@@ -4,7 +4,7 @@
 
 ### Project dependencies
 
-1. Install Visual Studio with Spectre-mitigated libraries
+1. Install Microsoft* Visual Studio* with Spectre-mitigated libraries
 2. Install CMake
 
 ### Documentation dependencies
@@ -52,6 +52,6 @@ PS> cd .../applications.validation.one-diagnostics.source
 PS> python diagnostics.py --help
 usage: diagnostics.py [--select SELECTION [SELECTION ...]] [-l] [-c PATH_TO_CONFIG] [-o PATH_TO_OUTPUT | -t] [-u] [-p PATH [PATH ...]] [--force] [-v] [-V] [-h]
 
-Diagnostics Utility for Intel® oneAPI Toolkits is a tool designed to diagnose the system status for using Intel® software.
+Diagnostics Utility for oneAPI is a tool designed to diagnose the system status for using Intel® software.
 ...
 ```

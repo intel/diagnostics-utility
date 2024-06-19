@@ -43,13 +43,13 @@ def _check_hangcheck_in_grub(check_result: Dict) -> None:
     except PermissionError as error:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error),
-        check_result["HowToFix"] = "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits " \
+        check_result["HowToFix"] = "Try to run the Diagnostics Utility for oneAPI " \
             "with administrative privileges."
     except Exception as error:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
 
@@ -65,13 +65,13 @@ def _check_hangcheck_in_config(check_result: Dict) -> None:
     except PermissionError as error:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
-        check_result["HowToFix"] = "Try to run the Diagnostics Utility for Intel® oneAPI Toolkits " \
+        check_result["HowToFix"] = "Try to run the Diagnostics Utility for oneAPI " \
             "with administrative privileges."
     except Exception as error:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
 
@@ -135,7 +135,7 @@ def check_non_zero_pre_emption_timeouts(json_node: Dict) -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     json_node.update({"Queried preempt_timeout_ms": check_result})

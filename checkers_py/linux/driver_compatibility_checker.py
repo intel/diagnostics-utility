@@ -142,7 +142,7 @@ def _check_regression(json_node: Dict, driver_name: str, driver_version: str,  c
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     json_node.update({"Regression": check_result})
@@ -177,7 +177,7 @@ def _check_drivers(json_node: Dict, gpu_driver_versions: Dict, cursor):
             check_result["CheckStatus"] = "ERROR"
             check_result["Message"] = str(error)
             check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+                "Diagnostics Utility for oneAPI repository: " \
                 "https://github.com/intel/diagnostics-utility."
 
     json_node.update({"GPU drivers information": check_result})
@@ -207,7 +207,7 @@ def _check_compatibilities(json_node: Dict, product_versions: Dict, gpu_driver_v
                 for comp, comp_version in product_compatibilities.items():
                     if comp in gpu_driver_versions.keys() and gpu_driver_versions[comp] < comp_version:
                         product_check_result["CheckResult"] = "No"
-                        product_check_result["CheckStatus"] = "FAIL"
+                        product_check_result["CheckStatus"] = "WARNING"
                         product_check_result["Message"] = \
                             f"Installed version of {comp} may not be compatible with the version of the {product}. " \
                             f"Recommended  version of {comp} is {comp_version}"  # noqa: E501
@@ -219,7 +219,7 @@ def _check_compatibilities(json_node: Dict, product_versions: Dict, gpu_driver_v
             check_result["CheckStatus"] = "ERROR"
             check_result["Message"] = str(error)
             check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-                "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+                "Diagnostics Utility for oneAPI repository: " \
                 "https://github.com/intel/diagnostics-utility."
 
     node_name = "Compatibility of the installed products" if install else \
@@ -253,7 +253,7 @@ def check_compatibilities(json_node: Dict, data: Dict) -> None:
         check_result["CheckStatus"] = "ERROR"
         check_result["Message"] = str(error)
         check_result["HowToFix"] = "This error is unexpected. Please report the issue to " \
-            "Diagnostics Utility for Intel® oneAPI Toolkits repository: " \
+            "Diagnostics Utility for oneAPI repository: " \
             "https://github.com/intel/diagnostics-utility."
 
     json_node.update({"oneAPI products compatibilities with drivers": check_result})

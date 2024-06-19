@@ -113,9 +113,8 @@ class TestIsOsSupported(unittest.TestCase):
     @patch("builtins.exit")
     @patch("builtins.print")
     def test_check_that_os_is_supported_negative(self, mock_print, mock_exit, mock_is_os_supported):
-        expected_output = "Your operating system is not supported by the Diagnostics Utility\n" \
-                          "for Intel® oneAPI Toolkits. You can force the program to run using the " \
-                          "--force flag."
+        expected_output = "Your operating system is not supported by the Diagnostics Utility for oneAPI.\n" \
+                          "You can force the program to run using the --force flag."
         expected_exit_code = 1
 
         check_that_os_is_supported()

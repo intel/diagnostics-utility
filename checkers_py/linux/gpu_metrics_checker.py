@@ -151,7 +151,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
         frequency["GPU Frequency, MHz (Max/Target)"].update({"CheckStatus": "ERROR"})
         frequency["GPU Frequency, MHz (Max/Target)"].update(
             {"Message": "Intel® oneAPI Level Zero driver cannot find out information about frequency.",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501)
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."})  # noqa E501)
     device_metrics.update(frequency)
     mem_bandwidth = {
         "Memory bandwidth, GB/s (Max/Target)":
@@ -161,7 +161,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update(
             {"Message": "Intel® oneAPI Level Zero driver cannot find out information about memory bandwidth.",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
         device_metrics.update(mem_bandwidth)
     elif device.mem_bandwidth != "unknown" and device.gpu_type == "Discrete":
         device_metrics.update(mem_bandwidth)
@@ -176,7 +176,7 @@ def show_metrics_for_unknown_device(json_node: Dict, device: Device) -> None:
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update(
             {"Message": "Intel® oneAPI Level Zero driver cannot find out information about PCIe bandwidth.",
-             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
+             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
         device_metrics.update(pcie_bandwidth)
     elif device.pcie_bandwidth != "unknown" and device.gpu_type == "Discrete":
         device_metrics.update(pcie_bandwidth)
@@ -197,7 +197,7 @@ def compare_metrics_for_known_device(json_node: Dict, device: Device) -> None:
         frequency["GPU Frequency, MHz (Max/Target)"].update({"CheckStatus": "ERROR"})  # noqa
         frequency["GPU Frequency, MHz (Max/Target)"].update(
             {"Message": "Intel® oneAPI Level Zero driver cannot find out information about frequency.",  # noqa
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
     elif float(device.max_freq) < float(known_devices[device.id]['freq']):
         frequency["GPU Frequency, MHz (Max/Target)"].update({"CheckStatus": "FAIL"})
         frequency["GPU Frequency, MHz (Max/Target)"].update(
@@ -212,7 +212,7 @@ def compare_metrics_for_known_device(json_node: Dict, device: Device) -> None:
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update(
             {"Message": "Intel® oneAPI Level Zero driver cannot find out information about memory bandwidth.",
-            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
+            "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."})  # noqa E501
     elif float(device.mem_bandwidth) < float(known_devices[device.id]['mem_bw']):
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "FAIL"})
         mem_bandwidth["Memory bandwidth, GB/s (Max/Target)"].update(
@@ -227,7 +227,7 @@ def compare_metrics_for_known_device(json_node: Dict, device: Device) -> None:
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "ERROR"})
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update(
             {"Message": "Intel® oneAPI Level Zero driver cannot find out information about PCIe bandwidth.",
-             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."})  # noqa
+             "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."})  # noqa
     elif float(device.pcie_bandwidth) < float(known_devices[device.id]['pcie_bw']):
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update({"CheckStatus": "FAIL"})
         pcie_bandwidth["PCIe bandwidth, GB/s (Max/Target)"].update(

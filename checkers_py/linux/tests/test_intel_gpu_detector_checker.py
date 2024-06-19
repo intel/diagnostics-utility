@@ -125,7 +125,7 @@ class TestGetI915DriverInfo(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "Cannot get information about kernel modules that are currently loaded.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
         lsmod_mock = MagicMock()
@@ -148,7 +148,7 @@ class TestGetI915DriverInfo(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "Cannot get information about whether the Intel® Graphics Driver is loaded.",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
 
@@ -205,7 +205,7 @@ class TestGetI915DriverInfo(unittest.TestCase):
                 "CheckStatus": "ERROR",
                 "Command": "lsmod | grep i915",
                 "Message": "test message",
-                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
             }
         }
         actual = {}
@@ -966,7 +966,7 @@ class TestGetGpuInfo(unittest.TestCase):
                         "CheckResult": "",
                         "CheckStatus": "ERROR",
                         "Message": "test message",
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     }
                 }
             }
@@ -1016,7 +1016,7 @@ class TestGetGpuInfo(unittest.TestCase):
                         "CheckResult": "",
                         "CheckStatus": "ERROR",
                         "Message": "test message",
-                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for Intel® oneAPI Toolkits repository: https://github.com/intel/diagnostics-utility."  # noqa E501
+                        "HowToFix": "This error is unexpected. Please report the issue to Diagnostics Utility for oneAPI repository: https://github.com/intel/diagnostics-utility."  # noqa E501
                     }
                 }
             }

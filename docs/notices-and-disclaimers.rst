@@ -1,6 +1,6 @@
 .. _notices-and-disclaimers:
 
-*Diagnostics Utility for Intel® oneAPI Toolkits User Guide*
+*Diagnostics Utility for oneAPI User Guide*
 
 
 Notices and Disclaimers

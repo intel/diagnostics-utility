@@ -112,7 +112,7 @@ may produce this output:
   JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_intel_gpu_detector_check_hostname_20211123_103132327361.json
 
   The report was generated for the machine: hostname
-  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
+  by the Diagnostics Utility for oneAPI 2024.2.0
 
 
 
@@ -131,7 +131,7 @@ check:
 | gpu_backend_check           | OpenCL or LevelZero Driver is not loaded. Load the driver.                                                                                         |
 |                             | Current user may not have permissions to access driver folder. Try running as  ``sudo``                                                            |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
-| oneapi_toolkit_check        | Information only. If a oneAPI toolkit is found, the check will INFO. If a oneAPI toolkit is not found, the check will FAIL.                        |
+| oneapi_toolkit_check        | Information only. If an Intel® oneAPI toolkit is found, the check will INFO. If an Intel® oneAPI toolkit is not found, the check will FAIL.        |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+
 | driver_compatibility_check  | Check drivers to ensure they are compatible with installed oneAPI components.                                                                      |
 +-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+

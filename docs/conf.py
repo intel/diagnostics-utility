@@ -28,11 +28,11 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Diagnostics Utility for Intel® oneAPI Toolkits User Guide'
+project = 'Diagnostics Utility for oneAPI User Guide'
 copyright = 'Intel Corporation'
 
 # The full version, including alpha/beta/rc tags
-release = '2023.2'
+release = '2024.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -43,15 +43,6 @@ release = '2023.2'
 # extensions = [
 #   'sphinx_tabs.tabs'
 # ]
-
-
-nbsphinx_allow_errors = True
-
-# for svg files handling for latex
-nbsphinx_execute_arguments = [
-    "--InlineBackend.figure_formats={'svg', 'pdf'}",
-    "--InlineBackend.rc={'figure.dpi': 150}",
-]
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -73,6 +64,8 @@ exclude_patterns = []
 #    "_themes"
 # ]
 
+html_copy_source = False
+
 rst_prolog = r"""
 .. |intel_r| replace:: Intel\ :superscript:`®`
 .. |vtune_tm| replace:: VTune\ :superscript:`tm`
@@ -93,14 +86,14 @@ rst_prolog = r"""
 # html_static_path = ['_static']
 
 ditaxml_make_flat = True
-ditaxml_flat_map_to_title = False
+ditaxml_flat_map_to_title = True
 ditaxml_shorten_alias = True
 
 ditaxml_topic_meta = {}
 ditaxml_topic_meta["audience"] = \
     "etm-aa2a8ffb0e5b41fe85bf2f5d50a71cf2"
 ditaxml_topic_meta["description"] = "Identify problems with your toolkit installation."
-ditaxml_topic_meta["document_title"] = "Diagnostics Utility for Intel® oneAPI Toolkits User Guide"
+ditaxml_topic_meta["document_title"] = "Diagnostics Utility for oneAPI User Guide"
 ditaxml_topic_meta["keywords"] = "None"
 ditaxml_topic_meta["locale"] = "en-us"
 ditaxml_topic_meta["menu"] = \
@@ -119,36 +112,39 @@ ditaxml_topic_meta["primary_tags"] = (
     "etm-6b088d69d83243a0aa3b986645a7e74b"
 )
 ditaxml_topic_meta["content_type"] = "etm-6d0f0d9ff2b54ee4a65b84789754d34e"  # Install Guide
-ditaxml_topic_meta["primary_owner"] = "Moore, Benjamin D (benjamin.d.moore@intel.com)"
-ditaxml_topic_meta["primary_business_owner"] = "Feldhousen, Jeanette S (jeanette.s.feldhousen@intel.com)"
-ditaxml_topic_meta["notification_dl"] = "benjamin.d.moore@intel.com,taryn.e.apel@intel.com,infodev.book.publishing.notices@intel.com"  # noqa: E501
+ditaxml_topic_meta["primary_owner"] = "Apel, Taryn E (taryn.e.apel@intel.com"
+ditaxml_topic_meta["primary_business_owner"] = "Moore, Benjamin D (benjamin.d.moore@intel.com)"
+ditaxml_topic_meta["notification_dl"] = "taryn.e.apel@intel.com,amie.grace@intel.com,infodev.book.publishing.notices@intel.com"  # noqa: E501
 ditaxml_topic_meta["program_identifier"] = "idz"
-ditaxml_topic_meta["publish_date"] = "2023-07-10"
-ditaxml_topic_meta["revision_date"] = "2023-07-13"
+ditaxml_topic_meta["publish_date"] = "2023-11-03"
+
+ditaxml_topic_meta["revision_date"] = "2024-06-24"
+
 ditaxml_topic_meta["classification_type"] = "Public"
 ditaxml_topic_meta["content_classification"] = "Public"
 ditaxml_topic_meta["metadata_classification"] = "Public"
 ditaxml_topic_meta["noindexfollowarchive"] = "false"
 ditaxml_topic_meta["latest_version"] = "true"
 ditaxml_topic_meta["group_content_id"] = "771725"  # 771725_771726 for 2023.0
-ditaxml_topic_meta["publication_content_id"] = "781960"  # 771726 = 2023.0 773660 = 2023.1
+ditaxml_topic_meta["publication_content_id"] = "824350"  # 771726 = 2023.0 773660 = 2023.2 790952 = 2024.0 817275  = 2024.1  # noqa: E501
+
 ditaxml_topic_meta["publication_root_node"] = "oneapi"
 ditaxml_topic_meta["publication_name"] = "user-guide-diagnostic-utility"
 ditaxml_prod_info = {}
 ditaxml_prod_info["prodname"] = ""
-ditaxml_prod_info["version"] = "2023.2"
+ditaxml_prod_info["version"] = "2024.2"
 
-imgmath_image_format = "svg"
 
-ditaxml_nocp_parameters = {
-    "operation": "publish",
-    "environment": "production",
-    "ipix-path": "IPIX_Importtointelsite\\oneapi\\programming-guide",
-    "dita-map": "C:\\git\\programming-guide\\_build\\ditaxml\\toc.ditamap",
-    "publication-name": "Intel® oneAPI Programming Guide",
-    "output-format": "NOCP staging",  # change to NOCP production to go live
-    "conversion-out": "C:\\nocp-publish\\conversion-out\\programming-guide"
-}
+# set up Kevin Putnam's script to eliminate multiple commands
+# Note that the dita-map path is specific to Amie's computer
 
 ditaxml_publish_to_nocp = True
-ditaxml_blockquote_warning = True
+ditaxml_nocp_parameters = {
+     "operation": "publish",
+     "environment": "production",
+     "ipix-path": "IPIX_Importtointelsite/oneapi/diagnostic-utility",
+     "dita-map": "C:\\repositories\\diagnostic-utility-user-guide\\applications.validation.one-diagnostics.source\\docs\\_build\\ditaxml\\toc.ditamap",  # noqa: E501
+     "publication-name": "Diagnostics Utility for oneAPI User Guide",
+     "output-format": "NOCP preview",   # NOCP production or NOCP preview
+     "conversion-out": "C:\\nocp\\ImportAndPublishCli\\conversion-out\\diag-utility"
+}

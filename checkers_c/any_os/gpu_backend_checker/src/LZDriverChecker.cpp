@@ -315,8 +315,7 @@ void LZ_DriverChecker::GetDriverInfo(string &message) {
   json_object *node = json_object_new_object();
 
   if (GetLoaderVersion(message)) {
-    JsonNode::AddJsonNode(node, "Loader Version", STATUS_INFO, "",
-                          "dpkg --no-pager -l 'level-zero' | grep ii", 0,
+    JsonNode::AddJsonNode(node, "Loader Version", STATUS_INFO, "", "", 0,
                           message);
   }
 

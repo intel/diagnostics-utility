@@ -50,7 +50,7 @@ The command below will run all checks and output the minimum details.
   JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_all_hostname_20211123_130044508628.json
 
   The report was generated for the machine: hostname
-  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
+  by the Diagnostics Utility for oneAPI 2024.2.0
 
 
 To run all checks and see more detail in the output, add the ``-v`` argument:
@@ -69,7 +69,7 @@ For more information about Verbose options, see :ref:`verbosity`.
 
   ======================================================================================================================================================================================================
   Check name: oneapi_toolkit_check
-  Description: This check shows information about installed oneAPI toolkits.
+  Description: This check shows information about installed Intel® oneAPI Toolkits.
   ======================================================================================================================================================================================================
 
   |    APP
@@ -159,7 +159,7 @@ To run a group of checks, use the Group from :ref:`check-table` for the type of 
   JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_gpu_hostname_20211123_130221787096.json
 
   The report was generated for the machine: hostname
-  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
+  by the Diagnostics Utility for oneAPI 2024.2.0
 
 
 Run a Specific Check
@@ -190,7 +190,7 @@ To run a specific check, use the check name from the :ref:`check-table` table. F
   JSON output file: /home/test/intel/diagnostics/logs/diagnostics_select_compiler_check_hostname_20211123_130559427767.json
 
   The report was generated for the machine: hostname
-  by the Diagnostics Utility for Intel® oneAPI Toolkits 2022.1.0
+  by the Diagnostics Utility for oneAPI 2024.2.0
 
 To view more information about the check, use the verbosity argument (-v): ::
 

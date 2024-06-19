@@ -4,7 +4,7 @@
 Verbose Mode Options
 ====================
 
-The Diagnostics Utility for Intel® oneAPI Toolkits has six verbosity
+The Diagnostics Utility for oneAPI has six verbosity
 levels to add more detail in the output of each check:
 
 .. _verbosity-levels:

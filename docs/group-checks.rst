@@ -4,12 +4,7 @@
 Run a Group of Checks
 =====================
 
-..
-  Note: running a group of checks is supported on Linux. For Windows, only the
-  `base_system_check` is supported so there is not a group checks
-  that can be run.
-
-The Diagnostics Utility for Intel® oneAPI Toolkits organizes checks in groups or categories.
+The Diagnostics Utility for oneAPI organizes checks in groups or categories.
 To choose specific group you want to run, use the List of Checks.
 
 For example, use the  ``gpu``  argument to run multiple checks related
@@ -29,7 +24,8 @@ To run the utility with the  ``gpu``  argument:
 
 ::
 
-  python3 diagnostics.py --select gpu
+  Linux: python3 diagnostics.py --select gpu
+  Windows: diagnostics.bat --select gpu
 
 You will see a result similar to this:
 
@@ -49,7 +45,7 @@ To get more information, use ``-v`` to activate verbose mode:
 
 The output will contain expanded details for each check. In the example below,
 the  ``intel_gpu_detector_check`` shows what information the Diagnostics Utility
-for Intel® oneAPI Toolkits found.
+for oneAPI found.
 
 .. image:: images/gpu-group-check-v.png
   :width: 800

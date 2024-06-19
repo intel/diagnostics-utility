@@ -95,15 +95,15 @@ def save_json_output_file(checks: List[BaseCheck], file: Path, print_json: bool)
 def _args_string(args) -> str:
     result = []
     if args.select != ["not_initialized"]:
-        result.append(f"select_{'_'.join(args.select)}")
+        result.append("select")
     if args.list:
         result.append("list")
     if args.config:
-        result.append(f"config_{args.config.stem}")
+        result.append("config")
     if args.force:
         result.append("force")
     if args.verbosity > -1:
-        result.append(f"verbosity_{args.verbosity}")
+        result.append("verbosity")
     return "_".join(result)
 
 
