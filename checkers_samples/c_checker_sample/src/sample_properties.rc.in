@@ -58,14 +58,14 @@ END
 
 #define VERSION_COMPANY_NAME	    "Intel Corporation"
 #define VERSION_PRODUCT_NAME        "Diagnostics Utility for oneAPI"
-#define VERSION_PRODUCT_VERSION     "2024.2.0.0"
+#define VERSION_PRODUCT_VERSION     "2024.2.1.0"
 #define VERSION_LEGAL_COPYRIGHT     "Copyright (C) Intel Corporation"
 #define VERSION_ORIG_FILENAME       "c_checker_sample.dll"
 #define VERSION_FILE_DESCR          "Sample checker for Diagnostics Utility for oneAPI"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2024,2,0,0
- PRODUCTVERSION 2024,2,0,0
+ FILEVERSION 2024,2,1,0
+ PRODUCTVERSION 2024,2,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
