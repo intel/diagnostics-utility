@@ -1,5 +1,17 @@
 # Diagnostics Utility for oneAPI
 
+## ⚠️ End-of-Life Notice
+
+This project is no longer maintained and has reached its End-of-Life (EOL).
+* Diagnostics Utility for oneAPI is discontinued in the 2025.0.0 release.
+* No further updates or maintenance will be provided.
+* Issues and pull requests will no longer be monitored or addressed.
+* The repository may be archived in the near future.
+
+***
+
+## [Original README Content]
+
 Diagnostics Utility for oneAPI is a tool designed to diagnose the system status for using Intel® software.
 
 ## Supported OS
